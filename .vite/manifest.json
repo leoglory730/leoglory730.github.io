@@ -29,7 +29,7 @@
     ]
   },
   "app/components/LanguageSelector.tsx": {
-    "file": "_next/static/chunks/LanguageSelector-CsN7kQ7x.js",
+    "file": "_next/static/chunks/LanguageSelector-BikDKnft.js",
     "name": "LanguageSelector",
     "src": "app/components/LanguageSelector.tsx",
     "isDynamicEntry": true,
@@ -39,7 +39,7 @@
     ]
   },
   "app/components/LiveScholarData.tsx": {
-    "file": "_next/static/chunks/LiveScholarData-C_N5k2Cz.js",
+    "file": "_next/static/chunks/LiveScholarData-8-3NYzp9.js",
     "name": "LiveScholarData",
     "src": "app/components/LiveScholarData.tsx",
     "isDynamicEntry": true,
@@ -59,7 +59,7 @@
     ]
   },
   "node_modules/vinext/dist/shims/layout-segment-context.js": {
-    "file": "_next/static/chunks/layout-segment-context-D7hQOdAD.js",
+    "file": "_next/static/chunks/layout-segment-context-3XGDGlAJ.js",
     "name": "layout-segment-context",
     "src": "node_modules/vinext/dist/shims/layout-segment-context.js",
     "isDynamicEntry": true,
@@ -71,7 +71,7 @@
     ]
   },
   "virtual:vinext-app-browser-entry": {
-    "file": "_next/static/chunks/index-DVitODUb.js",
+    "file": "_next/static/chunks/index-DsDW5Dj0.js",
     "name": "index",
     "src": "virtual:vinext-app-browser-entry",
     "isEntry": true,
