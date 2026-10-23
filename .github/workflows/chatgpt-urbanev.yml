@@ -89,13 +89,15 @@ jobs:
                       a=int(p[i]); w=max(stress[t],0); z=float(Q[a,j]<.5); n+=1; miss+=int(z); wt+=w; wm+=w*z; pk+=dc[i,a]/1000; ck+=dc[a,j]/1000
                   return dict(n=n,miss_rate=miss/n if n else np.nan,weighted_miss_share=wm/wt if wt else np.nan,preventive_km=pk/n if n else np.nan,corrective_km=ck/n if n else np.nan)
 
-              rows=[]; p30=None
+              rows=[]; p30=None; rules30=None; Q30=None
               travel=60*(dc/1000)/25; allowed=travel<=60; np.fill_diagonal(allowed,True)
               for H in [15,20,30,45,60,75,90,120]:
                   Q=(travel+10<=H).astype(float); ps,ls=pol(P,Q,allowed); pi,li=pol(np.tile(dest,(k,1)),Q,allowed); ph=np.full(k,int(np.argmin((1-Q)@dest)))
                   for name,p in {'transition-aware':ps,'iid-geographic':pi,'serve-and-stay':np.arange(k),'fixed-global-hub':ph}.items():
                       z=evalp(p,Q); z.update(policy=name,response_min=H); rows.append(z)
-                  if H==30: p30=pd.DataFrame({'origin':np.arange(k),'transition_stage':ps,'iid_stage':pi,'transition_loss':ls,'iid_loss':li})
+                  if H==30:
+                      p30=pd.DataFrame({'origin':np.arange(k),'transition_stage':ps,'iid_stage':pi,'transition_loss':ls,'iid_loss':li})
+                      rules30={'transition-aware':ps.copy(),'iid-geographic':pi.copy(),'serve-and-stay':np.arange(k),'fixed-global-hub':ph.copy()}; Q30=Q.copy()
               replay=pd.DataFrame(rows); main=replay[replay.response_min==30].set_index('policy')
               summary=dict(hours=len(Y),zones=len(zones),clusters=k,train_hours=train,test_hours=len(Y)-train,peak_quantile=peak_q,active_share_train=float(active[:train].mean()),active_share_test=float(active[train:].mean()),train_transitions=int(C.sum()),test_transitions=int(main.loc['transition-aware','n']),mutual_information_nats=float(mi),bayes_accuracy_train=bayes,iid_accuracy_train=iidacc,transition_weighted_miss_30m=float(main.loc['transition-aware','weighted_miss_share']),iid_weighted_miss_30m=float(main.loc['iid-geographic','weighted_miss_share']),stay_weighted_miss_30m=float(main.loc['serve-and-stay','weighted_miss_share']),hub_weighted_miss_30m=float(main.loc['fixed-global-hub','weighted_miss_share']),sequence_information_value_30m=float(main.loc['iid-geographic','weighted_miss_share']-main.loc['transition-aware','weighted_miss_share']))
 
@@ -117,6 +119,17 @@ jobs:
                                   pairs.append(dict(i=i,j=j,event_quantile=eq,response_min=H,p_i=xi.mean(),p_j=xj.mean(),rate_gap=abs(xi.mean()-xj.mean()),rho=np.corrcoef(xi,xj)[0,1],phi=phi,eta=eta,valid_pairs=valid,distance_km=dc[i,j]/1000,rho_star=rstar,interior_reversal=interior))
                   pair=pd.DataFrame(pairs); summary['reversal_pairs']=int(pair.interior_reversal.sum()); summary['supported_reversal_pairs']=int((pair.interior_reversal&(pair.rate_gap<=.05)&(pair.valid_pairs>=30)).sum())
                   pd.DataFrame([summary]).to_csv(OUT/'main_summary.csv',index=False); replay.to_csv(OUT/'policy_replay.csv',index=False); pd.DataFrame(P).to_csv(OUT/'transition_matrix.csv',index=False); pd.DataFrame(C).to_csv(OUT/'transition_counts.csv',index=False); p30.to_csv(OUT/'staging_policy_30m.csv',index=False); pair.to_csv(OUT/'pair_reversal_screen.csv',index=False); pd.DataFrame({'zone':zones,'cluster':lab,'capacity':caps,'longitude':coords[:,0],'latitude':coords[:,1]}).to_csv(OUT/'cluster_membership.csv',index=False)
+                  pd.DataFrame(dc).to_csv(OUT/'cluster_distance_m.csv',index=False)
+                  pd.DataFrame({'timestamp':Y.index,'state':state,'stress':stress,'active':active}).to_csv(OUT/'peak_state_series.csv',index=False)
+                  events=[]
+                  for t in range(train,len(state)):
+                      i,j=state[t-1],state[t]
+                      if i<0 or j<0: continue
+                      row={'timestamp':Y.index[t],'origin':i,'destination':j,'stress':stress[t]}
+                      for name,pp in rules30.items():
+                          aa=int(pp[i]); row[name+'_stage']=aa; row[name+'_miss']=int(Q30[aa,j]<.5); row[name+'_preventive_km']=dc[i,aa]/1000; row[name+'_corrective_km']=dc[aa,j]/1000
+                      events.append(row)
+                  pd.DataFrame(events).to_csv(OUT/'event_replay_30m.csv',index=False)
                   plt.figure(figsize=(7.2,5.1)); plt.scatter(coords[:,0],coords[:,1],c=lab,s=8+45*caps/caps.max(),alpha=.75); plt.xlabel('Longitude'); plt.ylabel('Latitude'); plt.tight_layout(); plt.savefig(OUT/'figures/cluster_map.pdf'); plt.savefig(OUT/'figures/cluster_map.png',dpi=220); plt.close()
                   plt.figure(figsize=(6.1,5.1)); plt.imshow(P,aspect='auto'); plt.colorbar(label='Transition probability'); plt.xlabel('Next peak cluster'); plt.ylabel('Current peak cluster'); plt.tight_layout(); plt.savefig(OUT/'figures/transition_matrix.pdf'); plt.savefig(OUT/'figures/transition_matrix.png',dpi=220); plt.close()
                   for metric,label in [('weighted_miss_share','Stress-weighted missed-peak share'),('miss_rate','Missed active-transition rate')]:
