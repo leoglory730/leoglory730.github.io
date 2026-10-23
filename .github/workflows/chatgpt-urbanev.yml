@@ -1,0 +1,145 @@
+name: Temporary UrbanEV empirical analysis
+
+on:
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  analyze:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install dependencies
+        run: python -m pip install --quiet numpy pandas matplotlib scikit-learn
+      - name: Clone public UrbanEV data
+        run: git clone --depth 1 https://github.com/IntelligentSystemsLab/UrbanEV.git urbanev_source
+      - name: Run structural replay
+        shell: bash
+        run: |
+          cat > /tmp/analyze.py <<'PY'
+          import json, math
+          from pathlib import Path
+          import numpy as np, pandas as pd
+          import matplotlib.pyplot as plt
+          from sklearn.cluster import AgglomerativeClustering
+
+          ROOT=Path('urbanev_source/data'); OUT=Path('urbanev_results'); OUT.mkdir(exist_ok=True); (OUT/'figures').mkdir(exist_ok=True)
+          START=pd.Timestamp('2022-09-01 00:00:00')
+
+          def numeric(path):
+              x=pd.read_csv(path); x=x.loc[:,~x.columns.astype(str).str.lower().str.startswith('unnamed')]
+              cols=[]
+              for c in x.columns:
+                  try: cols.append(str(int(float(str(c).strip()))))
+                  except: cols.append(str(c).strip())
+              x.columns=cols
+              return x.apply(pd.to_numeric,errors='coerce')
+
+          D=numeric(ROOT/'distance.csv')
+          if D.shape[1]==D.shape[0]+1: D=D.iloc[:,1:]
+          zones=list(D.columns); D.index=zones
+          X=numeric(ROOT/'occupancy.csv')
+          if X.shape[0]==len(zones) and X.shape[1]!=len(zones): X=X.T
+          X=X[zones].interpolate(axis=0,limit_direction='both').fillna(0); X.index=pd.date_range(START,periods=len(X),freq='h')
+          inf=pd.read_csv(ROOT/'inf.csv')
+          for c in ['TAZID','charge_count','longitude','latitude']: inf[c]=pd.to_numeric(inf[c],errors='coerce')
+          caps=[]; coords=[]
+          for z in zones:
+              q=inf[inf.TAZID==int(z)].dropna(subset=['longitude','latitude']); w=q.charge_count.fillna(1).clip(lower=1).to_numpy()
+              caps.append(max(float(q.charge_count.fillna(0).sum()),1.)); coords.append((np.average(q.longitude,weights=w),np.average(q.latitude,weights=w)))
+          caps=np.array(caps); coords=np.array(coords); dist=D.to_numpy(float)
+
+          def build(k,peak_q,detailed=False):
+              lab=AgglomerativeClustering(n_clusters=k,metric='precomputed',linkage='average').fit_predict(dist)
+              med=[]
+              for c in range(k):
+                  m=np.where(lab==c)[0]; w=caps[m]; med.append(m[int(np.argmin(dist[np.ix_(m,m)]@(w/w.sum())))])
+              med=np.array(med); dc=dist[np.ix_(med,med)]
+              occ=X.to_numpy(float); occ=occ/100 if np.nanquantile(occ,.99)>2 else occ; busy=np.clip(occ,0,None)*caps[None,:]
+              Y=pd.DataFrame(np.column_stack([busy[:,lab==c].sum(1) for c in range(k)]),index=X.index)
+              train=int(.70*len(Y)); key=Y.index.dayofweek*24+Y.index.hour; base=np.empty_like(Y.to_numpy())
+              fallback=Y.iloc[:train].median().to_numpy()
+              for h in range(168):
+                  mt=np.asarray(key[:train]==h); b=Y.iloc[:train].iloc[mt].median().to_numpy() if mt.any() else fallback; base[np.asarray(key==h),:]=b
+              R=Y-pd.DataFrame(base,index=Y.index); medr=R.iloc[:train].median(); mad=(R.iloc[:train]-medr).abs().median()*1.4826; sd=R.iloc[:train].std(); scale=mad.where(mad>1e-8,sd).where(lambda z:z>1e-8,1)
+              Z=R.divide(scale,axis=1); A=np.maximum(Z.to_numpy(),0); state=np.argmax(A,axis=1); stress=A[np.arange(len(A)),state]; cut=np.quantile(stress[:train],peak_q); active=stress>cut; state=state.astype(int); state[~active]=-1
+              C=np.zeros((k,k)); W=np.zeros((k,k))
+              for t in range(1,train):
+                  i,j=state[t-1],state[t]
+                  if i>=0 and j>=0: C[i,j]+=1; W[i,j]+=max(stress[t],1e-9)
+              dest=W.sum(0); dest=dest/dest.sum(); P=W+3*dest[None,:]; P=P/P.sum(1,keepdims=True)
+              joint=C/C.sum(); ro=joint.sum(1); co=joint.sum(0); mi=sum(joint[i,j]*math.log(joint[i,j]/(ro[i]*co[j])) for i in range(k) for j in range(k) if joint[i,j]>0 and ro[i]>0 and co[j]>0)
+              rowp=np.divide(C,C.sum(1,keepdims=True),out=np.zeros_like(C),where=C.sum(1,keepdims=True)>0); bayes=float(np.sum(ro*np.max(rowp,axis=1))); iidacc=float(np.max(co))
+
+              def pol(P0,Q,allowed):
+                  E=P0@(1-Q).T; M=np.where(allowed,E,np.inf); p=np.argmin(M,axis=1); return p,M[np.arange(k),p]
+              def evalp(p,Q):
+                  n=miss=0; wt=wm=pk=ck=0.
+                  for t in range(train,len(state)):
+                      i,j=state[t-1],state[t]
+                      if i<0 or j<0: continue
+                      a=int(p[i]); w=max(stress[t],0); z=float(Q[a,j]<.5); n+=1; miss+=int(z); wt+=w; wm+=w*z; pk+=dc[i,a]/1000; ck+=dc[a,j]/1000
+                  return dict(n=n,miss_rate=miss/n if n else np.nan,weighted_miss_share=wm/wt if wt else np.nan,preventive_km=pk/n if n else np.nan,corrective_km=ck/n if n else np.nan)
+
+              rows=[]; p30=None
+              travel=60*(dc/1000)/25; allowed=travel<=60; np.fill_diagonal(allowed,True)
+              for H in [15,20,30,45,60,75,90,120]:
+                  Q=(travel+10<=H).astype(float); ps,ls=pol(P,Q,allowed); pi,li=pol(np.tile(dest,(k,1)),Q,allowed); ph=np.full(k,int(np.argmin((1-Q)@dest)))
+                  for name,p in {'transition-aware':ps,'iid-geographic':pi,'serve-and-stay':np.arange(k),'fixed-global-hub':ph}.items():
+                      z=evalp(p,Q); z.update(policy=name,response_min=H); rows.append(z)
+                  if H==30: p30=pd.DataFrame({'origin':np.arange(k),'transition_stage':ps,'iid_stage':pi,'transition_loss':ls,'iid_loss':li})
+              replay=pd.DataFrame(rows); main=replay[replay.response_min==30].set_index('policy')
+              summary=dict(hours=len(Y),zones=len(zones),clusters=k,train_hours=train,test_hours=len(Y)-train,peak_quantile=peak_q,active_share_train=float(active[:train].mean()),active_share_test=float(active[train:].mean()),train_transitions=int(C.sum()),test_transitions=int(main.loc['transition-aware','n']),mutual_information_nats=float(mi),bayes_accuracy_train=bayes,iid_accuracy_train=iidacc,transition_weighted_miss_30m=float(main.loc['transition-aware','weighted_miss_share']),iid_weighted_miss_30m=float(main.loc['iid-geographic','weighted_miss_share']),stay_weighted_miss_30m=float(main.loc['serve-and-stay','weighted_miss_share']),hub_weighted_miss_30m=float(main.loc['fixed-global-hub','weighted_miss_share']),sequence_information_value_30m=float(main.loc['iid-geographic','weighted_miss_share']-main.loc['transition-aware','weighted_miss_share']))
+
+              if detailed:
+                  pairs=[]
+                  for eq in [.50,.75,.90]:
+                      th=Z.iloc[:train].quantile(eq); B=Z.iloc[:train].gt(th,axis=1).to_numpy(int)
+                      for H in [15,30,60]:
+                          qreach=(travel+10<=H).astype(float)
+                          for i in range(k):
+                              for j in range(i+1,k):
+                                  xi,xj=B[:,i],B[:,j]; iso=(xi+xj)==1; valid=same=0
+                                  for t in range(1,train):
+                                      if iso[t-1] and iso[t]: valid+=1; same+=int(xi[t-1]==xi[t])
+                                  if not valid: continue
+                                  phi=same/valid; eta=min(phi,1-phi); pbar=(xi.mean()+xj.mean())/2; c=4*eta-1; qr=float(qreach[i,j]); interior=False; rstar=np.nan
+                                  if c>0 and qr<1 and 0<pbar<1:
+                                      bs=(24/(23*(1-qr))-pbar)/(2*c); rstar=1-bs/(pbar*(1-pbar)); interior=0<bs<min(pbar,1-pbar)
+                                  pairs.append(dict(i=i,j=j,event_quantile=eq,response_min=H,p_i=xi.mean(),p_j=xj.mean(),rate_gap=abs(xi.mean()-xj.mean()),rho=np.corrcoef(xi,xj)[0,1],phi=phi,eta=eta,valid_pairs=valid,distance_km=dc[i,j]/1000,rho_star=rstar,interior_reversal=interior))
+                  pair=pd.DataFrame(pairs); summary['reversal_pairs']=int(pair.interior_reversal.sum()); summary['supported_reversal_pairs']=int((pair.interior_reversal&(pair.rate_gap<=.05)&(pair.valid_pairs>=30)).sum())
+                  pd.DataFrame([summary]).to_csv(OUT/'main_summary.csv',index=False); replay.to_csv(OUT/'policy_replay.csv',index=False); pd.DataFrame(P).to_csv(OUT/'transition_matrix.csv',index=False); pd.DataFrame(C).to_csv(OUT/'transition_counts.csv',index=False); p30.to_csv(OUT/'staging_policy_30m.csv',index=False); pair.to_csv(OUT/'pair_reversal_screen.csv',index=False); pd.DataFrame({'zone':zones,'cluster':lab,'capacity':caps,'longitude':coords[:,0],'latitude':coords[:,1]}).to_csv(OUT/'cluster_membership.csv',index=False)
+                  plt.figure(figsize=(7.2,5.1)); plt.scatter(coords[:,0],coords[:,1],c=lab,s=8+45*caps/caps.max(),alpha=.75); plt.xlabel('Longitude'); plt.ylabel('Latitude'); plt.tight_layout(); plt.savefig(OUT/'figures/cluster_map.pdf'); plt.savefig(OUT/'figures/cluster_map.png',dpi=220); plt.close()
+                  plt.figure(figsize=(6.1,5.1)); plt.imshow(P,aspect='auto'); plt.colorbar(label='Transition probability'); plt.xlabel('Next peak cluster'); plt.ylabel('Current peak cluster'); plt.tight_layout(); plt.savefig(OUT/'figures/transition_matrix.pdf'); plt.savefig(OUT/'figures/transition_matrix.png',dpi=220); plt.close()
+                  for metric,label in [('weighted_miss_share','Stress-weighted missed-peak share'),('miss_rate','Missed active-transition rate')]:
+                      plt.figure(figsize=(7.3,4.4))
+                      for name,g in replay.groupby('policy'): plt.plot(g.response_min,g[metric],marker='o',label=name)
+                      plt.xlabel('Corrective response window (minutes)'); plt.ylabel(label); plt.legend(frameon=False); plt.tight_layout(); plt.savefig(OUT/f'figures/{metric}.pdf'); plt.savefig(OUT/f'figures/{metric}.png',dpi=220); plt.close()
+              return summary
+
+          main=build(20,.70,True); robust=[]
+          for k in [10,20,30]:
+              for q in [.50,.70,.80,.90]:
+                  z=build(k,q,False); robust.append(z)
+          pd.DataFrame(robust).to_csv(OUT/'robustness_summary.csv',index=False)
+          (OUT/'run_metadata.json').write_text(json.dumps({'source':'UrbanEV CC0 public data','period':'2022-09-01 to 2023-02-28','main':{'clusters':20,'peak_quantile':.70,'train_share':.70,'speed_kmh':25,'setup_min':10,'staging_horizon_min':60}},indent=2))
+          print(pd.DataFrame([main]).T.to_string(header=False))
+          PY
+          python /tmp/analyze.py
+      - name: Upload results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: urbanev-empirical-results
+          path: urbanev_results
+          if-no-files-found: error
+          retention-days: 3
+          compression-level: 9
