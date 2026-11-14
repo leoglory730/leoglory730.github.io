@@ -124,6 +124,7 @@ dialog::backdrop{background:#142a3a70}
 #park-outcomes{padding:0 15px 10px}
 #outcomes-evidence{margin-top:6px;font-size:11px;line-height:1.45;color:var(--muted)}
 #outcomes-evidence summary{margin-top:4px;color:var(--accent);cursor:pointer}
+#outcomes-evidence details p{margin-top:3px}
 .unknown-reasons{margin:5px 0 0}
 .unknown-reasons div{display:flex;justify-content:space-between;gap:8px}
 .unknown-reasons dd{margin:0;font-variant-numeric:tabular-nums}
@@ -278,7 +279,7 @@ dialog{max-height:85dvh;overflow:auto}
       </div>
       <div class="map-foot"><div id="legend"></div><div id="map-note"></div></div>
       <section id="park-trend" class="park-trend" aria-labelledby="trend-heading" hidden>
-        <div class="park-chart-head"><h3 id="trend-heading">Aircraft in storage at year-end</h3><span id="trend-summary"></span></div>
+        <div class="park-chart-head"><h3 id="trend-heading">Reconstructed annual storage counts</h3><span id="trend-summary"></span></div>
         <svg id="trend-chart" role="img" aria-labelledby="trend-heading"></svg>
       </section>
       <section id="park-followup" class="park-trend park-followup" aria-labelledby="followup-heading" hidden>
@@ -843,6 +844,7 @@ const startExplorer = async () => {
   const statuses = {assigned:"Assigned to airline",parked:"Recorded parked",retired:"Recorded scrapped",unresolved:"Status unverified"};
   const lifecycle = {storage:"Parking recorded",storage_end:"Recorded parking period ends",reactivation:"Return to use recorded",scrap:"Dismantling recorded",assignment_conflict:"Conflicting same-day assignments"};
   const outcomes = {reactivated:"Recorded return to use",transferred:"Assigned to another airline",scrapped:"Recorded dismantling",unknown:"No confirmed outcome"};
+  const archiveLabels = {STD:"Stored",SCR:"Scrapped",C:"Active", "W/O":"Written off",PLN:"To enter in service"};
   const evidence = {reactivation:"Explicit return-to-use record",new_airline_assignment:"Later assignment to another airline",scrap:"Dated dismantling record",storage_end_only:"Parking period ended; subsequent use unverified",assignment_unverified:"Later assignment; outcome unverified",next_storage:"Later parking period; outcome of this period unverified",no_later_record:"No confirmed outcome by archive cutoff"};
   const state = {mode:"stock",year:2025,from:2021,family:-1,country:"",status:"assigned",search:"",asset:null,corridor:null,page:0,zoom:1,focus:[500,250],model:"",age:"0/",duration:"0/",outcome:""};
   const params=new URLSearchParams(window.location.search);
@@ -1040,7 +1042,7 @@ const startExplorer = async () => {
     const max=Math.max(1,...points.map(entry=>entry.count));
     const step=(width-12)/points.length;
     chart.setAttribute("viewBox","0 0 "+width+" "+height);
-    chart.setAttribute("aria-label","Year-end parked aircraft, 2000–2025, with current filters applied");
+    chart.setAttribute("aria-label","Reconstructed year-end storage, 2000–2025, with current filters applied");
     chart.replaceChildren();
     addSvg(chart,"line",{x1:6,y1:bottom,x2:width-6,y2:bottom,class:"guide"});
     for(const [index,entry] of points.entries()) {
@@ -1064,9 +1066,9 @@ const startExplorer = async () => {
       +(state.outcome?'<button type="button" class="inline-link outcome-clear" data-outcome="">Show all outcomes</button>':"");
     const evidenceBox=el("outcomes-evidence");
     if(noFollowup) {
-      evidenceBox.textContent="This snapshot is at the archive cutoff. The later status of these aircraft has yet to be observed.";
+      evidenceBox.textContent="This snapshot is at the archive cutoff. Dated follow-up stops here.";
     } else {
-      evidenceBox.textContent="These aircraft had a storage record at the snapshot. Later records determine the outcome.";
+      evidenceBox.textContent="Dated records place these aircraft in storage at the selected year-end. Later dated records determine the outcome.";
       if(result.outcomes.unknown && result.unknownReasons) {
         const details=document.createElement("details");
         details.innerHTML='<summary>Why outcomes are unconfirmed</summary><dl class="unknown-reasons">'+
@@ -1075,6 +1077,17 @@ const startExplorer = async () => {
               '<div><dt>'+label+'</dt><dd>'+n(result.unknownReasons[key])+'</dd></div>').join("")+'</dl>';
         evidenceBox.append(details);
       }
+    }
+    if(result.archiveStatusDate && result.outcomes.unknown && result.archiveStatuses) {
+      const archive=document.createElement("details");
+      const groups=Object.entries(archiveLabels).map(([code,name])=>[name,result.archiveStatuses[code]||0]);
+      const other=result.outcomes.unknown-groups.reduce((sum,[,count])=>sum+count,0);
+      if(other)groups.push(["Other or unmapped",other]);
+      archive.innerHTML='<summary>Archive status of unconfirmed aircraft</summary><p>Source status on '+
+        esc(result.archiveStatusDate)+'. Status codes give no event date. “Active” is the source label.</p>'+
+        '<dl class="unknown-reasons">'+groups.filter(([,count])=>count).map(([label,count])=>
+          '<div><dt>'+esc(label)+'</dt><dd>'+n(count)+'</dd></div>').join("")+'</dl>';
+      evidenceBox.append(archive);
     }
   }
 
@@ -1216,7 +1229,10 @@ const startExplorer = async () => {
       ...asset.events.map(event=>({date:event.date,display:formatDate(event.date,event.precision),title:lifecycle[event.kind]||event.kind,sub:"Historical status record",kind:"event"}))
     ].sort((a,b)=>b.date.localeCompare(a.date));
     const caseLink=caseAssets.has(state.asset)?'<p class="parking-evidence"><button type="button" class="inline-link" data-ppr-entry>View the AerFin Hong Kong case →</button></p>':"";
-    el("details-body").innerHTML=parkingDetail+caseLink+'<dl class="asset-meta"><dt>Family</dt><dd>'+esc(registry.families[asset.family])+'</dd><dt>First flight</dt><dd>'+esc(asset.firstFlight||"Unknown")+'</dd><dt>Engine</dt><dd>'+esc(asset.engine||"Unknown")+'</dd></dl><ol class="history">'+rows.map(item=>'<li class="'+item.kind+'"><time>'+esc(item.display||item.date)+'</time><strong>'+esc(item.title)+'</strong><small>'+esc(item.sub)+'</small></li>').join("")+'</ol>';
+    const archiveStatus=asset.archiveStatus&&registry.meta.archiveStatusDate?
+      '<p class="parking-evidence"><strong>Archive status '+esc(registry.meta.archiveStatusDate)+'</strong><br>'+
+      esc(archiveLabels[asset.archiveStatus]||"Unmapped code "+asset.archiveStatus)+' · Event date unavailable from status code</p>':"";
+    el("details-body").innerHTML=parkingDetail+archiveStatus+caseLink+'<dl class="asset-meta"><dt>Family</dt><dd>'+esc(registry.families[asset.family])+'</dd><dt>First flight</dt><dd>'+esc(asset.firstFlight||"Unknown")+'</dd><dt>Engine</dt><dd>'+esc(asset.engine||"Unknown")+'</dd></dl><ol class="history">'+rows.map(item=>'<li class="'+item.kind+'"><time>'+esc(item.display||item.date)+'</time><strong>'+esc(item.title)+'</strong><small>'+esc(item.sub)+'</small></li>').join("")+'</ol>';
     el("details-foot").innerHTML='<button class="inline-link" type="button" data-back="asset">← Back to '+(state.mode==="flow"?"changes":"aircraft list")+'</button><span>'+quantity(rows.length,"record")+'</span>';
   }
 
@@ -1274,7 +1290,7 @@ const startExplorer = async () => {
     const matches=(values)=>!query||values.some(value=>String(value??"").toLowerCase().includes(query));
     if(park) {
       const items=remote?.items??parkItems();
-      detailsHeader("Parked aircraft",label(state.country),"Year-end "+state.year+" · "+quantity(remote?.total??items.length,"aircraft","aircraft")+(state.outcome?" · "+outcomes[state.outcome]:""),true);
+      detailsHeader("Aircraft in reconstructed storage",label(state.country),"Year-end "+state.year+" · "+quantity(remote?.total??items.length,"aircraft","aircraft")+(state.outcome?" · "+outcomes[state.outcome]:""),true);
       detailList(items,a=>row("asset-row",'data-asset="'+a.id+'"',(a.registration||"Registration unknown")+" · MSN "+a.msn,
         [a.model,a.operator,a.age===null?"Age unknown":quantity(a.age,"year")+" old",timeParked(a)].filter(Boolean).join(" · "),outcomes[a.outcome]),"aircraft","aircraft",remote);
       return;
@@ -1348,7 +1364,7 @@ const startExplorer = async () => {
     const ticks=[tickStart, ...[2005,2010,2015,2020].filter(v=>v>tickStart),2025];
     el("ticks").innerHTML=[...new Set(ticks)].map(v=>"<span>"+v+"</span>").join("");
     el("search").value=state.search;
-    el("map-title").textContent=flow?"Cross-border assignments":park?"Parked aircraft":"Fleet distribution";
+    el("map-title").textContent=flow?"Cross-border assignments":park?"Reconstructed storage at year-end":"Fleet distribution";
     el("map-context").textContent=(flow?state.from+"–"+state.year:"As of "+state.year+"-12-31")+" · "+(state.family<0?"All aircraft families":registry.families[state.family])+(park&&state.model?" · "+state.model:"");
     if(!online) {
       result=getSummary();
@@ -1523,8 +1539,8 @@ const startExplorer = async () => {
   el("method-body").innerHTML='<p>The Airfleets production lists contain '+n(online?registry.airframeCount:engines.length)+' airframe histories, keyed by production list and manufacturer serial number (MSN). The map covers year-end snapshots from 2000 to 2025. Individual histories can start earlier.</p>'+
     '<p><strong>Fleet.</strong> Snapshots use dated assignment and status records through the selected date. “Assigned to airline” indicates a recorded airline assignment. Confirming actual operations requires flight records. Parked and dismantled aircraft appear under the airline’s country or territory as of that date, where known. Month- or year-only status records take effect at the end of the period.</p>'+
     '<p><strong>Cross-border assignments.</strong> Counts use dated changes in recorded airline for the same airframe, with both countries or territories mapped. An aircraft can contribute multiple changes. These records may include wet leases and transfers within an airline group. Ownership, airport and contract details require separate evidence.</p>'+
-    '<p><strong>Parked aircraft.</strong> Each bar counts aircraft recorded as parked at year-end under the current country, family, model, age and duration filters. Age runs from first flight. A later assignment can close a reconstructed parking period. Month- and year-only starts produce a range of possible durations. The filter includes ranges that overlap the selected interval. Outcome filters apply to the aircraft list.</p>'+
-    '<p><strong>Subsequent outcomes.</strong> Follow-up runs through year-end 2025, so earlier snapshots have more years of follow-up. Return to use requires an explicit record. Assignment to another airline uses later registry evidence. Both await flight verification. A recorded end to parking alone leaves the outcome unknown.</p>'+
+    '<p><strong>Parked aircraft.</strong> Each bar counts reconstructed parking periods open at year-end under the current filters. Dated storage and exit records define these periods. Record gaps can leave periods open. Age runs from first flight. Month- and year-only starts produce a range of possible durations. The filter includes ranges that overlap the selected interval.</p>'+
+    '<p><strong>Subsequent outcomes.</strong> Dated follow-up runs through year-end 2025. Return to use requires an explicit dated record. Assignment to another airline uses later registry evidence. Archive status gives the source’s classification at extraction. The date of the underlying event requires separate evidence. Fixed-horizon counts use dated records.</p>'+
     '<p><strong>Coverage.</strong> '+n(registry.meta.counts.airlineMappedCountryAssignments)+' of '+n(registry.meta.counts.assignments)+' dated assignment records are matched to an airline’s country or territory. Unknown or conflicting records appear under “Country or territory unverified.” Historical status uses dated parking or disposal records.</p>'+
     '<p>Airline country mapping draws on <a href="https://openflights.org/data#airline" target="_blank" rel="noreferrer">OpenFlights</a>, the <a href="https://www.faa.gov/air_traffic/publications/atpubs/cnt_html/chap3_section_1.html" target="_blank" rel="noreferrer">FAA airline directory</a> and manual checks. Map boundaries use <a href="https://www.naturalearthdata.com/downloads/110m-cultural-vectors/110m-admin-0-countries/" target="_blank" rel="noreferrer">Natural Earth</a>. Some small territories appear as dots.</p>';
   if(params.get("view")==="ppr")openPpr(null,false);
