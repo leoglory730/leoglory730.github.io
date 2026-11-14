@@ -217,6 +217,13 @@ dialog{max-height:85dvh;overflow:auto}
 .park-followup .park-chart-head label{display:flex;align-items:center;gap:6px;color:var(--muted);font-size:12px}
 .park-followup select{min-height:30px;padding:3px 5px;font-size:12px}
 #park-horizon-results>p{font-size:12px;line-height:1.5;color:var(--muted);margin-block:5px 0}
+.park-review{margin-top:12px;border-top:1px solid var(--line);padding-top:9px;font-size:12px;line-height:1.5}
+.park-review summary{cursor:pointer;font-weight:650;color:var(--accent)}
+.park-review p{margin:6px 0;color:var(--muted)}
+.park-review-table{width:100%;margin:8px 0;border-collapse:collapse;font-size:12px}
+.park-review-table th,.park-review-table td{padding:5px 5px 5px 0;border-bottom:1px solid var(--line);text-align:left}
+.park-review-table th[scope=row]{font-weight:500}
+.park-review-table th:last-child,.park-review-table td:last-child{text-align:right;padding-right:0;white-space:nowrap;font-variant-numeric:tabular-nums}
 .followup-bars{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px 15px;margin:8px 0}
 .followup-bars dt,.followup-bars dd{font-size:12px}
 .followup-bars dd{display:flex;align-items:center;gap:6px;margin:0;min-width:0;font-variant-numeric:tabular-nums}
@@ -284,10 +291,14 @@ dialog{max-height:85dvh;overflow:auto}
       </section>
       <section id="park-followup" class="park-trend park-followup" aria-labelledby="followup-heading" hidden>
         <div class="park-chart-head">
-          <h3 id="followup-heading">Outcomes at a fixed horizon</h3>
+          <h3 id="followup-heading">First classifiable outcome within a fixed window</h3>
           <label>Follow-up <select id="park-horizon"><option value="12">12 months</option><option value="24" selected>24 months</option></select></label>
         </div>
         <div id="park-horizon-results" aria-live="polite"></div>
+        <details id="park-review" class="park-review" hidden>
+          <summary>Dismantling sensitivity and archive cross-check</summary>
+          <div id="park-review-results" aria-live="polite"></div>
+        </details>
       </section>
     </section>
     <aside class="details" id="details" aria-label="Asset details">
@@ -1060,15 +1071,16 @@ const startExplorer = async () => {
     const difference=previous===undefined?null:result.total-previous.count;
     el("trend-summary").textContent=state.year+" · "+quantity(result.total,"aircraft","aircraft")+(difference===null?"":" · "+(difference>0?"+":"")+n(difference)+" vs. prior year");
     const noFollowup=result.asOf===result.followupEnd;
-    el("outcomes-asof").textContent=noFollowup?"At archive cutoff":"Followed through year-end "+result.followupEnd.slice(0,4);
-    el("outcomes-controls").innerHTML=Object.entries(outcomes).map(([key,name])=>
+    if(noFollowup)state.outcome="";
+    el("outcomes-asof").textContent=noFollowup?"No dated follow-up":"Records through year-end "+result.followupEnd.slice(0,4);
+    el("outcomes-controls").innerHTML=noFollowup?"":Object.entries(outcomes).map(([key,name])=>
       '<button type="button" class="outcome" aria-pressed="'+(state.outcome===key)+'" data-outcome="'+key+'"><span>'+name+'</span><strong>'+n(result.outcomes[key])+'</strong></button>').join("")
       +(state.outcome?'<button type="button" class="inline-link outcome-clear" data-outcome="">Show all outcomes</button>':"");
     const evidenceBox=el("outcomes-evidence");
     if(noFollowup) {
-      evidenceBox.textContent="This snapshot is at the archive cutoff. Dated follow-up stops here.";
+      evidenceBox.textContent="This cohort starts at the cutoff for dated records. See the source status at extraction below.";
     } else {
-      evidenceBox.textContent="Dated records place these aircraft in storage at the selected year-end. Later dated records determine the outcome.";
+      evidenceBox.textContent="Storage is reconstructed from dated records. These outcomes count the first classifiable later record.";
       if(result.outcomes.unknown && result.unknownReasons) {
         const details=document.createElement("details");
         details.innerHTML='<summary>Why outcomes are unconfirmed</summary><dl class="unknown-reasons">'+
@@ -1083,7 +1095,8 @@ const startExplorer = async () => {
       const groups=Object.entries(archiveLabels).map(([code,name])=>[name,result.archiveStatuses[code]||0]);
       const other=result.outcomes.unknown-groups.reduce((sum,[,count])=>sum+count,0);
       if(other)groups.push(["Other or unmapped",other]);
-      archive.innerHTML='<summary>Archive status of unconfirmed aircraft</summary><p>Source status on '+
+      archive.open=noFollowup;
+      archive.innerHTML='<summary>'+(noFollowup?"Source status of this cohort":"Archive status of unconfirmed aircraft")+'</summary><p>Source status on '+
         esc(result.archiveStatusDate)+'. Status codes give no event date. “Active” is the source label.</p>'+
         '<dl class="unknown-reasons">'+groups.filter(([,count])=>count).map(([label,count])=>
           '<div><dt>'+esc(label)+'</dt><dd>'+n(count)+'</dd></div>').join("")+'</dl>';
@@ -1095,10 +1108,11 @@ const startExplorer = async () => {
     const horizon=Number(el("park-horizon").value);
     if(!result || state.mode!=="park")return;
     const followup=online?result.fixedHorizon?.[horizon]:window.ExplorerParkingEconomics.summarize(result,horizon);
+    renderParkingReview();
     if(!followup)return;
     const target=el("park-horizon-results");
     if(!followup.eligible) {
-      target.innerHTML='<p>Follow-up through '+esc(followup.horizonEnd)+' is needed. The archive ends on '+
+      target.innerHTML='<p>Follow-up through '+esc(followup.horizonEnd)+' is needed. Dated records end on '+
         esc(result.followupEnd)+'. Select an earlier snapshot or a shorter horizon.</p>';
       return;
     }
@@ -1108,12 +1122,48 @@ const startExplorer = async () => {
     }
     const percent=new Intl.NumberFormat("en",{style:"percent",maximumFractionDigits:1});
     target.innerHTML='<p>'+quantity(followup.total,"aircraft","aircraft")+' at year-end '+state.year+
-      ' · Tracked through '+esc(followup.horizonEnd)+'</p><dl class="followup-bars">'+
+      ' · Records available through '+esc(followup.horizonEnd)+'</p><dl class="followup-bars">'+
       Object.entries(followup.counts).map(([key,count])=>
-        '<div data-followup="'+key+'"><dt>'+esc(key==="unknown"?"No classified outcome":outcomes[key])+
+        '<div data-followup="'+key+'"><dt>'+esc(key==="unknown"?"No classifiable record in window":outcomes[key])+
         '</dt><dd><span class="followup-track" aria-hidden="true"><span style="width:'+followup.shares[key]*100+'%"></span></span><strong>'+
         percent.format(followup.shares[key])+'</strong> <span>('+n(count)+')</span></dd></div>').join("")+
-      '</dl><p>Shares use the full filtered year-end cohort. A missing outcome can reflect a missing record or a later event.</p>';
+      '</dl><p>Denominator: all '+n(followup.total)+' aircraft in the filtered year-end cohort. A later record or a gap in reporting can leave the outcome unresolved.</p>';
+  }
+
+  function renderParkingReview() {
+    const section=el("park-review");
+    const target=el("park-review-results");
+    const review=online?result.reviewer:window.ExplorerParkingReview.calibrate(result,{registry});
+    section.hidden=!review?.total;
+    if(!review?.total)return;
+    const percent=new Intl.NumberFormat("en",{style:"percent",maximumFractionDigits:1});
+    const share=count=>n(count)+" ("+percent.format(count/review.total)+")";
+    const row=([label,count])=>'<tr><th scope="row">'+esc(label)+'</th><td>'+share(count)+'</td></tr>';
+    const table=(label, entries)=>'<table class="park-review-table"><thead><tr><th scope="col">'+esc(label)+
+      '</th><th scope="col">Aircraft (% of cohort)</th></tr></thead><tbody>'+entries.map(row).join("")+'</tbody></table>';
+    const archive=review.archive;
+    const counts=archive.counts;
+    const other=counts.planned+counts.other+counts.missing;
+    const archiveRows=[["Stored",counts.stored],["Scrapped",counts.scrapped],
+      ["Active",counts.active],["Written off",counts.writeoff],["Other or missing",other]];
+    const archiveText=archive.asOf?'<p>The source archive on '+esc(archive.asOf)+' labels the '+n(review.total)+
+      ' aircraft in this reconstructed cohort as follows. “Active” is an archive label. Flight activity is unverified.</p>'+
+      table("Source status",archiveRows):"";
+    if(review.asOf>=review.followupEnd) {
+      const screening=archive.storedScreening;
+      target.innerHTML=archiveText+'<p>For a stricter inventory screen, require both an archive Stored label and a documented parking start.</p>'+
+        table("Minimum elapsed time from recorded parking start",[["3 calendar months",screening.atLeast3Months],
+          ["12 calendar months",screening.atLeast12Months]])+
+        '<p>Duration uses the latest possible start date for month- or year-level records. Later-event sensitivity requires a cohort date before '+esc(review.followupEnd)+'.</p>';
+      return;
+    }
+    const scrap=review.anyDismantling;
+    target.innerHTML='<p>Any dismantling after '+esc(review.asOf)+' through the archive, regardless of earlier recorded outcomes. Denominator: '+n(review.total)+' aircraft in the cohort.</p>'+
+      table("Evidence included",[["Dated dismantling",scrap.dated],
+        ["Plus undated remarks with a Scrapped code",scrap.dated+scrap.undatedCorroborated],
+        ["Plus other aircraft coded Scrapped",scrap.combined]])+
+      '<p>The last two rows assume the scrap code is correct and the undated event happened after the selected year-end. The middle row also requires an undated dismantling remark. These scenarios use the archive endpoint and give no timing within the cohort’s follow-up.</p>'+
+      archiveText;
   }
 
   function csvCell(value) {
@@ -1223,7 +1273,7 @@ const startExplorer = async () => {
   function historyView(asset, selected) {
     if(!asset) {state.asset=null; return drawDetails();}
     detailsHeader("Aircraft history",asset.model||registry.families[asset.family],"MSN "+asset.msn);
-    const parkingDetail=selected?'<div class="parking-evidence"><strong>'+esc(outcomes[selected.outcome])+'</strong> · Parked from '+esc(formatDate(selected.storageDate,selected.storagePrecision))+' · '+esc(timeParked(selected))+'<br>'+esc([formatDate(selected.outcomeDate,selected.outcomePrecision),selected.outcomeOperator,evidence[selected.outcomeEvidence]].filter(Boolean).join(" · "))+'</div>':"";
+    const parkingDetail=selected?'<div class="parking-evidence"><strong>'+esc(result.asOf===result.followupEnd?"No dated follow-up":outcomes[selected.outcome])+'</strong> · Parked from '+esc(formatDate(selected.storageDate,selected.storagePrecision))+' · '+esc(timeParked(selected))+'<br>'+esc([formatDate(selected.outcomeDate,selected.outcomePrecision),selected.outcomeOperator,evidence[selected.outcomeEvidence]].filter(Boolean).join(" · "))+'</div>':"";
     const rows=[
       ...asset.assignments.map(assign=>({date:assign.date,title:assign.operator,sub:[assign.registration,label(assign.country||"~"),assign.role==="other"?"Non-airline record":""].filter(Boolean).join(" · "),kind:assign.role==="unknown"?"unresolved":""})),
       ...asset.events.map(event=>({date:event.date,display:formatDate(event.date,event.precision),title:lifecycle[event.kind]||event.kind,sub:"Historical status record",kind:"event"}))
@@ -1231,7 +1281,8 @@ const startExplorer = async () => {
     const caseLink=caseAssets.has(state.asset)?'<p class="parking-evidence"><button type="button" class="inline-link" data-ppr-entry>View the AerFin Hong Kong case →</button></p>':"";
     const archiveStatus=asset.archiveStatus&&registry.meta.archiveStatusDate?
       '<p class="parking-evidence"><strong>Archive status '+esc(registry.meta.archiveStatusDate)+'</strong><br>'+
-      esc(archiveLabels[asset.archiveStatus]||"Unmapped code "+asset.archiveStatus)+' · Event date unavailable from status code</p>':"";
+      esc(archiveLabels[asset.archiveStatus]||"Unmapped code "+asset.archiveStatus)+' · Event date unavailable from status code'+
+      (asset.archiveUndatedScrap?"<br>Source history also includes an undated dismantling remark.":"")+'</p>':"";
     el("details-body").innerHTML=parkingDetail+archiveStatus+caseLink+'<dl class="asset-meta"><dt>Family</dt><dd>'+esc(registry.families[asset.family])+'</dd><dt>First flight</dt><dd>'+esc(asset.firstFlight||"Unknown")+'</dd><dt>Engine</dt><dd>'+esc(asset.engine||"Unknown")+'</dd></dl><ol class="history">'+rows.map(item=>'<li class="'+item.kind+'"><time>'+esc(item.display||item.date)+'</time><strong>'+esc(item.title)+'</strong><small>'+esc(item.sub)+'</small></li>').join("")+'</ol>';
     el("details-foot").innerHTML='<button class="inline-link" type="button" data-back="asset">← Back to '+(state.mode==="flow"?"changes":"aircraft list")+'</button><span>'+quantity(rows.length,"record")+'</span>';
   }
@@ -1292,7 +1343,7 @@ const startExplorer = async () => {
       const items=remote?.items??parkItems();
       detailsHeader("Aircraft in reconstructed storage",label(state.country),"Year-end "+state.year+" · "+quantity(remote?.total??items.length,"aircraft","aircraft")+(state.outcome?" · "+outcomes[state.outcome]:""),true);
       detailList(items,a=>row("asset-row",'data-asset="'+a.id+'"',(a.registration||"Registration unknown")+" · MSN "+a.msn,
-        [a.model,a.operator,a.age===null?"Age unknown":quantity(a.age,"year")+" old",timeParked(a)].filter(Boolean).join(" · "),outcomes[a.outcome]),"aircraft","aircraft",remote);
+        [a.model,a.operator,a.age===null?"Age unknown":quantity(a.age,"year")+" old",timeParked(a)].filter(Boolean).join(" · "),result.asOf===result.followupEnd?"":outcomes[a.outcome]),"aircraft","aircraft",remote);
       return;
     }
     if(state.mode==="flow") {
