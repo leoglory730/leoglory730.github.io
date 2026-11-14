@@ -272,12 +272,12 @@ dialog{max-height:85dvh;overflow:auto}
   <section class="review-intro" aria-labelledby="review-heading">
     <p class="review-kicker">Public Policy Research · Reviewer preview</p>
     <h1 id="review-heading">Developing Hong Kong’s Aircraft Parts Processing and Trading Centre</h1>
-    <p>Follow a publicly documented aircraft from storage to dismantling, then assess which services Hong Kong could provide and when public support would pay off.</p>
+    <p>Explore worldwide fleet history, cross-border assignments, storage outcomes and individual aircraft. The Hong Kong case shows how these records inform commercial and policy appraisal.</p>
     <div class="review-actions">
-      <a class="review-primary" href="#aircraft-record">Start with the aircraft history</a>
-      <a class="review-secondary" href="#transaction-heading">Try the commercial comparison</a>
+      <a class="review-primary" href="https://aircraft-asset-explorer.jiangchangmin921.chatgpt.site/">Open the full Aircraft Asset Explorer →</a>
+      <a class="review-secondary" href="#aircraft-record">See the AerFin case below</a>
     </div>
-    <p class="review-scope">This preview uses public case sources. Costs, capacity and policy effects remain to be verified. The calculators use the assumptions you enter.</p>
+    <p class="review-scope">The case below uses public sources. Costs, capacity and policy effects remain to be verified. The calculators use the assumptions you enter.</p>
   </section>
   <section id="aircraft-record" class="review-history" aria-labelledby="history-heading">
     <div>
@@ -526,8 +526,7 @@ const PPR_CASE = {"title":"A330 teardown at Hong Kong International Airport","su
   global.ExplorerTransaction = { compare };
 })(typeof window === "undefined" ? globalThis : window);
 
-function mountPpr(panel, actions, {showAssetList = true, headingLevel = 1} = {}) {
-  const data = PPR_CASE;
+function mountPpr(panel, actions, {showAssetList = true, headingLevel = 1, data = PPR_CASE} = {}) {
   const model = window.ExplorerPPR;
   const esc = value => String(value ?? "").replace(/[&<>"']/g, char => ({
     "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;",
