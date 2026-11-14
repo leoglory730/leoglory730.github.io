@@ -1,0 +1,799 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<meta name="description" content="A reviewer demonstration of the Hong Kong aircraft parts policy research prototype.">
+<title>Aircraft Asset Explorer | PPR reviewer preview</title>
+<style>
+:root{color-scheme:light;--nav:#111e2b;--ink:#142a3a;--muted:#5b6e7b;--line:#dce5e8;--paper:#f5f8f8;--accent:#086f68;--flow:#0c756d;font-family:"Instrument Sans","PingFang SC","Microsoft YaHei",system-ui,sans-serif}
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink)}
+button,input,select{font:inherit;color:inherit}
+button{cursor:pointer}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid #07877d;outline-offset:2px}
+button:disabled{cursor:default;opacity:.45}
+[hidden]{display:none!important}
+.topbar{background:var(--nav);color:#f7fbfd;padding:14px clamp(18px,3.8vw,54px);min-height:67px;display:flex;align-items:center;justify-content:space-between;gap:14px}
+.identity{font-weight:650;letter-spacing:.04em;display:flex;align-items:center;gap:12px;font-size:15px}
+.identity-en{display:block;letter-spacing:.025em;color:#aabfc9;font-size:11px;font-weight:400;margin-top:3px}
+.insignia{border:1px solid #5a8387;color:#d4faf0;border-radius:9px;background:#1d3b45;display:grid;place-items:center;font-size:21px;width:36px;height:36px;flex-shrink:0}
+.light-button{background:#fff;border:1px solid var(--line);border-radius:8px;padding:8px 13px;font-size:13px;font-weight:600;white-space:nowrap}
+.light-button:hover{background:#edf6f4}
+.topbar .light-button{background:#1a2b39;border-color:#405460;color:#f4fbfc}
+.topbar .light-button:hover{background:#2a4350}
+main{max-width:1670px;margin:0 auto;padding:24px clamp(15px,3.8vw,54px) 14px}
+.intro{display:flex;justify-content:space-between;align-items:flex-end;gap:14px;margin-bottom:21px}
+h1,h2,p{margin:0}
+h1{font-size:clamp(25px,3vw,36px);letter-spacing:-.04em;font-weight:720;line-height:1.2}
+.intro p{font-size:13px;color:var(--muted);margin-top:7px;line-height:1.5}
+.source{background:#e9f3f0;border:1px solid #d5e8e2;color:#356150;border-radius:30px;padding:6px 12px;font-size:11px;white-space:nowrap}
+.source span{display:inline-block;margin-right:7px;width:6px;height:6px;border-radius:50%;background:#16826c;vertical-align:2px}
+.controlbar{display:flex;align-items:flex-end;flex-wrap:wrap;gap:10px 14px;margin-bottom:12px}
+.tabs{display:flex;padding:3px;gap:2px;border:1px solid var(--line);background:#eaf1f0;border-radius:9px;align-self:flex-end}
+.tabs button{color:#46606b;border:0;border-radius:6px;padding:8px 13px;background:transparent;font-size:13px;white-space:nowrap}
+.tabs button[aria-pressed=true]{background:#fff;color:#0c615b;font-weight:700;box-shadow:0 1px 3px #142a3a18}
+.tabs span{margin-left:5px}
+.controlbar label,.timeline label{font-size:11px;color:var(--muted);font-weight:650;display:flex;flex-direction:column;gap:4px}
+select,input[type=search]{border:1px solid var(--line);background:#fff;border-radius:8px;padding:7px 9px;min-height:37px;font-size:13px}
+.controlbar select{min-width:126px;max-width:196px}
+.reset{margin-left:auto;align-self:flex-end;color:#415561;min-height:37px}
+.board{display:grid;grid-template-columns:minmax(0,1fr) minmax(272px,320px);gap:12px;align-items:stretch}
+.map-panel,.details,.timebar{background:#fff;border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.map-panel{display:flex;flex-direction:column;min-width:0}
+.map-head{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:15px 17px 12px}
+.map-head h2,.details h2,.dialog-head h2{font-size:18px;line-height:1.25;letter-spacing:-.025em}
+.map-head p,.details-head p{font-size:12px;color:var(--muted);margin-top:5px;line-height:1.5}
+.map-metric{white-space:nowrap;display:flex;align-items:baseline;gap:7px;color:#436773}
+.map-metric strong{color:#124441;font-size:24px;letter-spacing:-.035em;font-variant-numeric:tabular-nums}
+.map-metric span{font-size:11px}
+.map-canvas{background:#eaf2f3;position:relative;display:flex;align-items:center;flex:1;min-height:370px;isolation:isolate}
+#world{display:block;width:100%;height:auto;aspect-ratio:2 / 1;touch-action:pan-y}
+#grid-layer{fill:none;stroke:#d2e2e6;stroke-width:1;pointer-events:none}
+.country-shape{cursor:pointer;stroke:#f7fbfb;stroke-width:.8;vector-effect:non-scaling-stroke;transition:fill .15s;outline:none}
+.country-shape:is(:hover,:focus-visible),.country-shape.selected{stroke:#123f43;stroke-width:1.6}
+.country-dot{stroke:#f4fafa;stroke-width:1.3;vector-effect:non-scaling-stroke;cursor:pointer}
+.country-dot:is(:hover,:focus-visible),.country-dot.selected{stroke:#123f43;stroke-width:2.4}
+.arc-line,.arc-arrow{fill:none;pointer-events:none;stroke:var(--flow);stroke-linecap:round}
+.arc-hit{fill:none;stroke:transparent;stroke-width:13;vector-effect:non-scaling-stroke;cursor:pointer}
+.arc-hit:is(:focus-visible,:hover){stroke:#07645b41}
+#arrow path{fill:#06685f}
+.map-tools{position:absolute;right:11px;top:11px;display:flex;flex-direction:column;border-radius:8px;overflow:hidden;box-shadow:0 1px 6px #20374520;gap:1px;background:#d9e7e7}
+.map-tools button{width:34px;height:33px;display:grid;place-items:center;background:#fff;border:0;font-size:19px;line-height:1}
+.map-tools button:hover{background:#e9f4f3}
+.tooltip{position:absolute;max-width:240px;pointer-events:none;padding:7px 10px;border-radius:6px;background:#14333c;color:white;font-size:12px;z-index:3;box-shadow:0 2px 8px #12384230;white-space:normal}
+.map-foot{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:7px 14px;padding:10px 16px;min-height:43px;color:var(--muted);font-size:11px}
+#legend{display:flex;gap:7px;align-items:center;flex-wrap:wrap}
+.swatches{display:flex;gap:2px}
+.swatches span{width:14px;height:9px;border-radius:1px}
+.legend-line{width:27px;height:2px;background:var(--flow);display:inline-block;position:relative}
+.legend-line::after{content:"";position:absolute;right:-1px;top:-2px;border-block:3px solid transparent;border-left:5px solid var(--flow)}
+.details{display:flex;flex-direction:column;min-width:0;min-height:0;max-height:650px}
+.details-head{padding:15px 15px 10px}
+.detail-kicker{color:#3f7271;font-size:11px;font-weight:700;letter-spacing:.08em;margin-bottom:5px}
+#search-wrap{padding:0 15px 8px}
+#search{width:100%;min-width:0;background:#f9fbfc}
+.details-body{padding:0 15px;max-height:350px;flex:1;overflow:auto;overscroll-behavior:contain;min-height:34px}
+.details-foot{padding:9px 15px 10px;min-height:36px;font-size:11px;color:var(--muted);display:flex;align-items:center;gap:8px;justify-content:space-between;border-top:1px solid #eef2f3}
+.asset-row,.corridor-row,.country-row{display:flex;align-items:center;justify-content:space-between;text-align:left;gap:6px;width:100%;background:#fff;border:0;border-bottom:1px solid #e9eff1;min-height:47px;padding:7px 4px}
+.asset-row:hover,.corridor-row:hover,.country-row:hover{background:#edf6f6}
+.row-main{display:block;font-size:13px;font-weight:680;overflow-wrap:anywhere}
+.row-sub{display:block;font-size:11px;color:var(--muted);margin-top:3px;overflow-wrap:anywhere}
+.row-right{color:#497471;font-size:11px;white-space:nowrap;font-weight:650}
+.empty{color:var(--muted);font-size:13px;line-height:1.6;padding:16px 0}
+.inline-link{border:0;background:transparent;color:#086f68;padding:3px 0;text-align:left;text-decoration:underline;text-underline-offset:3px;font-size:12px}
+.asset-meta{margin:7px 0 13px;display:grid;grid-template-columns:65px 1fr;gap:7px 8px;font-size:12px;overflow-wrap:anywhere}
+.asset-meta dt{color:var(--muted)}
+.asset-meta dd{margin:0;font-weight:570}
+.history{list-style:none;padding:0;margin:2px 0 10px 4px}
+.history li{border-left:1px solid #cedfdf;padding:0 0 11px 13px;position:relative}
+.history li::before{content:"";position:absolute;left:-4px;top:4px;width:7px;height:7px;background:#27847c;border-radius:50%}
+.history .unresolved::before{background:#b18637}
+.history .event::before{background:#6c8091}
+.history time{font-size:11px;color:var(--muted)}
+.history strong{font-size:12px;display:block;margin:2px 0 1px;overflow-wrap:anywhere}
+.history small{font-size:11px;color:var(--muted)}
+.timebar{display:flex;align-items:center;gap:14px;margin-top:12px;padding:11px 15px}
+.time-title{min-width:77px}
+.time-title span{display:block;font-size:10px;color:var(--muted);font-weight:600}
+.time-title strong{font-size:18px;letter-spacing:-.03em}
+.timeline{display:flex;align-items:center;gap:12px;flex:1;min-width:0}
+.slider-group{flex:1;display:flex;flex-direction:column;min-width:0}
+#year{width:100%;margin:0;accent-color:#12796d}
+.ticks{display:flex;justify-content:space-between;font-size:10px;color:var(--muted);padding-top:3px}
+footer{display:flex;justify-content:space-between;gap:7px 12px;flex-wrap:wrap;font-size:11px;color:var(--muted);margin-top:11px}
+dialog{width:min(540px,calc(100vw - 24px));border:1px solid var(--line);border-radius:12px;box-shadow:0 8px 40px #142a3a40;background:#fff;color:var(--ink);padding:19px}
+dialog::backdrop{background:#142a3a70}
+.dialog-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:9px}
+.dialog-head button{border:1px solid var(--line);background:#f7fafa;border-radius:8px;width:32px;height:32px;font-size:20px}
+#method-body{font-size:13px;color:#34515f;line-height:1.65}
+#method-body p+p{margin-top:10px}
+#method-body a{color:#086f68}
+.park-filters{gap:8px 14px;margin-top:-3px}
+.park-filters .export{margin-left:auto;align-self:flex-end;color:#095e58;min-height:37px}
+.park-trend{padding:11px 15px 8px;border-top:1px solid var(--line)}
+.park-chart-head,.outcomes-title{display:flex;align-items:baseline;justify-content:space-between;gap:7px}
+.park-chart-head h3,.outcomes-title strong{font-size:13px;margin:0}
+.park-chart-head span,.outcomes-title span{color:var(--muted);font-size:11px}
+#trend-chart{display:block;width:100%;height:78px;overflow:visible}
+#trend-chart .guide{stroke:#d0e2e1;stroke-width:1;vector-effect:non-scaling-stroke}
+#trend-chart .count-bar{fill:#adcfc9;cursor:pointer}
+#trend-chart .count-bar:hover,#trend-chart .chosen{fill:#187c70}
+#trend-chart text{fill:var(--muted);font-size:11px}
+#park-outcomes{padding:0 15px 10px}
+#outcomes-controls{display:grid;grid-template-columns:1fr 1fr;gap:4px;margin-top:6px}
+.outcome{display:flex;align-items:baseline;justify-content:space-between;gap:4px;padding:6px 7px;border:1px solid var(--line);border-radius:6px;background:#f9fbfb;font-size:11px;text-align:left}
+.outcome strong{font-size:13px;font-variant-numeric:tabular-nums}
+.outcome span{min-width:0;overflow-wrap:anywhere}
+.outcome[aria-pressed=true],.outcome:hover{border-color:#569d92;background:#e8f5f1}
+.outcome-clear{grid-column:1/-1;justify-self:start}
+.parking-evidence{background:#edf5f3;padding:7px 9px;border-radius:6px;margin:5px 0 9px;font-size:12px;line-height:1.5;overflow-wrap:anywhere}
+#csv-note{font-size:12px;color:var(--muted);margin-bottom:9px}
+#csv-text{width:100%;margin:0 0 9px;padding:8px;border:1px solid var(--line);border-radius:6px;font:12px ui-monospace,monospace;resize:vertical}
+#copy-result{color:var(--accent);font-size:12px;margin-left:7px}
+dialog{max-height:85dvh;overflow:auto}
+@media (min-width:711px){.board.is-parking .map-canvas{min-height:290px}.board.is-parking #world{max-height:455px}.board.is-parking .details-body{max-height:350px}}
+@media (max-width:445px){.park-filters .export{margin-left:0}.park-chart-head{flex-wrap:wrap}.outcome{min-height:38px}}
+@media (min-width:1200px){.details-body{max-height:415px}}
+@media (max-width:900px){.board{grid-template-columns:minmax(0,1fr) minmax(238px,270px)}.map-canvas{min-height:335px}}
+@media (max-width:710px){main{padding-top:17px;display:flex;flex-direction:column}.board{display:contents}.map-canvas{min-height:255px}.details-body{max-height:285px}.details{min-height:220px;order:2}.timebar{margin:8px 0 10px;order:1}.intro{align-items:start}.source{margin-top:4px}.controlbar{gap:8px}.controlbar select{min-width:105px}footer{order:3}}
+@media (max-width:445px){.source{display:none}.identity-en{font-size:9px}.topbar{padding-inline:12px}.topbar .light-button{font-size:11px;padding:7px}.controlbar label{flex:1;min-width:90px}.controlbar select{width:100%;max-width:none;min-width:0}.controlbar .tabs{width:100%;align-self:start}.tabs button{flex:1}.reset{margin-left:0}.map-canvas{min-height:200px}.map-head{padding:11px 12px}.map-foot{padding:8px 12px}.map-metric strong{font-size:20px}.map-tools{right:7px;top:7px}.map-tools button{width:28px;height:28px}.timebar{gap:8px;padding:9px 10px}.time-title{min-width:58px}.time-title strong{font-size:13px}.timeline{gap:6px}.timeline select{padding:3px;font-size:11px;min-height:31px}#play{padding:6px;font-size:11px}.ticks{font-size:9px}}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+.ppr-link{color:var(--accent);min-height:37px}
+.park-filters .ppr-link{margin-left:auto}
+.park-filters .ppr-link + .export{margin-left:0}
+.ppr-view{min-width:0;font-size:13px;line-height:1.6}
+.ppr-view h2,.ppr-view h3,.ppr-view h4{margin:0;line-height:1.25}
+.ppr-view a{color:var(--accent);text-underline-offset:2px}
+.ppr-hero{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px 20px;background:#173642;color:#f4faf9;border-radius:12px 12px 0 0;padding:19px clamp(15px,3vw,27px)}
+.ppr-hero h2{font-size:clamp(22px,3.5vw,32px);letter-spacing:-.025em;margin-block:3px}
+.ppr-hero p{color:#c4dedc}
+.ppr-hero .ppr-eyebrow{color:#9fccc4;font-size:11px;font-weight:680}
+.ppr-hero .light-button{background:#254c54;border-color:#56777d;color:#f1f9f8}
+.ppr-hero .light-button:hover{background:#315e66}
+.ppr-overview{background:#fff;padding:15px clamp(15px,3vw,27px) 18px;border:1px solid var(--line);border-top:0;border-radius:0 0 12px 12px}
+.ppr-overview>p,.ppr-section>p{color:var(--muted)}
+.ppr-facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(165px,100%),1fr));gap:10px;margin:13px 0 0}
+.ppr-facts>div{background:#edf5f3;border-radius:7px;padding:9px 11px;min-width:0}
+.ppr-facts dt{color:#305b59;font-size:11px;font-weight:650}
+.ppr-facts dd{color:#133f40;margin:1px 0 3px;font-size:clamp(18px,2.2vw,25px);font-variant-numeric:tabular-nums;font-weight:700}
+.ppr-facts small{display:block;color:#4d666c;font-size:11px;line-height:1.55}
+.ppr-section{margin-top:21px}
+.ppr-section h3{font-size:19px;letter-spacing:-.025em}
+.ppr-section>p{margin:6px 0 10px}
+.ppr-assets{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(107px,100%),1fr));gap:6px}
+.ppr-asset{display:flex;align-items:baseline;flex-wrap:wrap;gap:2px 7px;text-align:left;background:#fff;border:1px solid var(--line);border-radius:7px;padding:6px 8px;min-height:43px}
+.ppr-asset span{color:var(--muted);font-size:11px}
+.ppr-asset span:last-child{flex-basis:100%}
+.ppr-asset[aria-pressed=true],.ppr-asset:hover{background:#eaf6f2;border-color:#78a99e}
+.ppr-asset-detail{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:7px 12px;background:#fff;border:1px solid var(--line);border-radius:7px;padding:9px 11px;margin-top:6px}
+.ppr-asset-detail p{font-size:12px;color:var(--muted)}
+.ppr-route-grid,.ppr-policy-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.ppr-policy-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+.ppr-card{display:flex;flex-direction:column;gap:8px;background:#fff;border:1px solid var(--line);border-radius:9px;padding:12px;min-width:0}
+.ppr-card header{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:5px 8px}
+.ppr-card h4{font-size:15px}
+.ppr-tag{font-size:11px;font-weight:650;color:#42706a;background:#edf5f3;padding:2px 6px;border-radius:4px}
+.ppr-steps{list-style:none;padding:0;margin:0 0 0 4px}
+.ppr-steps li{position:relative;border-left:1px solid #c7ddda;padding:0 0 8px 10px}
+.ppr-steps li:last-child{padding-bottom:0}
+.ppr-steps li::before{content:"";position:absolute;left:-3px;top:6px;background:#558d83;border-radius:50%;width:5px;height:5px}
+.ppr-steps strong,.ppr-steps span,.ppr-steps small{display:block}
+.ppr-steps small,.ppr-sources,.ppr-route-cost,.ppr-baseline,.ppr-note{font-size:11px;color:var(--muted)}
+.ppr-baseline{padding:7px 9px;background:#f0f5f5;border-radius:5px}
+.ppr-calc summary,.ppr-caps summary{color:var(--accent);cursor:pointer;font-weight:650}
+.ppr-calc form{margin-top:8px}
+.ppr-fields{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(145px,100%),1fr));gap:7px}
+.ppr-field{display:flex;flex-direction:column;justify-content:space-between;gap:3px;font-size:11px;color:#425965;min-width:0}
+.ppr-field input{padding:6px 7px;min-width:0;width:100%;min-height:35px;border:1px solid var(--line);border-radius:6px;background:#fcfefe;font-size:14px;color:var(--ink)}
+.ppr-field input::placeholder{color:#6b787d}
+.ppr-caps{margin-block:7px}
+.ppr-caps .ppr-fields{margin-top:5px}
+.ppr-metrics{margin:0}
+.ppr-metrics>div{display:flex;align-items:baseline;justify-content:space-between;gap:5px 9px;border-top:1px solid #edf0f1;padding:4px 0}
+.ppr-metrics dt,.ppr-metrics dd{font-size:11px;line-height:1.45}
+.ppr-metrics dd{margin:0;color:#164743;font-weight:680;font-variant-numeric:tabular-nums;text-align:right;overflow-wrap:anywhere}
+.ppr-pending,.ppr-result-status{color:#765321}
+.ppr-result-status{font-size:11px;margin-top:3px}
+.ppr-results{margin-top:auto}
+.ppr-note{padding-top:2px}
+.ppr-view button:focus-visible,.ppr-view summary:focus-visible,.ppr-view a:focus-visible{outline:2px solid #0d8075;outline-offset:2px}
+@media(max-width:900px){.ppr-route-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:710px){.ppr-view{order:1}}
+@media(max-width:580px){.ppr-route-grid,.ppr-policy-grid{grid-template-columns:minmax(0,1fr)}}
+@media(max-width:525px){
+  .controlbar .tabs{flex-wrap:wrap;width:100%}
+  .tabs button{flex:1;min-height:33px;padding:6px 8px}
+  .park-filters .ppr-link{margin-left:0}
+}
+@media (pointer:coarse){.ppr-field input{min-height:44px;font-size:16px}.ppr-calc summary,.ppr-caps summary{min-height:44px;padding-block:11px}}
+.park-followup .park-chart-head label{display:flex;align-items:center;gap:6px;color:var(--muted);font-size:12px}
+.park-followup select{min-height:30px;padding:3px 5px;font-size:12px}
+#park-horizon-results>p{font-size:12px;line-height:1.5;color:var(--muted);margin-block:5px 0}
+.followup-bars{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px 15px;margin:8px 0}
+.followup-bars dt,.followup-bars dd{font-size:12px}
+.followup-bars dd{display:flex;align-items:center;gap:6px;margin:0;min-width:0;font-variant-numeric:tabular-nums}
+.followup-track{height:6px;flex:1;min-width:12px;background:#e8f0ef}
+.followup-track span{height:100%;display:block;background:#218175}
+[data-followup=unknown] .followup-track span{background:#93a7ab}
+.ppr-transaction{margin-top:11px;padding:14px;background:#fff;border:1px solid var(--line);border-radius:9px}
+.ppr-transaction h4{font-size:16px}
+.ppr-transaction>p{color:var(--muted);margin-top:4px}
+.ppr-transaction-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin-top:9px}
+.ppr-transaction-grid fieldset{border:1px solid var(--line);border-radius:7px;min-width:0;margin:0;padding:7px 9px 9px}
+.ppr-transaction-grid legend{font-size:13px;font-weight:650;padding-inline:4px}
+.ppr-rate{display:flex;align-items:flex-end;gap:10px 14px;flex-wrap:wrap;margin-block:9px}
+.ppr-rate label{width:min(204px,100%)}
+.ppr-rate button{margin-bottom:3px}
+.ppr-transaction-results{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:3px 15px;margin:0}
+.ppr-transaction-results>div{display:flex;justify-content:space-between;align-items:baseline;gap:5px 10px;padding-block:5px;border-top:1px solid var(--line);font-size:12px}
+.ppr-transaction-results dd{margin:0;text-align:right;min-width:0;overflow-wrap:anywhere;font-weight:650;font-variant-numeric:tabular-nums}
+@media(max-width:680px){.ppr-transaction-results,.ppr-transaction-grid{grid-template-columns:minmax(0,1fr)}}
+@media(max-width:450px){.followup-bars{grid-template-columns:minmax(0,1fr)}.asset-row .row-right{white-space:normal;text-align:right;max-width:40%}}
+
+.topbar nav{display:flex;flex-wrap:wrap;gap:7px 16px;align-items:center}
+.topbar nav a{color:#d8eeed;font-size:13px;text-underline-offset:3px}
+.reviewer-main{max-width:1240px;display:block}
+.review-intro{padding:clamp(22px,4vw,42px);background:#fff;border:1px solid var(--line);border-radius:12px;margin-bottom:15px}
+.review-kicker{font-size:12px;color:#28675e;font-weight:650;margin:0 0 6px}
+.review-intro h1{max-width:820px;font-size:clamp(28px,4.3vw,47px)}
+.review-intro>p:not(.review-kicker){max-width:660px;color:var(--muted);margin-top:10px;line-height:1.55}
+.review-intro .review-scope{font-size:12px}
+.review-actions{display:flex;flex-wrap:wrap;align-items:center;gap:8px 14px;margin-block:16px}
+.review-primary,.review-secondary{border-radius:7px;padding:8px 12px;font-size:13px;line-height:1.4;text-decoration:none;color:var(--accent);font-weight:650;border:1px solid var(--line)}
+.review-primary{color:#fff;background:#116e64;border-color:#116e64}
+.review-primary:hover{background:#0c524a}
+.review-secondary:hover{background:#edf6f4}
+.review-history{padding:16px clamp(15px,3vw,23px);background:#fff;border:1px solid var(--line);border-radius:9px;margin-bottom:16px}
+.review-history h2{font-size:22px}
+.review-history h2 span{font-size:13px;display:inline-block;margin-left:6px;color:var(--muted);font-weight:550}
+.review-history ol{margin:12px 0 8px;padding:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;list-style:none}
+.review-history li{border-top:2px solid #adcec6;padding-top:6px;font-size:13px}
+.review-history li time,.review-history li strong,.review-history li span{display:block}
+.review-history li time,.review-history li span{color:var(--muted);font-size:12px}
+.review-history a,footer a{color:var(--accent)}
+.worked-example{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;margin-top:10px;font-size:12px;color:var(--muted)}
+[id]{scroll-margin-top:12px}
+@media(max-width:620px){.review-history ol{grid-template-columns:minmax(0,1fr)}.topbar{align-items:flex-start;flex-direction:column}.reviewer-main{padding-inline:12px}}
+
+</style>
+</head>
+<body>
+<header class="topbar">
+  <div class="identity"><span class="insignia" aria-hidden="true">✈</span><span>Aircraft Asset Explorer</span></div>
+  <nav aria-label="Reviewer preview">
+    <a href="#aircraft-record">Aircraft history</a>
+    <a href="#ppr-routes-heading">Commercial comparison</a>
+    <a href="#ppr-policy-heading">Policy scenarios</a>
+  </nav>
+</header>
+<main class="reviewer-main">
+  <section class="review-intro" aria-labelledby="review-heading">
+    <p class="review-kicker">Public Policy Research · Reviewer preview</p>
+    <h1 id="review-heading">Developing Hong Kong’s Aircraft Parts Processing and Trading Centre</h1>
+    <p>Follow a publicly documented aircraft from storage to dismantling, then assess which services Hong Kong could provide and when public support would pay off.</p>
+    <div class="review-actions">
+      <a class="review-primary" href="#aircraft-record">Start with the aircraft history</a>
+      <a class="review-secondary" href="#transaction-heading">Try the commercial comparison</a>
+    </div>
+    <p class="review-scope">This preview uses public case sources. Costs, capacity and policy effects remain to be verified. The calculators use the assumptions you enter.</p>
+  </section>
+  <section id="aircraft-record" class="review-history" aria-labelledby="history-heading">
+    <div>
+      <p class="review-kicker">Aircraft history · Public record</p>
+      <h2 id="history-heading">B-LNF <span>Airbus A330-223 · MSN 1059</span></h2>
+    </div>
+    <ol>
+      <li><time datetime="2010-10">Oct 2010</time><strong>First tests in Toulouse</strong><span>Before handover to Hong Kong Airlines</span></li>
+      <li><time datetime="2018-09">Sep 2018</time><strong>Stored at Hong Kong International Airport</strong><span>The aircraft was parked on the apron.</span></li>
+      <li><time datetime="2025-02">Feb 2025</time><strong>Dismantling recorded</strong><span>Some fuselage panels were later processed in Cologne.</span></li>
+    </ol>
+    <p class="ppr-sources"><a href="https://www.aviationtag.com/en-en/blogs/blog/hong-kong-airlines-a330-b-lnf-from-flights-to-fuselage-tags" target="_blank" rel="noopener noreferrer">Published aircraft history and teardown photographs</a></p>
+  </section>
+  <section id="review-case" class="ppr-view" aria-labelledby="ppr-heading"></section>
+  <footer><p>Research prototype for the PPR application · Calculations run locally in your browser.</p><a href="#review-heading">Back to introduction ↑</a></footer>
+</main>
+<script>
+const PPR_CASE = {"title":"A330 teardown at Hong Kong International Airport","subtitle":"AerFin project · Airbus A330-200","summary":"AerFin and its logistics partner report that six A330-200s were dismantled at Hong Kong International Airport between September 2024 and April 2025. The case traces the time from storage to teardown and parts sales, and compares which services Hong Kong and the Greater Bay Area could provide.","facts":[{"label":"Dismantled at Hong Kong International Airport","value":"6 aircraft","note":"Project total reported by AerFin and B&H Worldwide.","sourceIds":["aerfin","bh"]},{"label":"Project duration","value":"About 8 months","note":"From mid-September 2024 to April 2025. AerFin reports an average pace of one aircraft every 40 days.","sourceIds":["aerfin","bh"]},{"label":"Engines sold in October 2024","value":"8 engines","note":"Project total reported by AerFin. Individual prices, buyers, and subsequent installations remain unverified.","sourceIds":["aerfin"]}],"assets":[],"routes":[{"id":"hong-kong","label":"Teardown at Hong Kong International Airport","status":"Completed project","summary":"The six aircraft were already parked at the airport. The project team set up an airside work area, removed engines and components, and moved the remaining airframes off-site for final recycling.","steps":[{"place":"Hong Kong International Airport","action":"Set up a teardown area for aircraft already on-site","evidence":"AerFin and B&H Worldwide project reports"},{"place":"Hong Kong International Airport","action":"Remove engines and components, then prepare them for transport","evidence":"AerFin project report"},{"place":"Downstream markets","action":"Sell engines and distribute recovered material for different uses","evidence":"AerFin reports engine sales. Aviationtag documents the reuse of some fuselage panels."}],"economics":"Include on-site labour, apron use, equipment, packing, transport, and waiting time. Estimating the project return also requires actual fees, quantities of saleable parts, and transaction prices.","sourceIds":["aerfin","bh","aviationtag"]},{"id":"gba","label":"Greater Bay Area repair with Hong Kong coordination","status":"Option to assess","summary":"Send removed engines or components with traceability records to qualified facilities in the Greater Bay Area. Hong Kong could coordinate the transaction or manage inventory. The required approvals depend on the engine and destination market.","steps":[{"place":"Hong Kong","action":"Verify provenance, serial numbers, and records, then arrange transport","evidence":"Proposed service arrangement"},{"place":"Qualified Greater Bay Area facility","action":"Inspect, repair, and release parts to meet target-market requirements","evidence":"Zhuhai has an operating engine-parts warehouse. Service capability needs verification by engine model."},{"place":"Hong Kong or the buyer’s location","action":"Manage inventory or arrange delivery, including direct shipment","evidence":"Proposed workflow with direct delivery as an option"}],"economics":"Compare added freight, paperwork, and transfer delays with any verified savings in repair costs or delivery time. The warehouse’s published engine list omits the PW4168A. Repair capability and quotes need verification.","sourceIds":["mtu","cad","tlb"]},{"id":"direct","label":"Direct sale from the processing site","status":"Existing industry practice","summary":"An established provider stocks and sells eligible parts from the processing site. This serves as a benchmark for options involving Hong Kong. Chengdu illustrates how a site can combine teardown, repair management, and global distribution.","steps":[{"place":"Qualified processing site","action":"Receive assets already on-site or able to be moved safely","evidence":"Match the asset’s starting location and condition across options."},{"place":"Existing processing and inventory network","action":"Dismantle the aircraft, repair parts as needed, and stock eligible material","evidence":"Existing lifecycle services in Chengdu"},{"place":"Buyer’s location","action":"Deliver directly through the provider’s network","evidence":"Satair Chengdu’s published distribution arrangements"}],"economics":"Compare potential sales proceeds, waiting time, extra costs, and alternative capacity for the same asset, component condition, and delivery deadline. Whether the six airframes could have been ferried elsewhere and at what price remains unverified.","sourceIds":["airbus","satair"]}],"policy":{"documentation":{"baseline":"Hong Kong’s Civil Aviation Department issued Airworthiness Notice No. 112 on 16 July 2026. It covers dismantling records, removal tags, and release documents. For parts intended for aircraft registered elsewhere, consult the relevant authority’s requirements.","sourceIds":["cad"]},"workspace":{"baseline":"On 7 October 2026, the Transport and Logistics Bureau said Airport Authority Hong Kong would facilitate access to designated work areas, equipment storage, and vehicle and barge access where appropriate. Availability, charges, and throughput still need verification.","sourceIds":["tlb"]}},"sources":[{"id":"aerfin","label":"AerFin’s Hong Kong airport teardown project","url":"https://www.aerfin.com/latest/news/pioneering-on-airport-aircraft-disassembly-operations/"},{"id":"bh","label":"B&H Worldwide’s project timeline","url":"https://bhworldwide.com/bh-worldwide-celebrates-successful-completion-of-historic-aerfin-a330-200-disassembly-project-at-hong-kong-international-airport/"},{"id":"aviationtag","label":"Aviationtag’s account of B-LNF","url":"https://www.aviationtag.com/en-en/blogs/blog/hong-kong-airlines-a330-b-lnf-from-flights-to-fuselage-tags"},{"id":"mtu","label":"MTU’s bonded parts warehouse in Zhuhai","url":"https://www.mtu.de/newsroom/press/press-archive/press-archive-detail/mtu-maintenance-lease-services-opens-parts-supply-warehouse-in-china/"},{"id":"cad","label":"Hong Kong Airworthiness Notice No. 112","url":"https://www.cad.gov.hk/reports/HKAN/Airworthiness_Notices.pdf#page=573"},{"id":"tlb","label":"Transport and Logistics Bureau statement on airport support (Chinese)","url":"https://www.info.gov.hk/gia/general/202610/07/P2026100700626.htm"},{"id":"airbus","label":"Airbus Lifecycle Services Centre in Chengdu","url":"https://www.airbus.com/sites/g/files/jlcbta136/files/2024-01/en_pr_airbus_lifecycle_services_centre_eis_0.pdf"},{"id":"satair","label":"Satair Chengdu’s distribution of used serviceable material","url":"https://www.aircraft.airbus.com/en/newsroom/press-releases/2023-11-satair-gears-up-for-growth-in-chinese-used-parts-market"}]};
+/* Incremental annual policy and route appraisal, in a common HKD price base. */
+(function (global) {
+  "use strict";
+
+  const workloadKeys = ["eligibleSupply", "compatibleDemand", "availableCapacity"];
+
+  function read(input, key, invalid, allowNegative = false) {
+    const raw = input[key];
+    if (raw === null || raw === undefined || (typeof raw === "string" && !raw.trim())) return null;
+    const value = (typeof raw === "number" || typeof raw === "string") ? Number(raw) : NaN;
+    if (!Number.isFinite(value) || (!allowNegative && value < 0)) {
+      invalid.push(key);
+      return null;
+    }
+    return value;
+  }
+
+  function product(quantity, value) {
+    if (quantity === 0 || value === 0) return 0;
+    if (quantity === null || value === null) return null;
+    return quantity * value;
+  }
+
+  // Ignore floating-point noise around an integral project count.
+  function integralThreshold(value, round) {
+    const nearest = Math.round(value);
+    return Math.abs(value - nearest) < 1e-9 ? nearest : round(value);
+  }
+
+  function annualThreshold(contribution, fixed) {
+    const result = {
+      thresholdKind: "pending", breakEvenWorkload: null,
+      minimumProjects: null, maximumProjects: null,
+    };
+    if (contribution === null || fixed === null) return result;
+    if (contribution > 0) {
+      const required = Math.max(0, fixed / contribution);
+      return {
+        ...result, thresholdKind: "minimum_workload",
+        breakEvenWorkload: required, minimumProjects: integralThreshold(required, Math.ceil),
+      };
+    }
+    if (contribution === 0) return { ...result, thresholdKind: fixed <= 0 ? "all_workloads" : "never" };
+    if (fixed > 0) return { ...result, thresholdKind: "never" };
+    const maximum = Math.max(0, fixed / contribution);
+    return {
+      ...result, thresholdKind: "maximum_workload",
+      breakEvenWorkload: maximum, maximumProjects: integralThreshold(maximum, Math.floor),
+    };
+  }
+
+  function workloadCapacity(limits, threshold, workload) {
+    const given = Object.values(limits).filter((value) => value !== null);
+    const partialWorkloadCap = given.length ? Math.min(...given) : null;
+    const feasibleWorkload = given.length === workloadKeys.length ? partialWorkloadCap : null;
+    const exceedsCapacity = workload !== null && partialWorkloadCap !== null && workload > partialWorkloadCap;
+    const breakEvenReachable = threshold.thresholdKind === "never" ? false
+      : ["all_workloads", "maximum_workload"].includes(threshold.thresholdKind) ? true
+      : threshold.thresholdKind !== "minimum_workload" ? null
+      : threshold.minimumProjects === 0 ? true
+      : partialWorkloadCap !== null && threshold.minimumProjects > partialWorkloadCap ? false
+      : feasibleWorkload === null ? null : true;
+    return { feasibleWorkload, partialWorkloadCap, exceedsCapacity, breakEvenReachable };
+  }
+
+  function annualResult(values, limits, invalid, missing) {
+    const { incrementalContribution, annualFixedCost, annualWorkload } = values;
+    const threshold = annualThreshold(incrementalContribution, annualFixedCost);
+    const capacity = workloadCapacity(limits, threshold, annualWorkload);
+    const annualContribution = product(incrementalContribution, annualWorkload);
+    const annualBalance = annualContribution === null || annualFixedCost === null
+      ? null : annualContribution - annualFixedCost;
+    const requiredContribution = annualFixedCost !== null && annualWorkload > 0
+      ? annualFixedCost / annualWorkload : null;
+    const status = invalid.length ? "invalid_inputs"
+      : capacity.exceedsCapacity ? "infeasible_workload"
+      : annualBalance === null ? "incomplete"
+      : annualBalance > 0 ? "positive"
+      : annualBalance < 0 ? "negative" : "break_even";
+    return {
+      ...values, ...threshold, ...capacity, annualContribution, annualBalance, requiredContribution,
+      missing, invalid, status,
+    };
+  }
+
+  function commonInputs(input, invalid) {
+    const annualFixedCost = read(input, "annualFixedCost", invalid, true);
+    const annualWorkload = read(input, "annualWorkload", invalid);
+    const limits = Object.fromEntries(workloadKeys.map((key) => [key, read(input, key, invalid)]));
+    return { annualFixedCost, annualWorkload, limits };
+  }
+
+  /**
+   * Route financial comparison, for the same asset and service scope.
+   * Enter all changes relative to the best feasible private alternative.
+   * Incremental contribution is HKD/project, after incremental variable costs.
+   * Annual fixed cost is HKD/year including the annual equivalent of investment
+   * and residual value, if applicable. Signed deltas are supported.
+   * Workload and three optional capacity constraints are projects/year.
+   */
+  function commercial(input = {}) {
+    const invalid = [];
+    const { annualFixedCost, annualWorkload, limits } = commonInputs(input, invalid);
+    const incrementalContribution = read(input, "incrementalContribution", invalid, true);
+    const values = { incrementalContribution, annualFixedCost, annualWorkload };
+    const missing = Object.keys(values).filter((key) => values[key] === null && !invalid.includes(key));
+    return annualResult(values, limits, invalid, missing);
+  }
+
+  /**
+   * Resident benefit of information reuse / document coordination beyond the
+   * best feasible private arrangement. Critical-path days and staff hours are
+   * incremental savings per project and are valued separately. Critical-path
+   * day value should exclude resource savings already counted in staff hours.
+   * incrementalContribution is other net HK resident value per project.
+   * Omit that field for a scenario limited explicitly to staff/time savings.
+   */
+  function documentCoordination(input = {}) {
+    const invalid = [];
+    const { annualFixedCost, annualWorkload, limits } = commonInputs(input, invalid);
+    const staffHoursSaved = read(input, "staffHoursSaved", invalid);
+    const staffHourlyValue = read(input, "staffHourlyValue", invalid);
+    const criticalPathDaysSaved = read(input, "criticalPathDaysSaved", invalid);
+    const criticalPathDailyValue = read(input, "criticalPathDailyValue", invalid);
+    const otherContribution = Object.prototype.hasOwnProperty.call(input, "incrementalContribution")
+      ? read(input, "incrementalContribution", invalid, true) : 0;
+    const staffBenefit = product(staffHoursSaved, staffHourlyValue);
+    const delayBenefit = product(criticalPathDaysSaved, criticalPathDailyValue);
+    const incrementalContribution = [staffBenefit, delayBenefit, otherContribution].includes(null)
+      ? null : staffBenefit + delayBenefit + otherContribution;
+    const missingCandidates = { annualFixedCost, annualWorkload };
+    if (staffBenefit === null) Object.assign(missingCandidates, { staffHoursSaved, staffHourlyValue });
+    if (delayBenefit === null) Object.assign(missingCandidates, { criticalPathDaysSaved, criticalPathDailyValue });
+    if (otherContribution === null) missingCandidates.incrementalContribution = null;
+    const missing = Object.keys(missingCandidates).filter((key) =>
+      missingCandidates[key] === null && !invalid.includes(key));
+    const residualPerProject = annualFixedCost !== null && annualWorkload > 0 &&
+      staffBenefit !== null && otherContribution !== null
+      ? annualFixedCost / annualWorkload - staffBenefit - otherContribution : null;
+    const requiredDaysSaved = residualPerProject === null ? null
+      : residualPerProject <= 0 ? 0
+      : criticalPathDailyValue > 0 ? residualPerProject / criticalPathDailyValue : null;
+    const daysThresholdKind = requiredDaysSaved !== null ? "minimum_days"
+      : residualPerProject > 0 && criticalPathDailyValue === 0 ? "never_at_input_value" : "pending";
+    return {
+      ...annualResult({ incrementalContribution, annualFixedCost, annualWorkload }, limits, invalid, missing),
+      staffBenefit, delayBenefit, otherContribution, requiredDaysSaved, daysThresholdKind,
+    };
+  }
+
+  /**
+   * Resident benefit of space access compared with feasible existing/private
+   * space. Per-project contribution includes only the net gain falling to HK
+   * residents, after variable resource costs, alternative uses and displaced
+   * activity. Enter annual fixed public and site costs net of incremental
+   * fixed savings. Use the actual executable service capacity as a bound.
+   */
+  function sharedWorkspace(input = {}) {
+    return commercial(input);
+  }
+
+  global.ExplorerPPR = {
+    commercial, documentCoordination, sharedWorkspace, publicScenario: documentCoordination,
+  };
+})(typeof window === "undefined" ? globalThis : window);
+
+/* Day-zero present value for a matched, eligible component transaction. */
+(function (global) {
+  "use strict";
+
+  function compare(input) {
+    const { hongKong, direct, discountRate } = input ?? {};
+    const missing = [];
+    const invalid = [];
+
+    function read(raw, field) {
+      if (raw == null || (typeof raw === "string" && !raw.trim())) {
+        missing.push(field);
+        return null;
+      }
+      const value = typeof raw === "number" || typeof raw === "string" ? Number(raw) : NaN;
+      if (!Number.isFinite(value) || value < 0) {
+        invalid.push(field);
+        return null;
+      }
+      return value;
+    }
+
+    const rate = read(discountRate, "discountRate");
+
+    function scenario(raw, name) {
+      const receipt = read(raw?.receipt, `${name}.receipt`);
+      const downstreamCost = read(raw?.downstreamCost, `${name}.downstreamCost`);
+      const handlingCost = read(raw?.handlingCost, `${name}.handlingCost`);
+      const daysField = `${name}.paidDays`;
+      const paidDays = read(raw?.paidDays, daysField);
+
+      let pvReceipt = null;
+      if (receipt !== null && !invalid.includes(daysField) && !invalid.includes("discountRate")) {
+        if (receipt === 0 || rate === 0 || paidDays === 0) {
+          pvReceipt = receipt;
+        } else if (rate !== null && paidDays !== null) {
+          pvReceipt = receipt * Math.exp(-Math.log1p(rate / 100) * (paidDays / 365));
+        }
+      }
+
+      const netBeforeHandling = pvReceipt === null || downstreamCost === null
+        ? null : pvReceipt - downstreamCost;
+      const pvNet = netBeforeHandling === null || handlingCost === null
+        ? null : netBeforeHandling - handlingCost;
+      return { pvReceipt, pvNet, netBeforeHandling };
+    }
+
+    const hkResult = scenario(hongKong, "hongKong");
+    const directResult = scenario(direct, "direct");
+    return {
+      hongKong: { pvReceipt: hkResult.pvReceipt, pvNet: hkResult.pvNet },
+      direct: { pvReceipt: directResult.pvReceipt, pvNet: directResult.pvNet },
+      incrementalPvNet: hkResult.pvNet === null || directResult.pvNet === null
+        ? null : hkResult.pvNet - directResult.pvNet,
+      maxHongKongHandlingCost: hkResult.netBeforeHandling === null || directResult.pvNet === null
+        ? null : hkResult.netBeforeHandling - directResult.pvNet,
+      missing,
+      invalid,
+    };
+  }
+
+  global.ExplorerTransaction = { compare };
+})(typeof window === "undefined" ? globalThis : window);
+
+function mountPpr(panel, actions, {showAssetList = true, headingLevel = 1} = {}) {
+  const data = PPR_CASE;
+  const model = window.ExplorerPPR;
+  const esc = value => String(value ?? "").replace(/[&<>"']/g, char => ({
+    "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;",
+  })[char]);
+  const format = new Intl.NumberFormat("en-HK", { maximumFractionDigits: 2 });
+  const amount = value => format.format(value);
+  const money = value => "HK$ " + amount(value);
+  const sourceById = new Map(data.sources.map(source => [source.id, source]));
+  const pending = '<span class="ppr-pending">To verify</span>';
+  const links = ids => ids.map(id => {
+    const source = sourceById.get(id);
+    return '<a href="' + esc(source.url) + '" target="_blank" rel="noopener noreferrer">' +
+      esc(source.label) + '</a>';
+  }).join(" · ");
+  const metric = (label, value) => '<div><dt>' + esc(label) + '</dt><dd>' + (value ?? pending) + '</dd></div>';
+  const query = selector => panel.querySelector(selector);
+
+  const fixed = ["annualFixedCost", "Annualised incremental fixed cost (HK$/year)"];
+  const workload = ["annualWorkload", "Expected workload (projects/year)"];
+  const caps = [
+    ["eligibleSupply", "Eligible supply (projects/year)"],
+    ["compatibleDemand", "Compatible demand (projects/year)"],
+    ["availableCapacity", "Available capacity (projects/year)"],
+  ];
+  const commercialFields = [
+    ["incrementalContribution", "Incremental revenue less variable costs (HK$/project)"], fixed, workload,
+  ];
+  const documentFields = [
+    fixed, workload,
+    ["staffHoursSaved", "Staff hours saved per project"],
+    ["staffHourlyValue", "Value to Hong Kong residents (HK$/staff hour)"],
+    ["criticalPathDaysSaved", "Days saved on the delivery critical path per project"],
+    ["criticalPathDailyValue", "Value to Hong Kong residents (HK$/day saved)"],
+  ];
+  const workspaceFields = [
+    ["incrementalContribution", "Incremental net benefit to Hong Kong residents (HK$/project)"], fixed, workload,
+  ];
+  const transactionFields = [
+    ["receipt", "Expected sale proceeds (HK$)"],
+    ["paidDays", "Days until payment"],
+    ["downstreamCost", "Repair and other non-handling costs (HK$)"],
+    ["handlingCost", "Handling, logistics and storage (HK$)"],
+  ];
+
+  function fields(entries) {
+    return entries.map(([key, label]) =>
+      '<label class="ppr-field">' + esc(label) +
+      '<input type="number" inputmode="decimal" step="any" name="' + key +
+      '" placeholder="To verify" autocomplete="off"></label>').join("");
+  }
+
+  function calculator(id, entries, capacityFields) {
+    return '<details class="ppr-calc"><summary>Enter scenario assumptions</summary><form data-calculator="' + id +
+      '"><div class="ppr-fields">' + fields(entries) + '</div>' +
+      (capacityFields ? '<details class="ppr-caps"><summary>Supply, demand and capacity limits</summary><div class="ppr-fields">' +
+        fields(caps) + '</div></details>' : '') +
+      '<button class="inline-link" type="reset">Clear assumptions</button></form></details>' +
+      '<div data-results="' + id + '" class="ppr-results" aria-live="polite"></div>';
+  }
+
+  function routeCard(route) {
+    const direct = route.id === "direct";
+    return '<article class="ppr-card"><header><h4>' + esc(route.label) + '</h4><span class="ppr-tag">' +
+      esc(route.status) + '</span></header><p>' + esc(route.summary) + '</p><ol class="ppr-steps">' +
+      route.steps.map(step => '<li><strong>' + esc(step.place) + '</strong><span>' + esc(step.action) +
+        '</span><small>' + esc(step.evidence) + '</small></li>').join("") +
+      '</ol><p class="ppr-route-cost">' + esc(route.economics) + '</p>' +
+      (direct ? '<dl class="ppr-metrics">' + metric("Comparable quote") +
+        metric("Acceptance criteria and lead time") + '</dl>' :
+        calculator(route.id, commercialFields, true)) +
+      '<p class="ppr-sources">' + links(route.sourceIds) + '</p></article>';
+  }
+
+  function policyCard(id, title, explanation, entries, hasCaps) {
+    const policy = data.policy[id];
+    return '<article class="ppr-card"><header><h4>' + esc(title) +
+      '</h4></header><p>' + esc(explanation) + '</p><p class="ppr-baseline">' +
+      esc(policy.baseline) + '</p>' + calculator(id, entries, hasCaps) +
+      '<p class="ppr-sources">' + links(policy.sourceIds) + '</p></article>';
+  }
+
+  function transactionForm() {
+    const route = (key, title) => '<fieldset><legend>' + esc(title) + '</legend><div class="ppr-fields">' +
+      fields(transactionFields.map(([name, label]) => [key + '.' + name, label])) + '</div></fieldset>';
+    return '<section class="ppr-transaction" aria-labelledby="transaction-heading">' +
+      '<h4 id="transaction-heading">How much handling cost can the Hong Kong route absorb?</h4>' +
+      '<p>Compare Hong Kong coordination with direct sale by the processor for the same removed component, repair scope, buyer and delivery requirement.</p>' +
+      '<form data-matched-transaction><div class="ppr-transaction-grid">' +
+      route("hongKong", "Hong Kong coordination") + route("direct", "Direct sale by processor") + '</div>' +
+      '<div class="ppr-rate">' + fields([["discountRate", "Real annual discount rate (%)"]]) +
+      '<button type="reset" class="inline-link">Clear transaction inputs</button></div></form>' +
+      '<div data-transaction-result aria-live="polite"></div>' +
+      '<p class="ppr-note">Enter amounts in HKD per component. Costs are charged at the start and proceeds are discounted to that date. Omit common acquisition costs. Use expected proceeds that account for acceptance and sale risk if relevant. Enter 0 for a known zero cost.</p></section>';
+  }
+
+  panel.innerHTML = `
+    <header class="ppr-hero">
+      <div>
+        <p class="ppr-eyebrow">Hong Kong policy analysis</p>
+        <h${headingLevel} id="ppr-heading" tabindex="-1">${esc(data.title)}</h${headingLevel}>
+        <p>${esc(data.subtitle)}</p>
+      </div>
+      ${actions.back ? '<button type="button" class="light-button" data-return-parking>← Back to parking pool</button>' : ''}
+    </header>
+    <div class="ppr-overview">
+      <p>${esc(data.summary)}</p>
+      <dl class="ppr-facts">${data.facts.map(fact =>
+        '<div><dt>' + esc(fact.label) + '</dt><dd>' + esc(fact.value) + '</dd><small>' + esc(fact.note) +
+        (fact.sourceIds.length ? ' ' + links(fact.sourceIds) : '') + '</small></div>').join("")}</dl>
+    </div>
+    ${showAssetList ? `<section class="ppr-section" aria-labelledby="ppr-evidence-heading">
+      <h3 id="ppr-evidence-heading">From storage to dismantling</h3>
+      <p>${esc(data.assetNotes)}</p>
+      <div class="ppr-assets">${data.assets.map(asset =>
+        '<button class="ppr-asset" data-case-msn="' + esc(asset.msn) + '" aria-pressed="false" type="button">' +
+        '<strong>' + esc(asset.reg) + '</strong><span>MSN ' + esc(asset.msn) + '</span><span>' +
+        esc(asset.confidence) + '</span></button>').join("")}</div>
+      <div class="ppr-asset-detail" aria-live="polite">
+        <div data-case-detail></div>
+        ${actions.openHistory ? '<button type="button" class="light-button" data-open-history>View aircraft history →</button>' : ''}
+      </div>
+    </section>` : ''}
+    <section class="ppr-section" aria-labelledby="ppr-routes-heading">
+      <h3 id="ppr-routes-heading">Commercial alternatives</h3>
+      <p>Compare routes for the same asset location, technical condition, buyer requirements and market date. Use a feasible existing private service as the baseline. If whole-aircraft transfer is unverified, hold dismantling in Hong Kong fixed and compare downstream repair, inventory and sale.</p>
+      <div class="ppr-route-grid">${data.routes.map(routeCard).join("")}</div>
+      ${transactionForm()}
+    </section>
+    <section class="ppr-section" aria-labelledby="ppr-policy-heading">
+      <h3 id="ppr-policy-heading">Public measures</h3>
+      <p>Compare each measure with existing rules, private services and operational facilities. Annualise public investment. Count fees and subsidies once across the accounts of Hong Kong residents and government.</p>
+      <div class="ppr-policy-grid">
+        ${policyCard("documentation", "Document coordination",
+          "Compare a shared checklist and a contact for resolving discrepancies with current practice. The annual value of staff and delivery time saved must cover the cost of coordination. Exclude staff savings already counted from the value per day.", documentFields, false)}
+        ${policyCard("workspace", "Shared work and storage space",
+          "Compare with existing work and storage space available to rent. Eligible supply, buyer demand and capacity must support the break-even workload. Deduct handling costs and displacement of existing Hong Kong business from the benefit per project.", workspaceFields, true)}
+      </div>
+      <p class="ppr-note">Use a common HKD price base, a consistent service unit and a stable annual workload. The six aircraft were one historical batch. Use transaction or operating evidence to inform annual workload.</p>
+    </section>`;
+
+  let selected;
+  function selectAsset(msn) {
+    if (!showAssetList) return;
+    selected = data.assets.find(asset => String(asset.msn) === String(msn)) ??
+      data.assets.find(asset => asset.confidence === "Aircraft-level confirmation") ?? data.assets[0];
+    for (const button of panel.querySelectorAll("[data-case-msn]")) {
+      button.setAttribute("aria-pressed", String(button.dataset.caseMsn === String(selected.msn)));
+    }
+    query("[data-case-detail]").innerHTML = '<strong>' + esc(selected.reg) + ' · MSN ' + esc(selected.msn) +
+      '</strong><p>Storage recorded ' + esc(selected.storage) + ' → dismantling recorded ' + esc(selected.scrap) +
+      ' · ' + esc(selected.months) + ' months</p><p>' + esc(selected.note) +
+      (selected.sourceIds.length ? ' ' + links(selected.sourceIds) : '') + '</p>';
+  }
+
+  function workloadThreshold(result) {
+    switch (result.thresholdKind) {
+      case "minimum_workload": return amount(result.minimumProjects) + " projects/year";
+      case "maximum_workload": return "Up to " + amount(result.maximumProjects) + " projects/year";
+      case "all_workloads": return "Fixed cost covered";
+      case "never": return "Unattainable at this contribution";
+      default: return null;
+    }
+  }
+
+  function report(form) {
+    const key = form.dataset.calculator;
+    const documentation = key === "documentation";
+    const shared = key === "workspace";
+    const publicMeasure = documentation || shared;
+    const hasCaps = !documentation;
+    const inputs = Object.fromEntries(new FormData(form));
+    const result = (documentation ? model.documentCoordination : shared ? model.sharedWorkspace : model.commercial)(inputs);
+    const box = query('[data-results="' + key + '"]');
+    const invalid = result.invalid.length > 0 || Array.from(form.elements).some(element =>
+      element.validity?.badInput || (caps.some(([name]) => name === element.name) ||
+      element.name === "annualWorkload") && element.value !== "" && !Number.isInteger(Number(element.value)));
+    const workloadValue = invalid ? null : workloadThreshold(result);
+    const unitThreshold = documentation
+      ? result.requiredDaysSaved !== null ? amount(result.requiredDaysSaved) + " days/project" :
+        result.daysThresholdKind === "never_at_input_value" ? "Daily time value is zero" : null
+      : result.requiredContribution === null ? null : money(result.requiredContribution) + "/project";
+    const balance = invalid || result.exceedsCapacity || result.annualBalance === null ? null :
+      money(result.annualBalance) + "/year";
+    let status = "To verify";
+    if (invalid) status = "Enter whole, nonnegative project counts and nonnegative time savings and unit values.";
+    else if (result.exceedsCapacity) status = "The entered workload exceeds a known limit.";
+    else if (result.breakEvenReachable === false) status = "Break-even is unattainable under the entered assumptions or known limits.";
+    else if (balance !== null) status = (result.status === "positive" ? "Positive under these assumptions" :
+      result.status === "negative" ? "Negative under these assumptions" : "Break-even under these assumptions") +
+      (hasCaps && result.feasibleWorkload === null ? ". Feasible workload remains unverified." : ".");
+    else if (workloadValue !== null || unitThreshold !== null) status = "Partial threshold. Other inputs remain to be verified.";
+
+    let metrics = metric(publicMeasure ? "Break-even annual workload" : "Break-even workload", workloadValue) +
+      metric(documentation ? "Required delivery time saving" : "Required contribution per project", invalid ? null : unitThreshold) +
+      metric(publicMeasure ? "Scenario net benefit to Hong Kong residents" : "Scenario annual net balance", balance);
+    if (hasCaps) metrics += metric("Feasible annual workload ceiling", invalid || result.feasibleWorkload === null ?
+      null : amount(result.feasibleWorkload) + " projects/year");
+    box.innerHTML = '<dl class="ppr-metrics">' + metrics + '</dl><p class="ppr-result-status">' +
+      esc(status) + '</p>';
+  }
+
+  function reportTransaction(form) {
+    const inputs = new FormData(form);
+    const route = key => Object.fromEntries(transactionFields.map(([name]) => [name, inputs.get(key + '.' + name)]));
+    const result = window.ExplorerTransaction.compare({
+      hongKong: route("hongKong"), direct: route("direct"), discountRate: inputs.get("discountRate"),
+    });
+    const invalid = result.invalid.length > 0 || Array.from(form.elements).some(field => field.validity?.badInput);
+    const display = value => invalid || value === null ? null : money(value) + '/component';
+    let status = 'Enter comparable terms to calculate the handling cost ceiling.';
+    if (invalid) status = 'Enter nonnegative amounts, payment days and a nonnegative discount rate.';
+    else if (result.maxHongKongHandlingCost !== null) {
+      if (result.maxHongKongHandlingCost < 0) status = 'Direct sale leads even with zero Hong Kong handling cost.';
+      else if (result.incrementalPvNet === null) status = 'Compare the Hong Kong handling quote with this break-even ceiling.';
+      else if (Math.abs(result.incrementalPvNet) < 0.005) status = 'The two arrangements break even under the entered terms.';
+      else status = (result.incrementalPvNet > 0 ? 'Hong Kong coordination' : 'Direct sale') + ' leads under the entered terms.';
+    }
+    query('[data-transaction-result]').innerHTML = '<dl class="ppr-transaction-results">' +
+      metric('Break-even Hong Kong handling cost', display(result.maxHongKongHandlingCost)) +
+      metric('Hong Kong net present value', display(result.hongKong.pvNet)) +
+      metric('Direct sale net present value', display(result.direct.pvNet)) +
+      metric('Hong Kong advantage vs direct sale', display(result.incrementalPvNet)) +
+      '</dl><p class="ppr-result-status">' + esc(status) + '</p>';
+  }
+
+  panel.addEventListener("click", event => {
+    const button = event.target.closest("button");
+    if (!button) return;
+    if (button.hasAttribute("data-return-parking")) actions.back();
+    if (button.hasAttribute("data-open-history")) actions.openHistory(selected.msn);
+    if (button.hasAttribute("data-case-msn")) selectAsset(button.dataset.caseMsn);
+  });
+  for (const form of panel.querySelectorAll("[data-calculator]")) {
+    form.addEventListener("submit", event => event.preventDefault());
+    form.addEventListener("input", () => report(form));
+    form.addEventListener("reset", () => setTimeout(() => report(form), 0));
+    report(form);
+  }
+  const transaction = query('[data-matched-transaction]');
+  transaction.addEventListener('submit', event => event.preventDefault());
+  transaction.addEventListener('input', () => reportTransaction(transaction));
+  transaction.addEventListener('reset', () => setTimeout(() => reportTransaction(transaction), 0));
+  reportTransaction(transaction);
+  selectAsset(null);
+  return { selectAsset, focus: () => query("#ppr-heading").focus() };
+}
+
+mountPpr(document.getElementById("review-case"), {}, {showAssetList:false, headingLevel:2});
+const transactionForm = document.querySelector("[data-matched-transaction]");
+const workedExample = document.createElement("div");
+workedExample.className = "worked-example";
+workedExample.innerHTML = '<button type="button" class="light-button">Load an illustrative comparison</button><span role="status">Example values are hypothetical.</span>';
+transactionForm.before(workedExample);
+workedExample.querySelector("button").addEventListener("click", () => {
+  const inputs = {
+    "hongKong.receipt": 110000, "hongKong.paidDays": 60, "hongKong.downstreamCost": 10000, "hongKong.handlingCost": 7000,
+    "direct.receipt": 110000, "direct.paidDays": 180, "direct.downstreamCost": 10000, "direct.handlingCost": 5000,
+    discountRate: 10,
+  };
+  for (const [name, value] of Object.entries(inputs)) transactionForm.elements.namedItem(name).value = value;
+  transactionForm.dispatchEvent(new Event("input"));
+  workedExample.querySelector('[role="status"]').textContent = "Illustrative inputs loaded. These are hypothetical figures.";
+});
+transactionForm.addEventListener("reset", () => {
+  workedExample.querySelector('[role="status"]').textContent = "Example values are hypothetical.";
+});
+</script>
+</body>
+</html>
