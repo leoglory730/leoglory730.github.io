@@ -353,6 +353,139 @@ dialog{max-height:85dvh;overflow:auto}
 @media(max-width:520px){.candidate-view{padding-top:3px}.candidate-hero{gap:14px;align-items:flex-start;flex-direction:column}.candidate-total{display:flex;text-align:left;gap:9px;align-items:baseline;min-width:0}.candidate-total strong{font-size:25px}.candidate-brief,.candidate-results,.candidate-detail,.candidate-comparison{padding:16px 13px;margin-top:13px}.candidate-section-head{gap:8px;margin-bottom:13px}.candidate-view h3{font-size:19px}.candidate-brief-grid{gap:15px 12px}.candidate-brief-grid dd{font-size:15px}.candidate-evidence-window{padding:13px}.candidate-controls{gap:11px}.candidate-controls label,.candidate-search-label,.candidate-controls label:not(.candidate-search-label){width:100%;min-width:0;flex:1 1 100%}.candidate-selection>div{width:100%}.candidate-selection>div button{flex:1}.candidate-detail-actions{width:100%}.candidate-detail-actions button{flex:1}.candidate-facts{gap:15px 12px}.candidate-methods{padding:15px 13px}}
 @media(prefers-reduced-motion:reduce){.candidate-view *{scroll-behavior:auto!important}}
 
+.lease-lab{font-size:16px;line-height:1.5;min-width:0;padding-top:8px;padding-bottom:24px}
+.lease-lab h2,.lease-lab h3,.lease-lab h4,.lease-lab p{margin:0}
+.lease-lab h2{font-size:clamp(28px,3vw,40px);line-height:1.12;letter-spacing:-.04em}
+.lease-lab h3{font-size:20px;letter-spacing:-.025em;line-height:1.25}
+.lease-lab h4{font-size:15px;line-height:1.4;margin:18px 0 9px}
+.lease-lab a,.lease-text-button{color:var(--accent);text-underline-offset:3px}
+.lease-lab button,.lease-lab input,.lease-lab select,.lease-lab textarea{font:inherit}
+.lease-lab button:focus-visible,.lease-lab input:focus-visible,.lease-lab select:focus-visible,.lease-lab textarea:focus-visible,.lease-lab summary:focus-visible{outline:3px solid #168b80;outline-offset:3px}
+.lease-lab [tabindex="-1"]:focus{outline:0}
+.lease-hero{display:flex;align-items:flex-end;justify-content:space-between;gap:22px;margin-bottom:22px}
+.lease-hero>div:first-child{max-width:780px}
+.lease-hero .lease-eyebrow{font-size:14px;font-weight:700;color:var(--accent);margin-bottom:9px}
+.lease-hero h2+p{margin-top:12px;color:var(--muted)}
+.lease-hero-actions{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end;flex-shrink:0}
+.lease-button{border:1px solid #c8d8dc;border-radius:7px;background:#fff;padding:9px 13px;color:var(--ink);font-size:14px!important;line-height:1.4;font-weight:650!important;white-space:normal;min-height:40px;cursor:pointer}
+.lease-button:hover{background:#edf6f3}
+.lease-primary{background:#086f68;border-color:#086f68;color:white}
+.lease-primary:hover{background:#07564f}
+.lease-button:disabled{cursor:default;opacity:.45}
+.lease-evidence{display:grid;grid-template-columns:1fr 1fr;gap:25px;background:#eaf3f0;border:1px solid #d5e6df;border-left:4px solid #46867c;border-radius:8px;padding:15px 19px;color:#28524b;font-size:14px}
+.lease-evidence strong{font-size:15px}
+.lease-evidence p{margin-top:5px}
+.lease-evidence>p{margin:0;align-self:center}
+.lease-toolbar{display:flex;justify-content:space-between;align-items:flex-end;gap:17px 22px;flex-wrap:wrap;margin:22px 0 14px}
+.lease-add-control{flex:1;min-width:270px;max-width:490px}
+.lease-add-control>label{display:block;font-size:14px;font-weight:650;margin-bottom:7px}
+.lease-add-control>label>span{font-weight:400;color:var(--muted);margin-left:8px}
+.lease-add-control>div{display:flex;gap:8px}
+.lease-add-control select{flex:1;min-width:0;max-width:100%;height:42px;border:1px solid #c8d8dc;border-radius:7px;background:#fff;color:var(--ink);font-size:14px;padding:8px 33px 8px 11px;appearance:none;background-image:linear-gradient(45deg,transparent 50%,#506976 50%),linear-gradient(135deg,#506976 50%,transparent 50%);background-position:calc(100% - 17px) 18px,calc(100% - 12px) 18px;background-size:5px 5px;background-repeat:no-repeat}
+.lease-toolbar-actions{display:flex;gap:8px;flex-wrap:wrap}
+.lease-feedback{color:#28594f;font-size:14px;min-height:0}
+.lease-feedback:not(:empty){padding:0 0 15px}
+.lease-workspace{display:grid;grid-template-columns:minmax(320px,.85fr) minmax(0,1.65fr);align-items:start;gap:20px;min-width:0}
+.lease-inputs,.lease-outputs{min-width:0}
+.lease-outputs{display:flex;flex-direction:column;gap:18px}
+.lease-card{min-width:0;border:1px solid var(--line);border-radius:11px;background:#fff;padding:21px}
+.lease-section-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px 17px;flex-wrap:wrap;margin-bottom:13px}
+.lease-section-head h3+p{margin-top:6px}
+.lease-tag{font-size:12px;line-height:1.5;font-weight:650;padding:3px 7px;border-radius:4px;background:#edf3f4;color:#4b6570;white-space:nowrap}
+.lease-muted{font-size:14px;color:var(--muted)}
+.lease-planning>.lease-muted,.lease-stress>.lease-muted{margin-bottom:17px}
+.lease-form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:15px 13px}
+.lease-field{display:flex;flex-direction:column;min-width:0;color:var(--ink);font-size:14px;font-weight:650;line-height:1.4}
+.lease-field>small{font-size:14px;font-weight:400;color:var(--muted);margin:3px 0 6px;min-height:17px}
+.lease-field>input{width:100%;min-width:0;border:1px solid #c9d8dc;border-radius:6px;background:#fbfdfd;color:var(--ink);font-size:15px;padding:8px 9px;min-height:40px;font-variant-numeric:tabular-nums}
+.lease-field>input::placeholder{font-size:12px;color:#758892;opacity:1}
+.lease-field>input:focus{background:white}
+.lease-field>input:invalid:not(:placeholder-shown){border-color:#be7862;background:#fff8f5}
+.lease-form-note{color:var(--muted);font-size:13px;line-height:1.6;margin-top:16px!important}
+.lease-quotes-heading{display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap;margin:24px 0 12px}
+.lease-quotes-heading h3{font-size:18px}
+.lease-quotes-heading p{font-size:13px;color:var(--muted)}
+.lease-quote-card{border:1px solid var(--line);border-radius:10px;background:#fff;margin-top:10px;min-width:0;overflow:hidden}
+.lease-quote-card>summary{display:flex;align-items:center;gap:9px;padding:15px 13px;cursor:pointer;list-style:none;font-size:15px;background:#fff;flex-wrap:wrap}
+.lease-quote-card>summary::-webkit-details-marker{display:none}
+.lease-quote-card>summary::after{content:"";width:7px;height:7px;border-right:1.8px solid #617782;border-bottom:1.8px solid #617782;transform:rotate(45deg);margin-left:auto;margin-right:3px;flex-shrink:0}
+.lease-quote-card[open]>summary::after{transform:rotate(225deg);margin-top:4px}
+.lease-quote-card[open]>summary{background:#f1f7f5;border-bottom:1px solid var(--line)}
+.lease-quote-card summary strong{font-size:16px}
+.lease-quote-card summary small{display:block;font-size:12px;color:var(--muted);margin-top:2px}
+.lease-aircraft-dot{display:inline-block;width:9px;height:9px;border-radius:50%;flex-shrink:0}
+.lease-quote-status{margin-left:auto;padding:3px 6px;font-size:14px;font-weight:600;color:#74501e;background:#fff0d5;border-radius:4px;max-width:145px}
+.lease-quote-body{padding:17px 14px 18px}
+.lease-record-meta{color:var(--muted);font-size:13px;line-height:1.6;margin-bottom:7px!important;overflow-wrap:anywhere}
+.lease-quote-actions{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:10px 0 17px}
+.lease-text-button{padding:0;border:0;background:none;font-size:13px!important;font-weight:600!important;text-decoration:underline;text-align:left;cursor:pointer}
+.lease-text-button:disabled{opacity:.4;cursor:default}
+.lease-stress{margin-top:20px}
+.lease-scenarios{display:flex;padding:3px;background:#eaf1f0;border-radius:7px;border:1px solid #dae4e5;gap:2px}
+.lease-scenarios button{font-size:14px;font-weight:600;border:0;background:none;padding:5px 12px;border-radius:4px;color:#4b6670;cursor:pointer}
+.lease-scenarios button[aria-pressed=true]{color:#0a615a;background:white;box-shadow:0 1px 3px #153f4217}
+.lease-result-status{border-radius:7px;background:#eaf5ee;padding:13px 15px;color:#245747;margin-top:18px!important}
+.lease-result-status strong{font-size:16px;display:block}
+.lease-result-status span{font-size:14px;display:block;margin-top:4px}
+.lease-assumption-status{font-size:13px;line-height:1.6;color:#78531e;background:#fff8e9;border-left:3px solid #d6ae68;padding:9px 12px;margin-top:12px!important;margin-bottom:17px!important}
+.lease-input-alert{color:#6c5535;font-size:13px;margin:13px 0 18px;padding:10px 13px;border:1px solid #eddfc8;border-radius:6px;background:#fffdf8}
+.lease-input-alert>strong{font-size:14px}
+.lease-input-alert ul{margin:7px 0 0;padding-left:17px}
+.lease-input-alert li{margin:5px 0}
+.lease-table-wrap{position:relative;width:100%;max-width:100%;overflow:auto;overscroll-behavior-inline:contain;border:1px solid var(--line);border-radius:7px}
+.lease-comparison{width:100%;min-width:610px;border-collapse:collapse;text-align:left;table-layout:fixed;font-size:14px;line-height:1.4}
+.lease-comparison th,.lease-comparison td{padding:13px 11px;vertical-align:top;border-bottom:1px solid #e4ecee;overflow-wrap:anywhere}
+.lease-comparison th:first-child{width:35%}
+.lease-comparison thead{background:#edf4f3;color:#365f61}
+.lease-comparison thead th{font-weight:650}
+.lease-comparison tbody th{font-weight:500;font-size:14px;background:#f9fbfc;color:#536b76}
+.lease-comparison td{font-weight:650;font-variant-numeric:tabular-nums}
+.lease-comparison tr:last-child>*{border-bottom:0}
+.lease-comparison small,.lease-point-table small{display:block;font-size:12px;font-weight:400;color:var(--muted);margin-top:5px}
+.lease-stress-summary{border-top:1px solid #e5edef;margin-top:19px;padding-top:1px}
+.lease-stress-summary h4{font-size:14px;margin:13px 0}
+.lease-stress-summary>div{display:flex;flex-wrap:wrap;gap:12px 20px}
+.lease-stress-summary p{font-size:13px;flex:1;min-width:150px}
+.lease-stress-summary p>strong{font-weight:650;display:block;color:#426a6a;margin-bottom:5px}
+.lease-stress-summary p>span{font-size:14px;display:block;color:var(--ink);font-variant-numeric:tabular-nums}
+.lease-stress-summary small{display:block;color:var(--muted);font-size:12px;margin-top:3px}
+.lease-scope-note{font-size:13px;line-height:1.6;color:var(--muted);margin-top:18px!important}
+.lease-chart-mode{font-size:13px;color:#4c726e;padding-top:3px}
+.lease-chart-legend{display:flex;flex-wrap:wrap;gap:9px 19px;font-size:13px;margin:17px 0 6px}
+.lease-chart-legend span{display:flex;align-items:center;gap:7px}
+.lease-chart-legend i{width:18px;height:3px;border-radius:1px;display:inline-block}
+.lease-cash-chart{display:block;width:100%;height:auto;overflow:visible}
+.lease-cash-chart text{font-size:13px;fill:#607582;font-family:inherit}
+.lease-chart-empty{min-height:255px;border:1px dashed #cfdddd;border-radius:7px;background:#f8fbfa;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:8px;margin-top:17px;padding:25px;text-align:center}
+.lease-chart-empty strong{font-size:16px;color:#4c706d}
+.lease-chart-empty p{font-size:14px;color:var(--muted)}
+.lease-empty-line{height:28px;width:90px;border-bottom:2px solid #9abeb6;transform:skewY(-12deg);display:block;margin-bottom:19px}
+.lease-inspect-control{margin:10px 0 15px;display:flex;align-items:center;gap:15px}
+.lease-inspect-control label{font-size:13px;min-width:110px;color:var(--muted)}
+.lease-inspect-control label strong{color:var(--ink);margin-left:5px}
+.lease-inspect-control input{min-width:0;flex:1;accent-color:var(--accent)}
+.lease-point-table{border-collapse:collapse;min-width:480px;width:100%;font-size:13px;text-align:left}
+.lease-point-table th,.lease-point-table td{padding:10px 11px;border-bottom:1px solid #e4ecee;vertical-align:top;font-variant-numeric:tabular-nums}
+.lease-point-table thead{background:#f4f8f8;color:#526b76}
+.lease-point-table th{font-weight:600}
+.lease-point-table tbody tr:last-child>*{border-bottom:0}
+.lease-memo>label{display:block;font-size:14px;font-weight:600;margin:17px 0 7px}
+.lease-memo textarea{resize:vertical;width:100%;min-height:105px;padding:11px 12px;border:1px solid #c9d8dc;border-radius:7px;font-size:14px;line-height:1.6;background:#fbfdfd}
+.lease-doc-list{margin:10px 0 0;padding-left:20px;color:var(--muted);font-size:14px;line-height:1.7}
+.lease-doc-list li{margin:7px 0}
+.lease-methods{font-size:14px;color:var(--muted);padding-top:15px;padding-bottom:15px}
+.lease-methods summary{font-weight:650;font-size:15px;color:var(--ink);cursor:pointer}
+.lease-methods p{margin-top:14px;line-height:1.7}
+.lease-loading{padding:30px;border:1px solid var(--line);border-radius:11px;background:white}
+.lease-print-only{display:none}
+.lease-sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+@media(min-width:1700px){.lease-workspace{grid-template-columns:minmax(350px,.85fr) minmax(0,1.65fr)}}
+@media(max-width:1120px){.lease-hero{align-items:flex-start}.lease-hero-actions{max-width:180px}.lease-workspace{grid-template-columns:minmax(295px,.95fr) minmax(0,1.35fr);gap:14px}.lease-card{padding:17px}.lease-quote-status{margin-left:18px;font-size:14px;max-width:none}.lease-quote-card>summary::after{position:relative;margin-left:auto}.lease-form-grid{gap:13px 10px}.lease-field>small{font-size:14px}.lease-toolbar-actions{flex:1}.lease-toolbar-actions .lease-button{flex:1 0 auto}}
+@media(max-width:850px){.lease-workspace{grid-template-columns:1fr}.lease-inputs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px}.lease-planning,.lease-quotes-heading,.lease-stress{grid-column:1/-1}.lease-quotes-heading{margin:8px 0 0}.lease-quote-card{margin:0;align-self:start}.lease-stress{margin-top:0}.lease-stress .lease-form-grid{grid-template-columns:repeat(3,minmax(0,1fr))}.lease-planning .lease-form-grid{grid-template-columns:repeat(3,minmax(0,1fr))}.lease-outputs{gap:14px}.lease-evidence{gap:18px}.lease-hero-actions{max-width:200px}.lease-hero h2{font-size:31px}}
+@media(max-width:560px){.lease-lab{padding-top:3px}.lease-hero{flex-direction:column;gap:16px;margin-bottom:17px}.lease-hero h2{font-size:31px}.lease-hero-actions{max-width:none;justify-content:flex-start;width:100%}.lease-hero-actions .lease-button{flex:1}.lease-evidence{grid-template-columns:1fr;gap:10px;padding:13px 14px}.lease-toolbar{margin:18px 0 13px;gap:14px}.lease-add-control{width:100%;max-width:none;min-width:0}.lease-toolbar-actions{gap:7px;width:100%}.lease-toolbar-actions .lease-button{flex:1 1 calc(50% - 7px);padding:8px 9px}.lease-toolbar-actions .lease-primary{flex-basis:100%}.lease-inputs{grid-template-columns:1fr;gap:12px}.lease-planning,.lease-quotes-heading,.lease-stress{grid-column:auto}.lease-planning .lease-form-grid,.lease-stress .lease-form-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.lease-card{padding:17px 13px}.lease-quote-card>summary{padding:13px}.lease-quote-status{margin-left:auto;max-width:145px;font-size:14px}.lease-quote-body{padding:14px 13px}.lease-section-head{gap:10px}.lease-result-status{padding:12px}.lease-result-status strong{font-size:15px}.lease-comparison{min-width:630px}.lease-inspect-control{gap:10px}.lease-chart-empty{min-height:215px}.lease-cash-chart text{font-size:14px}}
+@media print{body.lease-printing{background:white;color:black}body.lease-printing .topbar,body.lease-printing main>:not(#finance-view){display:none!important}body.lease-printing main{max-width:none;margin:0;padding:0}body.lease-printing #finance-view{display:block!important;font-size:10pt;padding:0}body.lease-printing .lease-screen-only,body.lease-printing .lease-hero-actions{display:none!important}body.lease-printing .lease-hero{margin-bottom:14px}body.lease-printing .lease-hero h2{font-size:24pt;color:black}body.lease-printing .lease-hero>div:first-child{max-width:none}body.lease-printing .lease-evidence{display:block;background:white;border:1px solid #bbb;color:black;padding:9px;font-size:9pt}body.lease-printing .lease-evidence>p{margin-top:7px}body.lease-printing .lease-print-only{display:block}body.lease-printing .lease-print-only h3{font-size:16pt;margin:18px 0 8px}body.lease-printing .lease-print-only h4{font-size:11pt;margin:16px 0 8px}body.lease-printing .lease-print-only p,body.lease-printing .lease-print-only li{font-size:9pt;line-height:1.6}body.lease-printing .lease-table-wrap{overflow:visible;border-color:#bbb;border-radius:0}body.lease-printing table{min-width:0!important;width:100%;font-size:8pt;table-layout:fixed;border-collapse:collapse}body.lease-printing th,body.lease-printing td{padding:6px!important;border-bottom:1px solid #ddd;text-align:left;vertical-align:top;overflow-wrap:anywhere;color:black;background:white}body.lease-printing tr{break-inside:avoid}body.lease-printing table small{font-size:7.5pt}body.lease-printing .lease-print-notes{white-space:pre-wrap}body.lease-printing .lease-comparison tbody th{font-size:8pt;color:black}body.lease-printing .lease-print-table th:first-child{width:35%}}
+@media(prefers-reduced-motion:reduce){.lease-lab *{scroll-behavior:auto!important}}
+
 </style>
 </head>
 <body>
@@ -368,6 +501,7 @@ dialog{max-height:85dvh;overflow:auto}
       <button id="flow" aria-pressed="false" type="button">⇄ <span>Transfers</span></button>
       <button id="park" aria-pressed="false" type="button">◉ <span>Parking pool</span></button>
       <button id="candidates" aria-pressed="false" aria-controls="candidate-view" type="button">Candidate Finder</button>
+      <button id="finance" aria-pressed="false" aria-controls="finance-view" type="button">Decision Lab</button>
       <button id="ppr" aria-pressed="false" aria-controls="ppr-view" type="button">Hong Kong policy analysis</button>
     </div>
     <label id="country-wrap">Country or territory<select id="country"><option value="">Global</option></select></label>
@@ -436,6 +570,7 @@ dialog{max-height:85dvh;overflow:auto}
   </section>
   <section id="ppr-view" class="ppr-view" aria-labelledby="ppr-heading" hidden></section>
   <section id="candidate-view" aria-label="A320 candidate comparison" hidden></section>
+  <section id="finance-view" aria-label="Aviation lease decision lab" hidden></section>
   <footer id="map-footer"><span>Source: Airfleets production lists and historical records</span><span>Boundaries: Natural Earth</span></footer>
 </main>
 <dialog id="method" aria-labelledby="method-title">
@@ -934,7 +1069,7 @@ function mountPpr(panel, actions, {showAssetList = true, headingLevel = 1, data 
 }
 
 /* Candidate review for a sourced aircraft requirement and dated evidence. */
-function mountCandidates(panel, { loadCase, openHistory } = {}) {
+function mountCandidates(panel, { loadCase, openHistory, openFinance } = {}) {
   const number = new Intl.NumberFormat("en", { maximumFractionDigits: 0 });
   const statusLabels = { pass: "Met in records", needs: "To verify", conflict: "Conflict", preference: "Preference" };
   const archiveLabels = { C: "Active", STD: "Stored", SCR: "Scrapped", "W/O": "Written off", PLN: "Planned entry into service" };
@@ -1043,6 +1178,7 @@ function mountCandidates(panel, { loadCase, openHistory } = {}) {
       '<option value="registration">Registration</option></select></label></div>' +
       '<div class="candidate-selection"><p data-candidate-selection-count></p><div>' +
       '<button type="button" class="candidate-button candidate-primary" data-candidate-action="compare">Compare selected</button>' +
+      (openFinance ? '<button type="button" class="candidate-button" data-candidate-action="finance">Review lease economics</button>' : '') +
       '<button type="button" class="candidate-button" data-candidate-action="clear">Clear selection</button></div></div>' +
       '<p class="candidate-feedback" data-candidate-feedback role="status" aria-live="polite"></p>' +
       '<div class="candidate-table-wrap"><table class="candidate-table"><caption class="candidate-sr-only">Aircraft candidates with dated identity and flight evidence</caption>' +
@@ -1103,6 +1239,8 @@ function mountCandidates(panel, { loadCase, openHistory } = {}) {
   function renderSelection() {
     query("[data-candidate-selection-count]").textContent = selected.size + " selected · compare 2–4 aircraft";
     query('[data-candidate-action="compare"]').disabled = selected.size < 2;
+    const financeButton=query('[data-candidate-action="finance"]');
+    if(financeButton)financeButton.disabled=selected.size<2;
     query('[data-candidate-action="clear"]').disabled = selected.size === 0;
     for (const input of panel.querySelectorAll("[data-candidate-select]")) {
       const chosen = selected.has(input.dataset.candidateSelect);
@@ -1249,6 +1387,8 @@ function mountCandidates(panel, { loadCase, openHistory } = {}) {
     } else if (button.dataset.candidateAction === "compare") {
       query("#candidate-comparison-heading").focus({ preventScroll: true });
       query("[data-candidate-comparison]").scrollIntoView({ behavior: "smooth", block: "start" });
+    } else if (button.dataset.candidateAction === "finance") {
+      if(selected.size>=2)openFinance?.(candidates.filter(item=>selected.has(item.key)));
     } else if (button.dataset.candidateAction === "clear") {
       selected.clear();
       query("[data-candidate-feedback]").textContent = "Selection cleared.";
@@ -1297,6 +1437,650 @@ function mountCandidates(panel, { loadCase, openHistory } = {}) {
   return { show, refresh: () => show({ refresh: true }) };
 }
 
+/* Lessee cash-flow comparison. Every commercial amount is supplied by the user.
+ * Positive cash flows below mean cash paid by the lessee. The model supports one
+ * pooled maintenance reserve account and one eligible maintenance event. It is a
+ * lease/transition cost model, not a complete airline operating-profit model.
+ */
+(function (global) {
+  "use strict";
+
+  const limits = Object.freeze({ termMonths: 180, delayMonths: 180 });
+  const metricNames = [
+    "totalNominalCost", "pvCost", "pvHours", "totalHours", "costPerHour", "pvCostPerHour",
+    "totalPreDeliveryCash", "peakCumulativeFunding", "peakFundingMonth", "rentCeiling",
+    "totalReservePayments", "totalReserveReimbursements", "totalReserveRefunds",
+    "unrecoveredReserveBalance", "lifetimeTotalCashOut", "lifetimeCashRecoveries",
+    "monthlyDiscountRate", "terminalMonth", "rentPVFactor", "baseNonRentPvCost",
+  ];
+
+  const assumptions = Object.freeze([
+    "USD nominal, pre-tax cash flows at month-end; the refundable security deposit and setup costs are paid at month 0.",
+    "Rent starts on delivery. A delay adds bridge costs and shifts the entire fixed number of operating months later; it does not shorten the lease.",
+    "Utilization is a scenario input. Observed flight counts are not substituted for complete flight hours or maintenance cycles.",
+    "A single pooled reserve account has no opening balance. Eligible maintenance is reimbursed only up to the reserve cash already collected, including that month’s collection.",
+    "The supplied recovery percentage applies to the reserve balance remaining after the maintenance event. Only that portion is refunded at lease end; the balance is retained by the lessor.",
+    "The security deposit is fully refunded at lease end. No interest is earned on the deposit or reserves. Recoveries and final payments occur in the same month.",
+    "The model includes the specified rent, transition costs, maintenance event, reserves and redelivery payment. Crew, fuel, insurance, taxes, financing, inflation, lost revenue and other maintenance events are excluded.",
+    "Peak funding is the maximum cumulative net cash paid at the modeled month ends. Gross intramonth liquidity needs can be higher.",
+    "The rent ceiling equates discounted modeled costs to the user’s hourly cost ceiling multiplied by discounted operating hours. It is not a market valuation or an airline profitability estimate.",
+  ]);
+
+  function absent(raw) {
+    return raw === undefined || raw === null || (typeof raw === "string" && raw.trim() === "");
+  }
+
+  function numeric(raw) {
+    return typeof raw === "number" || typeof raw === "string" ? Number(raw) : NaN;
+  }
+
+  function emptyResult(missing, errors) {
+    return { complete: false, missing, errors, schedule: [],
+      ...Object.fromEntries(metricNames.map(name => [name, null])) };
+  }
+
+  function calculate(common, quote) {
+    common = common ?? {};
+    quote = quote ?? {};
+    const missing = [];
+    const errors = [];
+
+    function read(raw, field, options = {}) {
+      const { min = 0, max = Infinity, integer = false, optional = false, exclusiveMin = false } = options;
+      if (absent(raw)) {
+        if (!optional) missing.push(field);
+        return null;
+      }
+      const value = numeric(raw);
+      if (!Number.isFinite(value) || value < min || (exclusiveMin && value === min) || value > max ||
+          (integer && !Number.isInteger(value))) {
+        errors.push(field);
+        return null;
+      }
+      return value;
+    }
+
+    const inputs = {
+      termMonths: read(common.termMonths, "common.termMonths", { min: 1, max: limits.termMonths, integer: true }),
+      monthlyHours: read(common.monthlyHours, "common.monthlyHours", { exclusiveMin: true }),
+      monthlyCycles: read(common.monthlyCycles, "common.monthlyCycles"),
+      annualDiscountPct: read(common.annualDiscountPct, "common.annualDiscountPct", { max: 50 }),
+      hourlyCostCeiling: read(common.hourlyCostCeiling, "common.hourlyCostCeiling", { optional: true }),
+    };
+    const terms = {
+      monthlyRent: read(quote.monthlyRent, "quote.monthlyRent"),
+      depositMonths: read(quote.depositMonths, "quote.depositMonths"),
+      setupCost: read(quote.setupCost, "quote.setupCost"),
+      maintenanceCost: read(quote.maintenanceCost, "quote.maintenanceCost"),
+      reservePerHour: read(quote.reservePerHour, "quote.reservePerHour"),
+      reservePerCycle: read(quote.reservePerCycle, "quote.reservePerCycle"),
+      reserveRecoveryPct: read(quote.reserveRecoveryPct, "quote.reserveRecoveryPct", { max: 100 }),
+      redeliveryCost: read(quote.redeliveryCost, "quote.redeliveryCost"),
+      delayMonths: read(quote.delayMonths, "quote.delayMonths", { max: limits.delayMonths, integer: true }),
+      bridgeMonthlyCost: read(quote.bridgeMonthlyCost, "quote.bridgeMonthlyCost"),
+      maintenanceMonth: null,
+    };
+    // A zero maintenance amount explicitly means no modeled event. Its timing
+    // has no cash-flow effect and need not be supplied.
+    if (terms.maintenanceCost !== null && terms.maintenanceCost > 0) {
+      terms.maintenanceMonth = read(quote.maintenanceMonth, "quote.maintenanceMonth", {
+        min: 1, max: inputs.termMonths ?? limits.termMonths, integer: true,
+      });
+    }
+    if (missing.length || errors.length) return emptyResult(missing, errors);
+
+    const monthlyDiscountRate = Math.expm1(Math.log1p(inputs.annualDiscountPct / 100) / 12);
+    const terminalMonth = terms.delayMonths + inputs.termMonths;
+    const discount = month => Math.exp(-Math.log1p(monthlyDiscountRate) * month);
+    const deposit = terms.monthlyRent * terms.depositMonths;
+    const reservePayment = inputs.monthlyHours * terms.reservePerHour + inputs.monthlyCycles * terms.reservePerCycle;
+    let reserveBalance = 0;
+    let cumulativeOutflow = 0;
+    let totalNominalCost = 0;
+    let pvCost = 0;
+    let pvHours = 0;
+    let totalHours = 0;
+    let totalPreDeliveryCash = 0;
+    let peakCumulativeFunding = 0;
+    let peakFundingMonth = 0;
+    let rentPVFactor = terms.depositMonths * (1 - discount(terminalMonth));
+    let totalReservePayments = 0;
+    let totalReserveReimbursements = 0;
+    let totalReserveRefunds = 0;
+    let lifetimeTotalCashOut = 0;
+    let lifetimeCashRecoveries = 0;
+    const schedule = [];
+
+    for (let month = 0; month <= terminalMonth; month++) {
+      const operatingMonth = month > terms.delayMonths ? month - terms.delayMonths : 0;
+      const row = { month, operatingMonth, hours: 0, cycles: 0, rent: 0, reservePayment: 0,
+        maintenanceGross: 0, reserveReimbursement: 0, reserveRefund: 0, depositFlow: 0,
+        setupCost: 0, bridgeCost: 0, redeliveryCost: 0, outflow: 0,
+        cumulativeOutflow: 0, reserveBalance: 0 };
+      if (month === 0) {
+        row.depositFlow = deposit;
+        row.setupCost = terms.setupCost;
+      } else if (!operatingMonth) {
+        row.bridgeCost = terms.bridgeMonthlyCost;
+      } else {
+        row.hours = inputs.monthlyHours;
+        row.cycles = inputs.monthlyCycles;
+        row.rent = terms.monthlyRent;
+        row.reservePayment = reservePayment;
+        reserveBalance += reservePayment;
+        totalReservePayments += reservePayment;
+        rentPVFactor += discount(month);
+        if (operatingMonth === terms.maintenanceMonth) {
+          row.maintenanceGross = terms.maintenanceCost;
+          row.reserveReimbursement = Math.min(row.maintenanceGross, reserveBalance);
+          reserveBalance -= row.reserveReimbursement;
+          totalReserveReimbursements += row.reserveReimbursement;
+        }
+        if (operatingMonth === inputs.termMonths) {
+          row.reserveRefund = reserveBalance * terms.reserveRecoveryPct / 100;
+          reserveBalance -= row.reserveRefund;
+          row.depositFlow = -deposit;
+          row.redeliveryCost = terms.redeliveryCost;
+          totalReserveRefunds += row.reserveRefund;
+        }
+      }
+      const paid = row.rent + row.reservePayment + row.maintenanceGross + Math.max(0, row.depositFlow) +
+        row.setupCost + row.bridgeCost + row.redeliveryCost;
+      const recovered = row.reserveReimbursement + row.reserveRefund + Math.max(0, -row.depositFlow);
+      row.outflow = paid - recovered;
+      cumulativeOutflow += row.outflow;
+      row.cumulativeOutflow = cumulativeOutflow;
+      row.reserveBalance = reserveBalance;
+      totalNominalCost += row.outflow;
+      pvCost += row.outflow * discount(month);
+      totalHours += row.hours;
+      pvHours += row.hours * discount(month);
+      lifetimeTotalCashOut += paid;
+      lifetimeCashRecoveries += recovered;
+      if (!operatingMonth) totalPreDeliveryCash += row.outflow;
+      if (cumulativeOutflow > peakCumulativeFunding) {
+        peakCumulativeFunding = cumulativeOutflow;
+        peakFundingMonth = month;
+      }
+      schedule.push(row);
+    }
+    const baseNonRentPvCost = pvCost - terms.monthlyRent * rentPVFactor;
+    const rentCeiling = inputs.hourlyCostCeiling === null ? null :
+      (inputs.hourlyCostCeiling * pvHours - baseNonRentPvCost) / rentPVFactor;
+    const result = { complete: true, missing, errors, schedule, totalNominalCost, pvCost, pvHours, totalHours,
+      costPerHour: totalNominalCost / totalHours, pvCostPerHour: pvCost / pvHours,
+      totalPreDeliveryCash, peakCumulativeFunding, peakFundingMonth, rentCeiling,
+      totalReservePayments, totalReserveReimbursements, totalReserveRefunds,
+      unrecoveredReserveBalance: reserveBalance, lifetimeTotalCashOut, lifetimeCashRecoveries,
+      monthlyDiscountRate, terminalMonth, rentPVFactor, baseNonRentPvCost };
+    // Very large, individually finite inputs can still overflow when combined.
+    // Keep that failure visible rather than presenting Infinity as a result.
+    if (metricNames.some(name => result[name] !== null && !Number.isFinite(result[name]))) {
+      return emptyResult([], ["calculation.numericOverflow"]);
+    }
+    return result;
+  }
+
+  function stressInputs(common, quote, stress) {
+    const nextCommon = { ...(common ?? {}) };
+    const nextQuote = { ...(quote ?? {}) };
+    const shocks = stress ?? {};
+    const errors = [];
+    function shock(key, min, integer = false) {
+      if (absent(shocks[key])) return 0;
+      const value = numeric(shocks[key]);
+      if (!Number.isFinite(value) || value < min || (integer && !Number.isInteger(value))) {
+        errors.push("stress." + key);
+        return NaN;
+      }
+      return value;
+    }
+    const delay = shock("extraDelayMonths", 0, true);
+    const hoursChange = shock("hoursChangePct", -100);
+    const maintenanceChange = shock("maintenanceChangePct", -100);
+    if (hoursChange === -100) errors.push("stress.hoursChangePct");
+    // Preserve absent commercial inputs as absent. A scenario never supplies a
+    // missing quote or turns an empty input into a zero-cost assumption.
+    if (!absent(nextQuote.delayMonths)) nextQuote.delayMonths = numeric(nextQuote.delayMonths) + delay;
+    if (!absent(nextCommon.monthlyHours)) nextCommon.monthlyHours = numeric(nextCommon.monthlyHours) * (1 + hoursChange / 100);
+    if (!absent(nextCommon.monthlyCycles)) nextCommon.monthlyCycles = numeric(nextCommon.monthlyCycles) * (1 + hoursChange / 100);
+    if (!absent(nextQuote.maintenanceCost)) nextQuote.maintenanceCost = numeric(nextQuote.maintenanceCost) * (1 + maintenanceChange / 100);
+    return { common: nextCommon, quote: nextQuote, errors };
+  }
+
+  // Synthetic values for demonstrating the comparison workflow. These are not
+  // offers, market estimates, or technical assessments of the selected aircraft.
+  function demoInputs(index = 0) {
+    const examples = [
+      { monthlyRent: 230000, depositMonths: 3, setupCost: 650000, maintenanceCost: 1800000,
+        maintenanceMonth: 36, reservePerHour: 250, reservePerCycle: 90, reserveRecoveryPct: 50,
+        redeliveryCost: 500000, delayMonths: 0, bridgeMonthlyCost: 150000 },
+      { monthlyRent: 215000, depositMonths: 4, setupCost: 900000, maintenanceCost: 3000000,
+        maintenanceMonth: 24, reservePerHour: 290, reservePerCycle: 100, reserveRecoveryPct: 20,
+        redeliveryCost: 700000, delayMonths: 1, bridgeMonthlyCost: 150000 },
+      { monthlyRent: 260000, depositMonths: 3, setupCost: 450000, maintenanceCost: 1200000,
+        maintenanceMonth: 48, reservePerHour: 210, reservePerCycle: 80, reserveRecoveryPct: 80,
+        redeliveryCost: 450000, delayMonths: 0, bridgeMonthlyCost: 150000 },
+      { monthlyRent: 245000, depositMonths: 2, setupCost: 550000, maintenanceCost: 1500000,
+        maintenanceMonth: 42, reservePerHour: 230, reservePerCycle: 85, reserveRecoveryPct: 50,
+        redeliveryCost: 500000, delayMonths: 2, bridgeMonthlyCost: 150000 },
+    ];
+    const value = Number.isInteger(index) ? Math.abs(index) % examples.length : 0;
+    return { ...examples[value] };
+  }
+
+  const api = Object.freeze({ calculate, stressInputs, demoInputs, assumptions, limits });
+  global.LeaseDealModel = api;
+  if (typeof module !== "undefined" && module.exports) module.exports = api;
+})(typeof window === "undefined" ? globalThis : window);
+
+/* A lessee's comparison of user-supplied lease terms and dated aircraft evidence. */
+function mountLeaseLab(panel, { loadCase, openHistory, backToCandidates } = {}) {
+  const commonFields = [
+    ["termMonths", "Operating lease term", "months", 1, 180, 1],
+    ["monthlyHours", "Planned flying", "flight hours / month", 1, null, 1],
+    ["monthlyCycles", "Planned cycles", "cycles / month", 0, null, 1],
+    ["annualDiscountPct", "Discount rate", "% / year, effective", 0, 50, .1],
+    ["hourlyCostCeiling", "Optional cost ceiling", "USD / discounted flight hour", 0, null, 1],
+  ];
+  const quoteFields = [
+    ["monthlyRent", "Base rent", "USD / month", 0, null, 1000],
+    ["depositMonths", "Refundable deposit", "months of base rent", 0, 24, .5],
+    ["setupCost", "Delivery and setup", "USD at month 0", 0, null, 10000],
+    ["maintenanceCost", "Planned maintenance event", "USD, gross cash cost", 0, null, 10000],
+    ["maintenanceMonth", "Maintenance timing", "operating month", 1, 180, 1],
+    ["reservePerHour", "Maintenance reserve", "USD / flight hour", 0, null, 10],
+    ["reservePerCycle", "Cycle reserve", "USD / cycle", 0, null, 10],
+    ["reserveRecoveryPct", "Closing reserve recovery", "% of remaining balance", 0, 100, 1],
+    ["redeliveryCost", "Net redelivery cost", "USD at lease end", 0, null, 10000],
+    ["delayMonths", "Delivery delay", "months before rent starts", 0, 60, 1],
+    ["bridgeMonthlyCost", "Delay cover cost", "USD / delayed month", 0, null, 10000],
+  ];
+  const stressFields = [
+    ["extraDelayMonths", "Additional delivery delay", "months", 0, 60, 1],
+    ["hoursChangePct", "Flying and cycle change", "% versus plan", -95, 200, 1],
+    ["maintenanceChangePct", "Maintenance event change", "% versus plan", -100, 500, 1],
+  ];
+  const fieldNames = Object.fromEntries([...commonFields, ...quoteFields, ...stressFields].map(field => [field[0], field[1]]));
+  const colors = ["#086f68", "#3f65a5", "#aa5e27", "#805c9d"];
+  const storageKey = "aircraft-explorer-lease-review-v1";
+  let data = null;
+  let allAircraft = [];
+  let chosen = [];
+  let pendingAircraft = null;
+  let loadPromise = null;
+  let common = { termMonths: 72, monthlyHours: 250, monthlyCycles: 125, annualDiscountPct: 8, hourlyCostCeiling: "" };
+  let stress = { extraDelayMonths: 2, hoursChangePct: -20, maintenanceChangePct: 30 };
+  let quotes = {};
+  let kinds = {};
+  let scenario = "base";
+  let notes = "";
+  let inspectionMonth = 0;
+  let calculated = [];
+  const esc = value => String(value ?? "").replace(/[&<>"']/g, character => ({
+    "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;",
+  })[character]);
+  const query = selector => panel.querySelector(selector);
+  const num = new Intl.NumberFormat("en-US", { maximumFractionDigits: 0 });
+  const money = value => Number.isFinite(value) ? "$" + num.format(Math.round(value)) : "Awaiting inputs";
+  const cash = value => Number.isFinite(value) ? (value < 0 ? "−" : "") + "$" + num.format(Math.round(Math.abs(value))) : "—";
+  const shortCash = value => Math.abs(value) >= 1e6 ? "$" + (value / 1e6).toFixed(1) + "m" : "$" + num.format(value / 1000) + "k";
+  const identifier = item => String(item.id ?? item.aircraftId ?? item.msn);
+  const name = item => item.registration || "MSN " + item.msn;
+  const selectedAircraft = () => chosen.map(id => allAircraft.find(item => identifier(item) === id)).filter(Boolean);
+  const blankQuote = () => Object.fromEntries(quoteFields.map(field => [field[0], ""]));
+  const labelKind = id => ({ demo: "Illustrative quote", editedDemo: "Edited illustrative quote", manual: "User-entered terms" })[kinds[id]] || "Quote to enter";
+  const numeric = value => value !== null && value !== undefined && value !== "" && Number.isFinite(Number(value));
+  function initializeQuote(id) {
+    if (!quotes[id]) quotes[id] = blankQuote();
+  }
+  function inputMarkup(field, value, scope, id = "") {
+    const [key, label, unit, min, max, step] = field;
+    const inputId = "lease-" + scope + "-" + key + (id ? "-" + id.replace(/[^a-z0-9_-]/gi, "-") : "");
+    return '<label class="lease-field" for="' + esc(inputId) + '"><span>' + esc(label) + '</span><small>' + esc(unit) + '</small>' +
+      '<input type="number" id="' + esc(inputId) + '" data-lease-scope="' + scope + '" data-lease-field="' + key + '"' +
+      (id ? ' data-lease-quote="' + esc(id) + '"' : '') + ' value="' + esc(value) + '" min="' + min + '"' +
+      (max === null ? '' : ' max="' + max + '"') + ' step="' + step + '" placeholder="' +
+      (key === "hourlyCostCeiling" ? "Optional" : key === "maintenanceMonth" ? "If event cost > 0" : "Enter, including 0") + '"></label>';
+  }
+  function recordMarkup(item) {
+    return '<p class="lease-record-meta">' + esc(item.model) + ' · MSN ' + esc(item.msn) + ' · Recorded operator: ' + esc(item.operator || "To verify") + '</p>' +
+      '<p class="lease-record-meta">First flight ' + esc(item.firstFlight || "unavailable") + ' · Source engine label: ' + esc(item.engine || "unavailable") + '</p>';
+  }
+  function quoteMarkup(item, index) {
+    const id = identifier(item);
+    initializeQuote(id);
+    return '<details class="lease-quote-card" data-lease-card="' + esc(id) + '"' + (index === 0 ? ' open' : '') + '>' +
+      '<summary><span class="lease-aircraft-dot" style="background:' + colors[index] + '"></span><span><strong>' + esc(name(item)) + '</strong>' +
+      '<small>' + esc(item.model) + ' · MSN ' + esc(item.msn) + '</small></span><span class="lease-quote-status" data-lease-kind="' + esc(id) + '">' + esc(labelKind(id)) + '</span></summary>' +
+      '<div class="lease-quote-body">' + recordMarkup(item) + '<div class="lease-quote-actions">' +
+      (openHistory ? '<button type="button" class="lease-text-button" data-lease-history="' + esc(id) + '">View registry history</button>' : '') +
+      '<button type="button" class="lease-text-button" data-lease-remove="' + esc(id) + '"' + (chosen.length <= 2 ? ' disabled' : '') + '>Remove from review</button></div>' +
+      '<div class="lease-form-grid">' + quoteFields.map(field => inputMarkup(field, quotes[id][field[0]], "quote", id)).join("") + '</div>' +
+      '<p class="lease-form-note">Reserve recovery is a contract assumption. Enter maintenance cost before reimbursement; the model draws from the reserve account once. Redelivery cost excludes amounts already counted in that event.</p></div></details>';
+  }
+  function render() {
+    panel.classList.add("lease-lab");
+    panel.innerHTML = '<header class="lease-hero"><div><p class="lease-eyebrow">Lease Deal Review · airline / lessee perspective</p>' +
+      '<h2 id="lease-heading" tabindex="-1">Aviation Decision Lab</h2><p>Turn an aircraft shortlist into a comparable lease cost and cash-flow review.</p></div>' +
+      '<div class="lease-hero-actions"><button type="button" class="lease-button" data-lease-action="back">Candidate Finder</button>' +
+      '<button type="button" class="lease-button" data-lease-action="print">Print decision memo</button></div></header>' +
+      '<section class="lease-evidence" aria-label="Evidence and financial assumptions"><div><strong>Real aircraft. Unverified commercial terms.</strong><p>Registry ' +
+      esc(data.methodology?.registryAsOf || "2026-01-01") + ' · OPDI observations through ' + esc(data.methodology?.adsbEnd || "2026-09-30") +
+      '. Availability and all quotes await lessor confirmation.</p></div><p>Financial results use your planning assumptions. Illustrative quotes are available for trying the workflow and are never treated as seller offers.</p></section>' +
+      '<div class="lease-screen-only"><section class="lease-toolbar" aria-label="Review controls"><div class="lease-add-control"><label for="lease-add-aircraft">Aircraft in this review <span>' + chosen.length + ' of 4</span></label>' +
+      '<div><select id="lease-add-aircraft" aria-label="Add aircraft from the screened candidates"><option value="">Choose a screened aircraft</option>' +
+      allAircraft.filter(item => !chosen.includes(identifier(item))).map(item => '<option value="' + esc(identifier(item)) + '">' + esc(name(item) + " · " + item.model + " · " + item.operator) + '</option>').join("") +
+      '</select><button type="button" class="lease-button" data-lease-action="add"' + (chosen.length >= 4 ? ' disabled' : '') + '>Add</button></div></div>' +
+      '<div class="lease-toolbar-actions"><button type="button" class="lease-button lease-primary" data-lease-action="demo">Load illustrative quotes</button>' +
+      '<button type="button" class="lease-button" data-lease-action="clear">Clear quotes</button>' +
+      '<button type="button" class="lease-button" data-lease-action="save">Save in this browser</button>' +
+      '<button type="button" class="lease-button" data-lease-action="restore">Restore saved review</button></div></section>' +
+      '<p class="lease-feedback" data-lease-feedback role="status" aria-live="polite"></p>' +
+      '<div class="lease-workspace"><aside class="lease-inputs" aria-label="Planning and quote inputs">' +
+      '<section class="lease-card lease-planning"><div class="lease-section-head"><h3>Planning assumptions</h3><span class="lease-tag">User editable</span></div>' +
+      '<p class="lease-muted">Apply the same operating plan to every aircraft.</p><div class="lease-form-grid">' + commonFields.map(field => inputMarkup(field, common[field[0]], "common")).join("") + '</div>' +
+      '<p class="lease-form-note">Term is counted from delivery. Flight hours and cycles are your plan; observed ADS-B flights do not populate them.</p></section>' +
+      '<div class="lease-quotes-heading"><h3>Aircraft and quotes</h3><p>Open a card to enter its terms.</p></div>' + selectedAircraft().map(quoteMarkup).join("") +
+      '<section class="lease-card lease-stress"><div class="lease-section-head"><h3>Stress assumptions</h3><span class="lease-tag">Scenario</span></div><p class="lease-muted">Applied to every quote. Flying and cycles change together.</p>' +
+      '<div class="lease-form-grid">' + stressFields.map(field => inputMarkup(field, stress[field[0]], "stress")).join("") + '</div></section></aside>' +
+      '<div class="lease-outputs"><section class="lease-card lease-results" aria-labelledby="lease-results-heading"><div class="lease-section-head"><div><h3 id="lease-results-heading" tabindex="-1">Compare lease economics</h3>' +
+      '<p class="lease-muted">USD · nominal cash flows · taxes excluded</p></div><div class="lease-scenarios" role="group" aria-label="Displayed financial scenario">' +
+      '<button type="button" data-lease-scenario="base" aria-pressed="' + (scenario === "base") + '">Base</button><button type="button" data-lease-scenario="stress" aria-pressed="' + (scenario === "stress") + '">Stress</button></div></div>' +
+      '<div data-lease-results></div></section>' +
+      '<section class="lease-card" aria-labelledby="lease-cash-heading"><div class="lease-section-head"><div><h3 id="lease-cash-heading">Lease-related cash outlay</h3><p class="lease-muted">Cumulative payments less refunds and reimbursements</p></div><span class="lease-chart-mode" data-lease-chart-mode></span></div>' +
+      '<div data-lease-chart></div><div data-lease-inspection></div></section>' +
+      '<section class="lease-card lease-memo" aria-labelledby="lease-memo-heading"><div class="lease-section-head"><h3 id="lease-memo-heading">Decision memo</h3><span class="lease-tag">Your assessment</span></div>' +
+      '<label for="lease-decision-note">Preferred option, conditions and next step</label><textarea id="lease-decision-note" rows="4" placeholder="Record the conditions under which you would progress a quote.">' + esc(notes) + '</textarea>' +
+      '<h4>Documents needed to progress</h4><ul class="lease-doc-list"><li>Written availability, authorised lessor mandate and complete rent / deposit quote.</li>' +
+      '<li>Current LOPA, certified 77-tonne MTOW and delivery acceptance specification.</li><li>Engine and LLP records, maintenance forecast, reserve reimbursement and closing-balance terms.</li>' +
+      '<li>Redelivery conditions, setup / delay cover quotations and applicable tax and insurance terms.</li></ul>' +
+      '<p class="lease-form-note">Saving keeps inputs and notes on this browser only. Printing creates a review of the current assumptions; aircraft availability remains unconfirmed.</p></section>' +
+      '<details class="lease-card lease-methods"><summary>Cost scope and cash-flow rules</summary><div>' +
+      '<p>This is a lease-related cost comparison. Crew, fuel, normal line maintenance outside the entered event, insurance, taxes, airline overheads and operating revenue are outside this model. The cash curve shows cumulative outlay, not a liquidity shortfall or required equity.</p>' +
+      '<p>The deposit and setup are paid at month 0. Delivery delays add the entered monthly cover cost. Rent starts at delivery and continues for the full operating term. Delays extend the timeline; lost route revenue is not estimated.</p>' +
+      '<p>Hourly and cycle reserve payments build an account. At the entered maintenance event, available reserves reimburse the cost up to the account balance. At lease end, the entered recovery percentage applies to the remaining reserve balance, the deposit is refunded, and net redelivery cost is paid. These are scenario conventions to replace with the actual lease terms.</p>' +
+      '<p>Present values use the effective annual discount rate converted to a monthly rate. Lease-related cost per flight hour uses total nominal net cost and planned hours. The optional rent ceiling uses discounted costs and discounted hours; a negative ceiling means the cost target is infeasible even at zero rent.</p>' +
+      '<p>Aircraft identity is carried from a dated registry match. First flight is not manufacturing year. The source engine label is not a technical inspection. No quote or technical condition is inferred from age, operator or observed activity.</p>' +
+      '<p><a href="https://www.airsource-partners.com/aircraft/276-a320.html" target="_blank" rel="noopener noreferrer">Source A320 requirement</a> · ' +
+      '<a href="https://www.opdi.aero/flight-list-data" target="_blank" rel="noopener noreferrer">OPDI flight records</a> · ' +
+      '<a href="https://www.sec.gov/Archives/edgar/data/1378789/000162828026007513/aer-20251231.htm" target="_blank" rel="noopener noreferrer">AerCap lease and maintenance disclosures</a></p></div></details></div></div></div>' +
+      '<section class="lease-print-only" data-lease-print></section>';
+    renderResults();
+  }
+  function readableIssues(result) {
+    return [...(result?.missing || []), ...(result?.errors || [])].map(value => {
+      const message = typeof value === "string" ? value : value.message || value.field || "Check inputs";
+      return message.replace(/(?:common|quote|stress)\.([a-zA-Z]+)/g, (_, key) => fieldNames[key] || key);
+    });
+  }
+  function run(item) {
+    const quote = quotes[identifier(item)] || blankQuote();
+    const model = window.LeaseDealModel;
+    if (!model) return { item, base: { complete: false, errors: ["Calculation module unavailable"], missing: [] }, stress: { complete: false, errors: [], missing: [] } };
+    const base = model.calculate(common, quote);
+    try {
+      const stressed = model.stressInputs(common, quote, stress);
+      const stressResult = stressed.errors?.length
+        ? { complete: false, missing: [], errors: stressed.errors }
+        : model.calculate(stressed.common, stressed.quote);
+      return { item, base, stress: stressResult };
+    } catch (error) {
+      return { item, base, stress: { complete: false, missing: [], errors: ["Check stress assumptions"] } };
+    }
+  }
+  function resultTable(mode, entries = calculated) {
+    const rows = [
+      ["Present value of net lease-related cost", "pvCost"],
+      ["Total nominal net cost", "totalNominalCost"],
+      ["Lease-related cost / flight hour", "costPerHour"],
+      ["Cash outlay before first operation", "totalPreDeliveryCash"],
+      ["Peak cumulative cash outlay", "peakCumulativeFunding"],
+      ["Maximum monthly rent at your cost ceiling", "rentCeiling"],
+    ];
+    return '<div class="lease-table-wrap"><table class="lease-comparison"><caption class="lease-sr-only">' + (mode === "base" ? "Base" : "Stress") + ' scenario lease cost comparison</caption>' +
+      '<thead><tr><th scope="col">' + (mode === "base" ? "Base" : "Stress") + ' scenario</th>' + entries.map(({ item }) => '<th scope="col">' + esc(name(item)) + '<small>MSN ' + esc(item.msn) + '</small></th>').join("") + '</tr></thead><tbody>' +
+      rows.map(([label, key]) => '<tr><th scope="row">' + label + '</th>' + entries.map(entry => {
+        const result = entry[mode];
+        let value = result.complete ? money(result[key]) : "—";
+        if (key === "rentCeiling" && result.complete && !numeric(common.hourlyCostCeiling)) value = "Set a cost ceiling";
+        const detail = key === "peakCumulativeFunding" && result.complete ? '<small>End of month ' + num.format(result.peakFundingMonth) + '</small>' :
+          key === "rentCeiling" && result.complete && Number.isFinite(result.rentCeiling) ? '<small>USD / month' + (result.rentCeiling < 0 ? ' · target infeasible' : '') + '</small>' : '';
+        return '<td data-lease-metric="' + key + '" data-lease-result-id="' + esc(identifier(entry.item)) + '">' + value + detail + '</td>';
+      }).join("") + '</tr>').join("") + '</tbody></table></div>';
+  }
+  function renderResults() {
+    calculated = selectedAircraft().map(run);
+    const completed = calculated.filter(entry => entry[scenario]?.complete);
+    const allComplete = completed.length === calculated.length && completed.length >= 2;
+    const ranked = [...completed].sort((a, b) => a[scenario].pvCost - b[scenario].pvCost);
+    const hasDemo = chosen.some(id => kinds[id] === "demo" || kinds[id] === "editedDemo");
+    let status = '<p class="lease-result-status" data-lease-result-status>' + (allComplete
+      ? '<strong>Lowest modeled PV cost: ' + esc(name(ranked[0].item)) + '</strong><span>' + money(ranked[0][scenario].pvCost) + ' under the shared plan and entered terms.</span>'
+      : '<strong>' + completed.length + ' of ' + calculated.length + ' quotes ready to calculate</strong><span>Enter each quote, or load illustrative quotes to explore the comparison.</span>') + '</p>';
+    status += '<p class="lease-assumption-status">' + (hasDemo ? 'Illustrative commercial assumptions are in this review. ' : 'Commercial terms are user inputs and remain unverified. ') +
+      'No confirmed lease offers. A lower modeled cost does not confirm technical acceptance or availability.</p>';
+    const incomplete = calculated.filter(entry => !entry[scenario]?.complete);
+    if (incomplete.length) status += '<div class="lease-input-alert"><strong>Inputs to complete</strong><ul>' + incomplete.map(entry => {
+      const issues = readableIssues(entry[scenario]);
+      return '<li><b>' + esc(name(entry.item)) + ':</b> ' + esc(issues.slice(0, 5).join(", ") || "Complete quote fields") + (issues.length > 5 ? ' and ' + (issues.length - 5) + ' more.' : '.') + '</li>';
+    }).join("") + '</ul></div>';
+    query("[data-lease-results]").innerHTML = status + resultTable(scenario) +
+      '<div class="lease-stress-summary"><h4>Base to stress: cost per flight hour</h4><div>' + calculated.map(entry => '<p><strong>' + esc(name(entry.item)) + '</strong><span>' +
+      (entry.base.complete && entry.stress.complete ? money(entry.base.costPerHour) + ' to ' + money(entry.stress.costPerHour) + '<small>' + num.format(entry.base.totalHours) + ' to ' + num.format(entry.stress.totalHours) + ' planned hours</small>' : 'Awaiting complete inputs') + '</span></p>').join("") + '</div></div>' +
+      '<p class="lease-scope-note">Cost comparison only. Operating receipts and other airline operating costs are excluded. Peak outlay is not an estimate of a financing gap.</p>';
+    query("[data-lease-chart-mode]").textContent = scenario === "base" ? "Base scenario" : "Stress scenario";
+    for (const button of panel.querySelectorAll("[data-lease-scenario]")) button.setAttribute("aria-pressed", String(button.dataset.leaseScenario === scenario));
+    renderChart();
+    renderPrint();
+  }
+  function chartEntries() {
+    return calculated.filter(entry => entry[scenario]?.complete).map(entry => ({ ...entry, result: entry[scenario], color: colors[chosen.indexOf(identifier(entry.item))] }));
+  }
+  function renderChart() {
+    const entries = chartEntries();
+    const host = query("[data-lease-chart]");
+    const inspector = query("[data-lease-inspection]");
+    if (!entries.length) {
+      host.innerHTML = '<div class="lease-chart-empty"><span class="lease-empty-line" aria-hidden="true"></span><strong>Cash-flow comparison appears here</strong><p>Complete a quote or load the illustrative terms.</p></div>';
+      inspector.innerHTML = "";
+      return;
+    }
+    const maxMonth = Math.max(...entries.map(entry => entry.result.schedule.length - 1));
+    inspectionMonth = Math.min(Math.max(inspectionMonth, 0), maxMonth);
+    host.innerHTML = '<div class="lease-chart-legend">' + entries.map(entry => '<span><i style="background:' + entry.color + '"></i>' + esc(name(entry.item)) + '</span>').join("") +
+      '</div><div data-lease-chart-svg></div>';
+    inspector.innerHTML = '<div class="lease-inspect-control"><label for="lease-inspect-month">Inspect month <strong data-lease-inspect-label>' + inspectionMonth + '</strong></label>' +
+      '<input id="lease-inspect-month" type="range" min="0" max="' + maxMonth + '" value="' + inspectionMonth + '" step="1" aria-label="Cash-flow inspection month"></div><div data-lease-inspect-table></div>';
+    renderChartPoint();
+  }
+  function renderChartPoint() {
+    const entries = chartEntries();
+    if (!entries.length) return;
+    const values = entries.flatMap(entry => entry.result.schedule.map(row => Number(row.cumulativeOutflow)));
+    const minY = Math.min(0, ...values);
+    const maxY = Math.max(1, ...values);
+    const maxMonth = Math.max(...entries.map(entry => entry.result.schedule.length - 1));
+    const left = 70, right = 705, top = 20, bottom = 245;
+    const x = month => left + month / Math.max(1, maxMonth) * (right - left);
+    const y = value => bottom - (value - minY) / Math.max(1, maxY - minY) * (bottom - top);
+    const grid = [0, .25, .5, .75, 1].map(fraction => {
+      const value = minY + fraction * (maxY - minY);
+      return '<line x1="' + left + '" x2="' + right + '" y1="' + y(value) + '" y2="' + y(value) + '" stroke="#e4ecee"/><text x="' + (left - 10) + '" y="' + (y(value) + 5) + '" text-anchor="end">' + esc(shortCash(value)) + '</text>';
+    }).join("");
+    const ticks = [0, Math.round(maxMonth / 3), Math.round(2 * maxMonth / 3), maxMonth].map(month => '<text x="' + x(month) + '" y="271" text-anchor="middle">' + month + '</text>').join("");
+    const lines = entries.map(entry => {
+      const points = entry.result.schedule.map((row, index) => x(row.month ?? index).toFixed(2) + ',' + y(row.cumulativeOutflow).toFixed(2)).join(" ");
+      const row = entry.result.schedule[Math.min(inspectionMonth, entry.result.schedule.length - 1)];
+      return '<polyline fill="none" stroke="' + entry.color + '" stroke-width="2.7" stroke-linejoin="round" points="' + points + '"/>' +
+        '<circle cx="' + x(inspectionMonth) + '" cy="' + y(row.cumulativeOutflow) + '" r="4.5" fill="' + entry.color + '" stroke="white" stroke-width="2"/>';
+    }).join("");
+    query("[data-lease-chart-svg]").innerHTML = '<svg class="lease-cash-chart" role="img" viewBox="0 0 730 300" aria-labelledby="lease-chart-title lease-chart-desc"><title id="lease-chart-title">Cumulative lease-related cash outlay</title>' +
+      '<desc id="lease-chart-desc">The lines show cumulative net payments for complete quotes. Use the month slider and table below to inspect exact cash outlays. No operating revenue is included.</desc>' + grid + ticks +
+      '<text x="390" y="294" text-anchor="middle">Months from decision</text><line x1="' + x(inspectionMonth) + '" x2="' + x(inspectionMonth) + '" y1="' + top + '" y2="' + bottom + '" stroke="#9bb2b8" stroke-dasharray="4 4"/>' + lines + '</svg>';
+    query("[data-lease-inspect-label]").textContent = inspectionMonth;
+    query("[data-lease-inspect-table]").innerHTML = '<div class="lease-table-wrap"><table class="lease-point-table"><caption class="lease-sr-only">Cash outlay at month ' + inspectionMonth + '</caption><thead><tr><th>Aircraft</th><th>Net month outlay</th><th>Cumulative outlay</th><th>Reserve balance</th></tr></thead><tbody>' +
+      entries.map(entry => {
+        const ended = inspectionMonth >= entry.result.schedule.length;
+        const row = entry.result.schedule[Math.min(inspectionMonth, entry.result.schedule.length - 1)];
+        return '<tr><th scope="row">' + esc(name(entry.item)) + (ended ? '<small>Lease complete</small>' : '') + '</th><td>' + cash(ended ? 0 : row.outflow) + '</td><td>' + cash(row.cumulativeOutflow) + '</td><td>' + cash(row.reserveBalance) + '</td></tr>';
+      }).join("") + '</tbody></table></div>';
+  }
+  function renderPrint() {
+    const fieldsTable = (fields, get) => '<div class="lease-table-wrap"><table class="lease-print-table"><thead><tr><th>Input</th>' + selectedAircraft().map(item => '<th>' + esc(name(item)) + '</th>').join("") + '</tr></thead><tbody>' +
+      fields.map(field => '<tr><th>' + esc(field[1] + ' (' + field[2] + ')') + '</th>' + selectedAircraft().map(item => '<td>' + esc(get(item, field[0]) === "" ? "To enter" : get(item, field[0])) + '</td>').join("") + '</tr>').join("") + '</tbody></table></div>';
+    const preparedDate = new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Hong_Kong", year: "numeric", month: "2-digit", day: "2-digit" }).format(new Date());
+    query("[data-lease-print]").innerHTML = '<h3>Lease decision memo</h3><p>Prepared ' + esc(preparedDate) + ' (Hong Kong). Financial assumptions are user-entered or illustrative. No lease offer is confirmed.</p>' +
+      '<p>Registry ' + esc(data.methodology?.registryAsOf || "2026-01-01") + '; observed flight records through ' + esc(data.methodology?.adsbEnd || "2026-09-30") + '.</p>' +
+      '<h4>Aircraft and quote provenance</h4><ul>' + selectedAircraft().map(item => '<li>' + esc(name(item) + ' · MSN ' + item.msn + ' · ' + item.model + ' · ' + labelKind(identifier(item))) + '</li>').join("") + '</ul>' +
+      '<h4>Shared plan</h4><p>' + commonFields.map(field => esc(field[1] + ': ' + (common[field[0]] === "" ? "not set" : common[field[0]]) + ' ' + field[2])).join('; ') + '</p>' +
+      '<h4>Base comparison</h4>' + resultTable("base") + '<h4>Stress comparison</h4><p>' + stressFields.map(field => esc(field[1] + ': ' + stress[field[0]] + ' ' + field[2])).join('; ') + '</p>' + resultTable("stress") +
+      '<h4>Entered commercial terms</h4>' + fieldsTable(quoteFields, (item, key) => quotes[identifier(item)][key]) +
+      '<h4>Decision and next action</h4><p class="lease-print-notes">' + esc(notes || "No decision note entered.") + '</p>' +
+      '<h4>Pending lessor evidence</h4><p>Availability and mandate; certified cabin / MTOW; engine and LLP records; maintenance forecast and reserve terms; redelivery condition; complete commercial quote.</p>' +
+      '<h4>Scope</h4><p>Lease-related cost only. Fuel, crew, insurance, tax, airline overheads and revenue are excluded. Cumulative outlay is not a funding gap. The full operating term starts at delivery. Deposits are refunded at lease end; reserve payments are reimbursed only to the extent modeled by the entered event and recovery percentage. Replace scenario assumptions with lease-specific terms.</p>';
+  }
+  function message(value) {
+    const feedback = query("[data-lease-feedback]");
+    if (feedback) feedback.textContent = value;
+  }
+  function markQuote(id) {
+    kinds[id] = kinds[id] === "demo" || kinds[id] === "editedDemo" ? "editedDemo" : "manual";
+    const status = query('[data-lease-kind="' + id.replace(/["\\]/g, "") + '"]');
+    if (status) status.textContent = labelKind(id);
+  }
+  panel.addEventListener("input", event => {
+    const target = event.target;
+    if (target.matches("#lease-decision-note")) {
+      notes = target.value;
+      renderPrint();
+      return;
+    }
+    if (target.matches("#lease-inspect-month")) {
+      inspectionMonth = Number(target.value);
+      renderChartPoint();
+      return;
+    }
+    if (!target.matches("[data-lease-field]")) return;
+    const key = target.dataset.leaseField;
+    if (target.dataset.leaseScope === "common") common[key] = target.value;
+    else if (target.dataset.leaseScope === "stress") stress[key] = target.value;
+    else if (target.dataset.leaseScope === "quote") {
+      const id = target.dataset.leaseQuote;
+      quotes[id][key] = target.value;
+      markQuote(id);
+    }
+    renderResults();
+  });
+  panel.addEventListener("click", event => {
+    const button = event.target.closest("button");
+    if (!button || !panel.contains(button)) return;
+    if (button.dataset.leaseHistory) {
+      const item = allAircraft.find(item => identifier(item) === button.dataset.leaseHistory);
+      if (item) openHistory?.(item);
+    } else if (button.dataset.leaseRemove) {
+      if (chosen.length <= 2) return;
+      chosen = chosen.filter(id => id !== button.dataset.leaseRemove);
+      render();
+      message("Aircraft removed from this comparison. Its entered quote remains available in this review.");
+    } else if (button.dataset.leaseScenario) {
+      scenario = button.dataset.leaseScenario;
+      renderResults();
+    } else if (button.dataset.leaseAction === "back") backToCandidates?.();
+    else if (button.dataset.leaseAction === "demo") {
+      if (!numeric(common.hourlyCostCeiling)) common.hourlyCostCeiling = 1600;
+      selectedAircraft().forEach((item, index) => {
+        const id = identifier(item);
+        quotes[id] = window.LeaseDealModel.demoInputs(index);
+        kinds[id] = "demo";
+      });
+      render();
+      message("Illustrative quotes loaded. The $1,600 / discounted flight-hour ceiling is an editable planning assumption, separate from the source request’s budget whose billing period is unconfirmed. These are not seller offers.");
+      if (window.innerWidth <= 850) {
+        query("#lease-results-heading").focus({ preventScroll: true });
+        query(".lease-results").scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+    } else if (button.dataset.leaseAction === "clear") {
+      chosen.forEach(id => { quotes[id] = blankQuote(); delete kinds[id]; });
+      render();
+      message("Commercial quote fields cleared. The shared planning assumptions remain editable.");
+    } else if (button.dataset.leaseAction === "add") {
+      const id = query("#lease-add-aircraft").value;
+      if (!id || chosen.includes(id) || chosen.length >= 4) return;
+      chosen.push(id);
+      initializeQuote(id);
+      render();
+      message("Aircraft added. Enter its commercial terms or load illustrative quotes.");
+    } else if (button.dataset.leaseAction === "save") {
+      try {
+        localStorage.setItem(storageKey, JSON.stringify({ version: 1, chosen, quotes, kinds, common, stress, notes, scenario }));
+        message("Review saved in this browser. Inputs and notes are not uploaded to the server.");
+      } catch (error) { message("This browser could not save the review. Your current inputs remain on screen."); }
+    } else if (button.dataset.leaseAction === "restore") {
+      try {
+        const saved = JSON.parse(localStorage.getItem(storageKey));
+        if (!saved || saved.version !== 1 || !Array.isArray(saved.chosen)) throw new Error("No saved review");
+        const ids = [...new Set(saved.chosen.map(String))].filter(id => allAircraft.some(item => identifier(item) === id)).slice(0, 4);
+        if (ids.length < 2) throw new Error("Saved aircraft unavailable");
+        const cleanFields = (fields, values) => Object.fromEntries(fields.map(field => [field[0], numeric(values?.[field[0]]) ? values[field[0]] : ""]));
+        common = cleanFields(commonFields, saved.common);
+        stress = cleanFields(stressFields, saved.stress);
+        chosen = ids;
+        quotes = {};
+        kinds = {};
+        chosen.forEach(id => {
+          quotes[id] = cleanFields(quoteFields, saved.quotes?.[id]);
+          kinds[id] = ["demo", "editedDemo", "manual"].includes(saved.kinds?.[id]) ? saved.kinds[id] : "manual";
+        });
+        notes = typeof saved.notes === "string" ? saved.notes.slice(0, 20000) : "";
+        scenario = saved.scenario === "stress" ? "stress" : "base";
+        render();
+        message("Saved review restored. Commercial terms retain their original illustrative or user-entered status.");
+      } catch (error) { message("No compatible saved review was found in this browser."); }
+    } else if (button.dataset.leaseAction === "print") {
+      renderPrint();
+      document.body.classList.add("lease-printing");
+      window.print();
+    } else if (button.dataset.leaseAction === "retry") show();
+  });
+  window.addEventListener("afterprint", () => document.body.classList.remove("lease-printing"));
+  function setAircraft(aircraft) {
+    if (!Array.isArray(aircraft)) return;
+    if (!data) { pendingAircraft = aircraft; return; }
+    const ids = [...new Set(aircraft.map(item => typeof item === "object" ? identifier(item) : String(item)))].filter(id => allAircraft.some(item => identifier(item) === id)).slice(0, 4);
+    if (ids.length < 2) return;
+    chosen = ids;
+    chosen.forEach(initializeQuote);
+    render();
+  }
+  async function show({ focus = false, aircraft = null } = {}) {
+    if (aircraft !== null) pendingAircraft = aircraft;
+    panel.classList.add("lease-lab");
+    if (!data) {
+      if (!loadPromise) {
+        panel.setAttribute("aria-busy", "true");
+        panel.innerHTML = '<p class="lease-loading" role="status">Loading aircraft evidence for the lease review…</p>';
+        loadPromise = Promise.resolve().then(loadCase).then(result => {
+          if (!result || !Array.isArray(result.candidates)) throw new TypeError("Missing candidate evidence");
+          data = result;
+          allAircraft = result.candidates;
+          chosen = allAircraft.slice(0, 3).map(identifier);
+          chosen.forEach(initializeQuote);
+          render();
+        }).catch(error => {
+          panel.innerHTML = '<div class="lease-card"><h2>Aircraft evidence could not be loaded</h2><p>Retry when the candidate service is available.</p><button type="button" class="lease-button" data-lease-action="retry">Retry</button></div>';
+        }).finally(() => { loadPromise = null; panel.removeAttribute("aria-busy"); });
+      }
+      await loadPromise;
+    }
+    if (!data) return;
+    if (pendingAircraft) { const selection = pendingAircraft; pendingAircraft = null; setAircraft(selection); }
+    if (focus) query("#lease-heading")?.focus({ preventScroll: true });
+    return data;
+  }
+  return { show, setAircraft, refresh: renderResults };
+}
+
 const startExplorer = async () => {
   const online = !window.REGISTRY;
   async function request(endpoint, params={}, signal) {
@@ -1338,6 +2122,7 @@ const startExplorer = async () => {
   const state = {mode:"stock",year:2025,from:2021,family:-1,country:"",status:"assigned",search:"",asset:null,corridor:null,page:0,zoom:1,focus:[500,250],model:"",age:"0/",duration:"0/",outcome:""};
   const params=new URLSearchParams(window.location.search);
   if(params.get("view")==="candidates")state.mode="candidates";
+  if(params.get("view")==="finance")state.mode="finance";
   if(params.get("view")==="parking"||params.get("view")==="ppr"||root instanceof ShadowRoot) {
     state.mode="park";
     const year=Number(params.get("year"));
@@ -1367,9 +2152,25 @@ const startExplorer = async () => {
       engines.findIndex(row => row[0] === caseFamily && String(row[1]) === String(asset.msn));
     return index < 0 ? [] : [[index, asset]];
   }));
+  let candidateCasePromise = null;
+  const loadCandidateCase = () => {
+    if (!candidateCasePromise) candidateCasePromise = (online ? request("candidates") : Promise.resolve(window.CANDIDATE_CASE))
+      .catch(error => { candidateCasePromise = null; throw error; });
+    return candidateCasePromise;
+  };
+  let financeSelection = null;
+  const financeLab = mountLeaseLab(el("finance-view"), {
+    loadCase: loadCandidateCase,
+    openHistory: item => openCandidateHistory(item.id ?? item.aircraftId),
+    backToCandidates: () => { setMode("candidates"); candidateView.show({focus:true}); },
+  });
   const candidateView = mountCandidates(el("candidate-view"), {
-    loadCase:()=>online?request("candidates"):Promise.resolve(window.CANDIDATE_CASE),
+    loadCase:loadCandidateCase,
     openHistory:openCandidateHistory,
+    openFinance(aircraft) {
+      financeSelection = aircraft;
+      setMode("finance");
+    },
   });
   const ppr = mountPpr(el("ppr-view"), {
     openHistory(msn) {
@@ -1882,6 +2683,12 @@ const startExplorer = async () => {
   }
 
   function refresh({preserveScroll=false}={}) {
+    if (window.location.protocol === "http:" || window.location.protocol === "https:") {
+      const viewUrl = new URL(window.location.href);
+      if (state.mode === "finance" || state.mode === "candidates") viewUrl.searchParams.set("view", state.mode);
+      else if (["finance", "candidates"].includes(viewUrl.searchParams.get("view"))) viewUrl.searchParams.delete("view");
+      if (viewUrl.href !== window.location.href) window.history.replaceState(null, "", viewUrl);
+    }
     if(online) {
       summaryRequest?.abort();
       detailsRequest?.abort();
@@ -1891,19 +2698,28 @@ const startExplorer = async () => {
     const park=state.mode==="park";
     const policy=state.mode==="ppr";
     const candidates=state.mode==="candidates";
-    const focused=policy||candidates;
+    const finance=state.mode==="finance";
+    const focused=policy||candidates||finance;
     el("stock").setAttribute("aria-pressed",state.mode==="stock");
     el("flow").setAttribute("aria-pressed",flow);
     el("park").setAttribute("aria-pressed",park);
     el("ppr").setAttribute("aria-pressed",policy);
     el("candidates").setAttribute("aria-pressed",candidates);
+    el("finance").setAttribute("aria-pressed",finance);
     for(const id of ["map-intro","country-wrap","family-wrap","reset","map-board","map-timebar","map-footer"]) el(id).hidden=focused;
     el("ppr-view").hidden=!policy;
     el("candidate-view").hidden=!candidates;
+    el("finance-view").hidden=!finance;
     el("status-wrap").hidden=flow||park||focused;
     el("park-filters").hidden=!park;
     if(policy)return;
     if(candidates) {candidateView.show();return;}
+    if(finance) {
+      const aircraft = financeSelection;
+      financeSelection = null;
+      financeLab.show({aircraft,focus:true});
+      return;
+    }
     const list=el("details-body");
     const previousScroll=preserveScroll?list.scrollTop:0;
     el("country").value=state.country;
@@ -2021,6 +2837,7 @@ const startExplorer = async () => {
   el("flow").addEventListener("click",()=>setMode("flow"));
   el("park").addEventListener("click",()=>setMode("park"));
   el("candidates").addEventListener("click",()=>setMode("candidates"));
+  el("finance").addEventListener("click",()=>setMode("finance"));
   el("ppr").addEventListener("click",()=>openPpr(state.asset));
   el("park-ppr").addEventListener("click",()=>openPpr(state.asset));
   el("country").addEventListener("change",event=>chooseCountry(event.target.value));
@@ -2103,6 +2920,7 @@ const startExplorer = async () => {
     '<p><strong>Parked aircraft.</strong> Each bar counts reconstructed parking periods open at year-end under the current filters. Dated storage and exit records define these periods. Record gaps can leave periods open. Age runs from first flight. Month- and year-only starts produce a range of possible durations. The filter includes ranges that overlap the selected interval.</p>'+
     '<p><strong>Subsequent outcomes.</strong> Dated follow-up runs through year-end 2025. Return to use requires an explicit dated record. Assignment to another airline uses later registry evidence. Archive status gives the source’s classification at extraction. The date of the underlying event requires separate evidence. Fixed-horizon counts use dated records.</p>'+
     '<p><strong>Candidate Finder.</strong> The A320 review uses the published Airsource lease requirement and separately dated registry and OPDI evidence. Aircraft identity and observed activity support initial screening. The requirement matrix records the delivery, cabin, technical and commercial documents still needed from the lessor. Observed inactivity depends on tracking coverage.</p>'+
+    '<p><strong>Aviation Decision Lab.</strong> The lease review compares a receiving airline’s lease-related cash costs under user-entered contract terms and operating assumptions. Aircraft evidence retains its original dates. Illustrative quotes are optional scenarios and are never confirmed offers. Refundable deposits and the maintenance reserve account are tracked separately from final costs. Fuel, crew and other airline operating costs require a separate operating model.</p>'+
     '<p><strong>Coverage.</strong> '+n(registry.meta.counts.airlineMappedCountryAssignments)+' of '+n(registry.meta.counts.assignments)+' dated assignment records are matched to an airline’s country or territory. Unknown or conflicting records appear under “Country or territory unverified.” Historical status uses dated parking or disposal records.</p>'+
     '<p>Airline country mapping draws on <a href="https://openflights.org/data#airline" target="_blank" rel="noreferrer">OpenFlights</a>, the <a href="https://www.faa.gov/air_traffic/publications/atpubs/cnt_html/chap3_section_1.html" target="_blank" rel="noreferrer">FAA airline directory</a> and manual checks. Map boundaries use <a href="https://www.naturalearthdata.com/downloads/110m-cultural-vectors/110m-admin-0-countries/" target="_blank" rel="noreferrer">Natural Earth</a>. Some small territories appear as dots.</p>';
   if(params.get("view")==="ppr")openPpr(null,false);
