@@ -15,6 +15,10 @@ button{cursor:pointer}
 button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid #07877d;outline-offset:2px}
 button:disabled{cursor:default;opacity:.45}
 [hidden]{display:none!important}
+#candidate-history{width:min(740px,calc(100vw - 24px))}
+#candidate-history-body{font-size:14px;line-height:1.6}
+#candidate-history-body .history strong{font-size:14px}
+#candidate-history-body .history small,#candidate-history-body .history time{font-size:13px}
 .topbar{background:var(--nav);color:#f7fbfd;padding:14px clamp(18px,3.8vw,54px);min-height:67px;display:flex;align-items:center;justify-content:space-between;gap:14px}
 .identity{font-weight:650;letter-spacing:.04em;display:flex;align-items:center;gap:12px;font-size:15px}
 .identity-en{display:block;letter-spacing:.025em;color:#aabfc9;font-size:11px;font-weight:400;margin-top:3px}
@@ -31,7 +35,7 @@ h1{font-size:clamp(25px,3vw,36px);letter-spacing:-.04em;font-weight:720;line-hei
 .source{background:#e9f3f0;border:1px solid #d5e8e2;color:#356150;border-radius:30px;padding:6px 12px;font-size:11px;white-space:nowrap}
 .source span{display:inline-block;margin-right:7px;width:6px;height:6px;border-radius:50%;background:#16826c;vertical-align:2px}
 .controlbar{display:flex;align-items:flex-end;flex-wrap:wrap;gap:10px 14px;margin-bottom:12px}
-.tabs{display:flex;padding:3px;gap:2px;border:1px solid var(--line);background:#eaf1f0;border-radius:9px;align-self:flex-end}
+.tabs{display:flex;flex-wrap:wrap;max-width:100%;padding:3px;gap:2px;border:1px solid var(--line);background:#eaf1f0;border-radius:9px;align-self:flex-end}
 .tabs button{color:#46606b;border:0;border-radius:6px;padding:8px 13px;background:transparent;font-size:13px;white-space:nowrap}
 .tabs button[aria-pressed=true]{background:#fff;color:#0c615b;font-weight:700;box-shadow:0 1px 3px #142a3a18}
 .tabs span{margin-left:5px}
@@ -245,6 +249,110 @@ dialog{max-height:85dvh;overflow:auto}
 @media(max-width:680px){.ppr-transaction-results,.ppr-transaction-grid{grid-template-columns:minmax(0,1fr)}}
 @media(max-width:450px){.followup-bars{grid-template-columns:minmax(0,1fr)}.asset-row .row-right{white-space:normal;text-align:right;max-width:40%}}
 
+.candidate-view{font-size:16px;line-height:1.5;min-width:0;padding-top:8px}
+.candidate-view h2,.candidate-view h3,.candidate-view p{margin:0}
+.candidate-view h2{font-size:clamp(27px,3vw,38px);letter-spacing:-.04em;line-height:1.15}
+.candidate-view h3{font-size:21px;line-height:1.25;letter-spacing:-.025em}
+.candidate-view a{color:var(--accent);text-underline-offset:3px}
+.candidate-view button,.candidate-view input,.candidate-view select{font:inherit}
+.candidate-view button{line-height:1.4}
+.candidate-view input:focus-visible,.candidate-view select:focus-visible,.candidate-view button:focus-visible{outline:3px solid #168b80;outline-offset:3px}
+.candidate-view [tabindex="-1"]:focus{outline:0}
+.candidate-view .candidate-eyebrow{font-size:14px;font-weight:700;color:var(--accent);margin-bottom:7px}
+.candidate-hero{display:flex;justify-content:space-between;align-items:flex-end;gap:24px;margin-bottom:22px}
+.candidate-hero>div:first-child{max-width:800px}
+.candidate-hero>div>p:last-child{color:var(--muted);margin-top:10px;max-width:720px}
+.candidate-hero .candidate-offer-note{font-size:14px;font-weight:650;color:#795019;background:#fff1d8;padding:7px 10px;border-radius:6px;display:inline-block}
+.candidate-total{flex-shrink:0;min-width:150px;text-align:right;color:var(--muted);font-size:14px}
+.candidate-total strong{display:block;font-size:38px;letter-spacing:-.04em;line-height:1.15;color:var(--ink);font-weight:700;font-variant-numeric:tabular-nums}
+.candidate-brief,.candidate-results,.candidate-detail,.candidate-comparison,.candidate-methods{background:#fff;border:1px solid var(--line);border-radius:12px;padding:22px;margin-top:16px;min-width:0}
+.candidate-section-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px 24px;flex-wrap:wrap;margin-bottom:15px}
+.candidate-section-head>p{font-size:14px;color:var(--muted)}
+.candidate-brief .candidate-brief-lead{font-size:17px;font-weight:650;margin-top:3px;margin-bottom:17px}
+.candidate-brief-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:20px 25px;margin:0}
+.candidate-brief-grid>div{border-top:1px solid #e8eef0;padding-top:11px;min-width:0}
+.candidate-brief-grid dt,.candidate-facts dt{font-size:14px;color:var(--muted);margin-bottom:4px}
+.candidate-brief-grid dd,.candidate-facts dd{margin:0;font-weight:650;overflow-wrap:anywhere}
+.candidate-brief-grid small{font-size:13px;display:block;color:var(--muted);margin-top:3px}
+.candidate-brief .candidate-budget{background:#f3f7f7;border-radius:7px;padding:12px 14px;color:#425a68;font-size:14px;margin-top:20px}
+.candidate-budget strong{font-weight:700;margin-right:7px}
+.candidate-evidence-window{display:grid;grid-template-columns:minmax(300px,.9fr) minmax(300px,1.1fr);gap:20px;background:#eaf3f0;border-left:4px solid #46867c;border-radius:7px;padding:15px 18px;margin-top:16px;color:#244d48;font-size:14px}
+.candidate-evidence-window strong{font-size:14px;display:block;margin-bottom:5px}
+.candidate-controls{display:flex;flex-wrap:wrap;align-items:flex-end;gap:13px;margin:17px 0 15px}
+.candidate-results .candidate-screen-note{font-size:14px;color:var(--muted);max-width:1100px;margin-top:-2px;margin-bottom:15px}
+.candidate-screen-note strong{color:#395b64;margin-right:5px}
+.candidate-controls label{display:flex;flex-direction:column;gap:5px;font-size:14px;font-weight:600;color:var(--muted)}
+.candidate-controls input,.candidate-controls select{font-size:14px;min-height:42px;padding:9px 12px;border:1px solid #ccdadd;border-radius:7px;background:#fff;color:var(--ink);width:100%;max-width:none}
+.candidate-controls select{appearance:none;padding-right:35px;background-image:linear-gradient(45deg,transparent 50%,#506976 50%),linear-gradient(135deg,#506976 50%,transparent 50%);background-position:calc(100% - 17px) 18px,calc(100% - 12px) 18px;background-size:5px 5px;background-repeat:no-repeat}
+.candidate-search-label{flex:1;min-width:240px}
+.candidate-controls label:not(.candidate-search-label){min-width:195px}
+.candidate-selection{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;padding:12px 0 14px;border-top:1px solid #e7edef}
+.candidate-selection p{font-size:14px;color:var(--muted)}
+.candidate-selection>div{display:flex;gap:8px;flex-wrap:wrap}
+.candidate-button{background:#fff;border:1px solid #ccdadd;border-radius:7px;padding:9px 13px;font-size:14px;font-weight:650;cursor:pointer;white-space:normal}
+.candidate-button:hover{background:#edf5f3}
+.candidate-primary{background:#0a6b63;color:#fff;border-color:#0a6b63}
+.candidate-primary:hover{background:#07564f}
+.candidate-button:disabled{opacity:.45;cursor:default}
+.candidate-feedback{font-size:14px;min-height:0;color:#315f58}
+.candidate-feedback:not(:empty){padding-bottom:12px}
+.candidate-table-wrap{position:relative;width:100%;max-width:100%;overflow:auto;overscroll-behavior-inline:contain;border:1px solid var(--line);border-radius:8px}
+.candidate-table,.candidate-requirements,.candidate-compare-table{width:100%;border-collapse:collapse;text-align:left;font-size:14px;line-height:1.5}
+.candidate-table{min-width:1010px}
+.candidate-table th,.candidate-table td,.candidate-requirements th,.candidate-requirements td,.candidate-compare-table th,.candidate-compare-table td{padding:13px 14px;vertical-align:top;border-bottom:1px solid #e3eaed;overflow-wrap:anywhere}
+.candidate-table thead,.candidate-requirements thead,.candidate-compare-table thead{background:#f1f6f6;color:#49636e}
+.candidate-table thead th,.candidate-requirements thead th,.candidate-compare-table thead th{font-weight:650;font-size:14px}
+.candidate-table tr:last-child>*,.candidate-requirements tbody tr:last-child>*,.candidate-compare-table tbody tr:last-child>*{border-bottom:0}
+.candidate-table tbody th{min-width:170px;font-weight:400}
+.candidate-table th strong{font-size:15px;display:block;font-weight:700;color:var(--ink)}
+.candidate-table th span,.candidate-table td small{display:block;color:var(--muted);font-size:13px;font-weight:400;line-height:1.5;margin-top:4px}
+.candidate-table input[type="checkbox"]{width:18px;height:18px;accent-color:var(--accent);margin:3px 0;cursor:pointer}
+.candidate-table tbody tr:hover{background:#f5faf8}
+.candidate-table tbody tr.candidate-selected{background:#edf6f2}
+.candidate-review-count{min-width:145px;max-width:175px;color:#49626b}
+.candidate-text-button{background:none;border:0;padding:0;color:var(--accent);font-size:14px;font-weight:650;text-align:left;text-decoration:underline;text-underline-offset:3px;cursor:pointer}
+.candidate-view .candidate-empty{padding:20px 0;color:var(--muted);font-size:15px}
+.candidate-table .candidate-empty{padding:20px}
+.candidate-detail{scroll-margin-top:18px}
+.candidate-detail-actions{display:flex;gap:8px;flex-wrap:wrap}
+.candidate-facts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px 25px;margin:17px 0}
+.candidate-facts>div{min-width:0}
+.candidate-facts dd small{display:block;color:var(--muted);font-size:13px;font-weight:400;margin-top:4px}
+.candidate-detail .candidate-rationale{background:#eff5f3;border-radius:7px;padding:11px 13px;margin:16px 0;font-size:14px;color:#315b51}
+.candidate-rationale strong{margin-right:5px}
+.candidate-detail .candidate-identity,.candidate-detail .candidate-coverage,.candidate-detail .candidate-conflict-note{font-size:14px;color:var(--muted);margin:9px 0}
+.candidate-detail .candidate-conflict-note{color:#9c4534;background:#fff3ee;padding:9px 12px;border-radius:6px}
+.candidate-detail>.candidate-table-wrap{margin-top:18px}
+.candidate-requirements{min-width:650px}
+.candidate-requirements caption{font-size:16px;font-weight:650;text-align:left;padding:13px 14px;border-bottom:1px solid var(--line)}
+.candidate-requirements tbody th{width:30%;font-weight:650}
+.candidate-requirements th span,.candidate-compare-table th span{display:block;font-size:13px;font-weight:400;color:var(--muted);margin-top:4px}
+.candidate-requirements td p,.candidate-compare-table td p{margin-top:7px;font-size:14px}
+.candidate-requirements td small,.candidate-compare-table td small{display:block;margin-top:6px;color:var(--muted);font-size:13px}
+.candidate-status{display:inline-block;border-radius:5px;padding:3px 7px;font-size:13px;font-weight:650;white-space:nowrap}
+.candidate-status-pass{background:#e5f3eb;color:#256544}
+.candidate-status-needs{background:#fff1d8;color:#795019}
+.candidate-status-conflict{background:#fce8e3;color:#a63b28}
+.candidate-status-preference{background:#eaf0f7;color:#405d7c}
+.candidate-comparison{scroll-margin-top:18px}
+.candidate-compare-table{min-width:760px;table-layout:fixed}
+.candidate-compare-table th:first-child{width:190px}
+.candidate-compare-table tbody th{font-weight:650;background:#f8fafb}
+.candidate-compare-table tbody td{min-width:190px}
+.candidate-comparison .candidate-section-head{align-items:baseline}
+.candidate-methods{padding:16px 22px;color:var(--muted);font-size:14px;margin-bottom:20px}
+.candidate-methods summary{cursor:pointer;color:var(--ink);font-weight:650;font-size:15px}
+.candidate-methods ul{padding-left:20px;max-width:1050px;line-height:1.7}
+.candidate-methods li{margin-top:9px}
+.candidate-methods p{margin-top:14px}
+.candidate-loading,.candidate-load-error{padding:30px 22px;border:1px solid var(--line);border-radius:12px;background:#fff;margin-top:15px}
+.candidate-load-error p{margin:12px 0 20px;color:var(--muted)}
+.candidate-sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+@media(min-width:1450px){.candidate-brief-grid{grid-template-columns:repeat(4,minmax(0,1fr))}.candidate-table th,.candidate-table td{padding-inline:16px}}
+@media(max-width:900px){.candidate-brief-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.candidate-evidence-window{grid-template-columns:1fr;gap:12px}.candidate-controls label:not(.candidate-search-label){flex:1}.candidate-facts{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:520px){.candidate-view{padding-top:3px}.candidate-hero{gap:14px;align-items:flex-start;flex-direction:column}.candidate-total{display:flex;text-align:left;gap:9px;align-items:baseline;min-width:0}.candidate-total strong{font-size:25px}.candidate-brief,.candidate-results,.candidate-detail,.candidate-comparison{padding:16px 13px;margin-top:13px}.candidate-section-head{gap:8px;margin-bottom:13px}.candidate-view h3{font-size:19px}.candidate-brief-grid{gap:15px 12px}.candidate-brief-grid dd{font-size:15px}.candidate-evidence-window{padding:13px}.candidate-controls{gap:11px}.candidate-controls label,.candidate-search-label,.candidate-controls label:not(.candidate-search-label){width:100%;min-width:0;flex:1 1 100%}.candidate-selection>div{width:100%}.candidate-selection>div button{flex:1}.candidate-detail-actions{width:100%}.candidate-detail-actions button{flex:1}.candidate-facts{gap:15px 12px}.candidate-methods{padding:15px 13px}}
+@media(prefers-reduced-motion:reduce){.candidate-view *{scroll-behavior:auto!important}}
+
 </style>
 </head>
 <body>
@@ -259,6 +367,7 @@ dialog{max-height:85dvh;overflow:auto}
       <button id="stock" aria-pressed="true" type="button">◫ <span>Fleet</span></button>
       <button id="flow" aria-pressed="false" type="button">⇄ <span>Transfers</span></button>
       <button id="park" aria-pressed="false" type="button">◉ <span>Parking pool</span></button>
+      <button id="candidates" aria-pressed="false" aria-controls="candidate-view" type="button">Candidate Finder</button>
       <button id="ppr" aria-pressed="false" aria-controls="ppr-view" type="button">Hong Kong policy analysis</button>
     </div>
     <label id="country-wrap">Country or territory<select id="country"><option value="">Global</option></select></label>
@@ -326,11 +435,16 @@ dialog{max-height:85dvh;overflow:auto}
     <button type="button" id="play" class="light-button" aria-pressed="false">▷ Play</button>
   </section>
   <section id="ppr-view" class="ppr-view" aria-labelledby="ppr-heading" hidden></section>
+  <section id="candidate-view" aria-label="A320 candidate comparison" hidden></section>
   <footer id="map-footer"><span>Source: Airfleets production lists and historical records</span><span>Boundaries: Natural Earth</span></footer>
 </main>
 <dialog id="method" aria-labelledby="method-title">
   <div class="dialog-head"><h2 id="method-title">Data and methods</h2><button type="button" id="close-method" aria-label="Close">×</button></div>
   <div id="method-body"></div>
+</dialog>
+<dialog id="candidate-history" aria-labelledby="candidate-history-title">
+  <div class="dialog-head"><h2 id="candidate-history-title">Aircraft history</h2><button type="button" id="close-candidate-history" aria-label="Close aircraft history">×</button></div>
+  <div id="candidate-history-body"></div>
 </dialog>
 <script>window.EXPLORER_API_BASE = "https://aircraft-asset-explorer.jiangchangmin921.chatgpt.site/";
 // https://d3js.org/d3-array/ v3.2.4 Copyright 2010-2023 Mike Bostock
@@ -819,6 +933,370 @@ function mountPpr(panel, actions, {showAssetList = true, headingLevel = 1, data 
   return { selectAsset, focus: () => query("#ppr-heading").focus() };
 }
 
+/* Candidate review for a sourced aircraft requirement and dated evidence. */
+function mountCandidates(panel, { loadCase, openHistory } = {}) {
+  const number = new Intl.NumberFormat("en", { maximumFractionDigits: 0 });
+  const statusLabels = { pass: "Met in records", needs: "To verify", conflict: "Conflict", preference: "Preference" };
+  const archiveLabels = { C: "Active", STD: "Stored", SCR: "Scrapped", "W/O": "Written off", PLN: "Planned entry into service" };
+  const selected = new Set();
+  let data = null;
+  let candidates = [];
+  let activeId = null;
+  let search = "";
+  let filter = "all";
+  let order = "screening";
+  let loaded = false;
+  let requestNumber = 0;
+
+  const esc = value => String(value ?? "").replace(/[&<>"']/g, character => ({
+    "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;",
+  })[character]);
+  const query = selector => panel.querySelector(selector);
+  const text = value => value === undefined || value === null || value === "" ? "To verify" : String(value);
+  const count = value => Number.isFinite(Number(value)) && value !== null && value !== "" && value !== undefined
+    ? number.format(Number(value)) : "Unavailable";
+  const link = (url, label) => /^https?:\/\//i.test(url ?? "")
+    ? '<a href="' + esc(url) + '" target="_blank" rel="noopener noreferrer">' + esc(label) + '</a>' : esc(label);
+  const badge = status => '<span class="candidate-status candidate-status-' + esc(status) + '">' +
+    esc(statusLabels[status] ?? statusLabels.needs) + '</span>';
+  const candidateName = item => item.registration || "MSN " + item.msn;
+  const dateText = value => value ? String(value).slice(0, 10) : "No matched observation";
+  const requirementStatus = requirement => Object.hasOwn(statusLabels, requirement.status) ? requirement.status : "needs";
+
+  function normalize(item, index) {
+    return { ...item, key: String(item.id ?? item.aircraftId ?? item.msn), screeningOrder: index,
+      activity: item.activity ?? {}, requirements: item.requirements ?? [] };
+  }
+
+  function reviewCounts(item) {
+    const counts = { pass: 0, needs: 0, conflict: 0, preference: 0 };
+    item.requirements.forEach(requirement => counts[requirementStatus(requirement)]++);
+    return counts;
+  }
+
+  function summaryText(item) {
+    const counts = reviewCounts(item);
+    return [counts.pass + " met", counts.needs + " to verify", counts.conflict ? counts.conflict + " conflicts" : ""]
+      .filter(Boolean).join(" · ");
+  }
+
+  function fallbackRequirements() {
+    return [
+      { key: "model", label: "Aircraft", expected: "Airbus A320", kind: "Required" },
+      { key: "cabin", label: "Cabin", expected: "180Y", kind: "Required" },
+      { key: "mtow", label: "MTOW", expected: "77 tonnes", kind: "Required" },
+      { key: "availability", label: "Delivery", expected: "Q1 2027", kind: "Required" },
+      { key: "leaseTerm", label: "Lease", expected: "Dry lease · at least 6 years", kind: "Required" },
+      { key: "base", label: "Operating base", expected: "Europe", kind: "Required" },
+      { key: "yom", label: "Manufacture year", expected: "2006 or later preferred", kind: "Preference" },
+      { key: "engine", label: "Engine", expected: "No engine preference", kind: "Unrestricted" },
+    ];
+  }
+
+  function requestMarkup() {
+    const request = data.request ?? {};
+    const requirements = request.requirements?.length ? request.requirements : fallbackRequirements();
+    return '<section class="candidate-brief" aria-labelledby="candidate-brief-heading">' +
+      '<div class="candidate-section-head"><h3 id="candidate-brief-heading">The lease requirement</h3><p>' +
+      link(request.sourceUrl ?? "https://www.airsource-partners.com/aircraft/276-a320.html", "Airsource RQ-OCT26-26-1") +
+      ' · Updated ' + esc(request.updatedAt ?? "2026-10-15") + '</p></div>' +
+      '<p class="candidate-brief-lead">European airline · up to 3 aircraft · dry lease</p>' +
+      '<dl class="candidate-brief-grid">' + requirements.filter(requirement => !["budget", "deal"].includes(requirement.key)).map(requirement => '<div><dt>' + esc(requirement.label) +
+        '</dt><dd>' + esc(requirement.expected) + '</dd>' +
+        (requirement.kind === "Preference" || requirement.kind === "preference" ? '<small>Buyer preference</small>' : '') +
+        '</div>').join("") + '</dl>' +
+      '<p class="candidate-budget"><strong>Budget wording</strong> ' + esc(request.budgetSourceText ?? "USD 250K + Maint Reserves") + '. ' +
+      'The source gives no explicit billing period. Obtain a comparable quote and confirm the budget basis.</p></section>';
+  }
+
+  function freshnessMarkup() {
+    const methodology = data.methodology ?? {};
+    const registryDate = methodology.registryAsOf ?? methodology.registryEnd ?? data.registryAsOf;
+    const adsbStart = methodology.adsbStart ?? methodology.observationStart;
+    const adsbEnd = methodology.adsbEnd ?? methodology.observationEnd ?? data.adsbAsOf;
+    return '<section class="candidate-evidence-window" aria-label="Evidence dates">' +
+      '<div><strong>Evidence dates</strong><p>Registry ' + esc(text(registryDate)) +
+      ' · Observed flights ' + esc(adsbStart ? String(adsbStart).slice(0, 10) : "start to verify") +
+      ' to ' + esc(adsbEnd ? String(adsbEnd).slice(0, 10) : "end to verify") + '</p></div>' +
+      '<p>Flight observations describe the dated window. Availability for Q1 2027, lease terms and delivery condition await the lessor’s confirmation.</p></section>';
+  }
+
+  function render() {
+    panel.classList.add("candidate-view");
+    panel.innerHTML = '<header class="candidate-hero"><div><p class="candidate-eyebrow">Candidate Finder</p>' +
+      '<h2 id="candidate-heading" tabindex="-1">A320 lease candidates</h2>' +
+      '<p>Review the actual lease requirement, compare aircraft and identify the documents needed to progress.</p>' +
+      '<p class="candidate-offer-note">Preliminary shortlist. Lease offers await seller confirmation.</p></div>' +
+      '<div class="candidate-total"><strong>' + number.format(candidates.length) + '</strong><span>screening candidates</span></div></header>' +
+      requestMarkup() + freshnessMarkup() +
+      '<section class="candidate-results" aria-labelledby="candidate-list-heading"><div class="candidate-section-head">' +
+      '<h3 id="candidate-list-heading">Candidate list</h3><p data-candidate-list-count></p></div>' +
+      (data.summary?.selectionOrder ? '<p class="candidate-screen-note"><strong>Selection order</strong> ' +
+        esc(data.summary.selectionOrder) + '</p>' : '') +
+      '<div class="candidate-controls"><label class="candidate-search-label">Search candidates' +
+      '<input type="search" data-candidate-search placeholder="Registration, MSN or operator"></label>' +
+      '<label>Evidence<select data-candidate-filter><option value="all">All candidates</option>' +
+      '<option value="flights">With observed flights</option><option value="arrival">With mapped arrival</option>' +
+      '<option value="conflict">With a record conflict</option><option value="selected">Selected for comparison</option></select></label>' +
+      '<label>Sort by<select data-candidate-order><option value="screening">Screening order</option>' +
+      '<option value="lastFlight">Latest observed flight</option><option value="flights">Observed flights in 90 days</option>' +
+      '<option value="registration">Registration</option></select></label></div>' +
+      '<div class="candidate-selection"><p data-candidate-selection-count></p><div>' +
+      '<button type="button" class="candidate-button candidate-primary" data-candidate-action="compare">Compare selected</button>' +
+      '<button type="button" class="candidate-button" data-candidate-action="clear">Clear selection</button></div></div>' +
+      '<p class="candidate-feedback" data-candidate-feedback role="status" aria-live="polite"></p>' +
+      '<div class="candidate-table-wrap"><table class="candidate-table"><caption class="candidate-sr-only">Aircraft candidates with dated identity and flight evidence</caption>' +
+      '<thead><tr><th scope="col">Compare</th><th scope="col">Aircraft</th><th scope="col">Recorded operator</th>' +
+      '<th scope="col">Observed activity</th><th scope="col">Last mapped arrival (OPDI)</th><th scope="col">Requirements</th><th scope="col">Review</th></tr></thead>' +
+      '<tbody data-candidate-rows></tbody></table></div></section>' +
+      '<section class="candidate-detail" aria-labelledby="candidate-detail-heading" data-candidate-detail></section>' +
+      '<section class="candidate-comparison" aria-labelledby="candidate-comparison-heading" data-candidate-comparison></section>' +
+      '<details class="candidate-methods"><summary>Screening method and evidence limits</summary><div data-candidate-methods></div></details>';
+    query("[data-candidate-search]").value = search;
+    query("[data-candidate-filter]").value = filter;
+    query("[data-candidate-order]").value = order;
+    renderRows();
+    renderSelection();
+    renderDetail();
+    renderMethods();
+  }
+
+  function visibleCandidates() {
+    const needle = search.trim().toLowerCase();
+    const visible = candidates.filter(item => {
+      if (needle && ![item.registration, item.msn, item.model, item.operator, item.country, item.engine]
+        .some(value => String(value ?? "").toLowerCase().includes(needle))) return false;
+      if (filter === "flights") return Boolean(item.activity.lastFlightDate);
+      if (filter === "arrival") return Boolean(item.activity.lastArrivalAirport);
+      if (filter === "conflict") return reviewCounts(item).conflict > 0 || Boolean(item.identity?.conflicts?.length);
+      return filter !== "selected" || selected.has(item.key);
+    });
+    return visible.sort((a, b) => {
+      if (order === "lastFlight") return String(b.activity.lastFlightDate ?? "").localeCompare(String(a.activity.lastFlightDate ?? ""));
+      if (order === "flights") return (b.activity.flights90 ?? -1) - (a.activity.flights90 ?? -1);
+      if (order === "registration") return candidateName(a).localeCompare(candidateName(b), "en", { numeric: true });
+      return a.screeningOrder - b.screeningOrder;
+    });
+  }
+
+  function renderRows() {
+    const visible = visibleCandidates();
+    const reviewable = data.summary?.reviewableAircraft;
+    query("[data-candidate-list-count]").textContent = number.format(visible.length) + " of " + number.format(candidates.length) + " shown" +
+      (reviewable !== undefined ? " · selected from " + count(reviewable) + " reviewable observed aircraft" : "");
+    query("[data-candidate-rows]").innerHTML = visible.length ? visible.map(item => {
+      const activity = item.activity;
+      return '<tr data-candidate-key="' + esc(item.key) + '"' + (selected.has(item.key) ? ' class="candidate-selected"' : '') + '>' +
+        '<td><input type="checkbox" data-candidate-select="' + esc(item.key) + '" aria-label="Compare ' + esc(candidateName(item)) + '"' +
+        (selected.has(item.key) ? " checked" : "") + (selected.size >= 4 && !selected.has(item.key) ? " disabled" : "") + '></td>' +
+        '<th scope="row"><strong>' + esc(candidateName(item)) + '</strong><span>' + esc(text(item.model)) +
+        ' · MSN ' + esc(item.msn) + '</span></th><td>' + esc(text(item.operator)) + '<small>' + esc(item.countryName ?? item.country ?? "") + '</small></td>' +
+        '<td>' + esc(dateText(activity.lastFlightDate)) + '<small>' + count(activity.flights90) + ' flights in 90 days</small></td>' +
+        '<td>' + esc(activity.lastArrivalAirport || "Unmapped") + '<small>' +
+        esc(activity.lastArrivalAirport ? dateText(activity.lastArrivalDate) : "Arrival mapping unavailable") + '</small></td>' +
+        '<td class="candidate-review-count">' + esc(summaryText(item)) + '</td>' +
+        '<td><button type="button" class="candidate-text-button" data-candidate-review="' + esc(item.key) + '">Review<span class="candidate-sr-only"> ' +
+        esc(candidateName(item)) + '</span></button></td></tr>';
+    }).join("") : '<tr><td colspan="7" class="candidate-empty">No candidates match these filters.</td></tr>';
+  }
+
+  function renderSelection() {
+    query("[data-candidate-selection-count]").textContent = selected.size + " selected · compare 2–4 aircraft";
+    query('[data-candidate-action="compare"]').disabled = selected.size < 2;
+    query('[data-candidate-action="clear"]').disabled = selected.size === 0;
+    for (const input of panel.querySelectorAll("[data-candidate-select]")) {
+      const chosen = selected.has(input.dataset.candidateSelect);
+      input.checked = chosen;
+      input.disabled = selected.size >= 4 && !chosen;
+      input.closest("tr").classList.toggle("candidate-selected", chosen);
+    }
+    renderComparison();
+  }
+
+  function requirementCell(requirement) {
+    if (!requirement) return badge("needs") + '<p>Evidence to verify.</p>';
+    return badge(requirementStatus(requirement)) + '<p>' + esc(requirement.evidence || "Evidence to verify.") + '</p>' +
+      (requirement.needed ? '<small>' + esc(requirement.needed) + '</small>' : '') +
+      (requirement.asOf ? '<small class="candidate-date">Evidence ' + esc(requirement.asOf) + '</small>' : '');
+  }
+
+  function renderDetail() {
+    const item = candidates.find(candidate => candidate.key === activeId);
+    const target = query("[data-candidate-detail]");
+    target.hidden = !item;
+    if (!item) return;
+    const activity = item.activity;
+    const identityConflicts = item.identity?.conflicts;
+    target.innerHTML = '<div class="candidate-section-head"><div><p class="candidate-eyebrow">Aircraft review</p>' +
+      '<h3 id="candidate-detail-heading" tabindex="-1">' + esc(candidateName(item)) + ' · MSN ' + esc(item.msn) + '</h3></div>' +
+      '<div class="candidate-detail-actions">' + (openHistory ? '<button type="button" class="candidate-button" data-candidate-history="' +
+      esc(item.key) + '">View registry history</button>' : '') +
+      '<button type="button" class="candidate-button" data-candidate-action="close-review">Close review</button></div></div>' +
+      '<dl class="candidate-facts"><div><dt>Model</dt><dd>' + esc(text(item.model)) + '</dd></div>' +
+      '<div><dt>Recorded operator</dt><dd>' + esc(text(item.operator)) +
+      (item.registryAssignmentDate ? '<small>Assignment record ' + esc(item.registryAssignmentDate) + '</small>' : '') + '</dd></div>' +
+      '<div><dt>Flight-source operator codes</dt><dd>' + esc(item.activity.recordedOperatorCodes?.join(" · ") || "Unavailable") + '</dd></div>' +
+      '<div><dt>First flight</dt><dd>' + esc(text(item.firstFlight)) + '</dd></div>' +
+      '<div><dt>Source engine label</dt><dd>' + esc(text(item.engine)) + '</dd></div>' +
+      '<div><dt>Archive status</dt><dd>' + esc(text(item.archiveStatusLabel ?? archiveLabels[item.archiveStatus] ?? item.archiveStatus)) + '</dd></div>' +
+      '<div><dt>Flights in last 30 days</dt><dd>' + count(activity.flights30) + '</dd></div>' +
+      '<div><dt>Flights in preceding 30 days</dt><dd>' + count(activity.flightsPrevious30) + '</dd></div></dl>' +
+      (item.rankReasons?.length ? '<p class="candidate-rationale"><strong>Screening reasons</strong> ' + esc(item.rankReasons.join(" · ")) + '</p>' : '') +
+      '<p class="candidate-identity">' + esc(item.identity?.method ?? "Identity is matched to the dated registry registration history.") + '</p>' +
+      (item.identity?.notes ?? []).filter(note => note !== item.identity?.method).map(note =>
+        '<p class="candidate-identity">' + esc(note) + '</p>').join("") +
+      (identityConflicts?.length ? '<p class="candidate-conflict-note">' + esc(Array.isArray(identityConflicts) ? identityConflicts.join(" · ") : identityConflicts) + '</p>' : '') +
+      (activity.coverageNote ? '<p class="candidate-coverage">' + esc(activity.coverageNote) + '</p>' : '') +
+      '<div class="candidate-table-wrap"><table class="candidate-requirements"><caption>Requirement review for ' + esc(candidateName(item)) + '</caption>' +
+      '<thead><tr><th scope="col">Requirement</th><th scope="col">Evidence and next step</th></tr></thead><tbody>' +
+      item.requirements.map(requirement => '<tr><th scope="row">' + esc(requirement.label) +
+        '<span>' + esc(requirement.expected ?? "") + '</span></th><td>' + requirementCell(requirement) + '</td></tr>').join("") +
+      '</tbody></table></div>';
+  }
+
+  function renderComparison() {
+    const target = query("[data-candidate-comparison]");
+    const items = candidates.filter(item => selected.has(item.key));
+    if (items.length < 2) {
+      target.innerHTML = '<h3 id="candidate-comparison-heading" tabindex="-1">Compare candidates</h3>' +
+        '<p class="candidate-empty">Select 2–4 aircraft to compare the same requirements and evidence side by side.</p>';
+      return;
+    }
+    const requirements = new Map();
+    items.forEach(item => item.requirements.forEach(requirement => {
+      if (!requirements.has(requirement.key ?? requirement.label)) requirements.set(requirement.key ?? requirement.label, requirement);
+    }));
+    const basicRow = (label, value) => '<tr><th scope="row">' + esc(label) + '</th>' +
+      items.map(item => '<td>' + esc(text(value(item))) + '</td>').join("") + '</tr>';
+    target.innerHTML = '<div class="candidate-section-head"><h3 id="candidate-comparison-heading" tabindex="-1">Compare candidates</h3>' +
+      '<p>' + items.length + ' aircraft · common requirement set</p></div><div class="candidate-table-wrap">' +
+      '<table class="candidate-compare-table" style="min-width:' + Math.max(760, 190 * (items.length + 1)) + 'px"><caption class="candidate-sr-only">Side-by-side aircraft evidence and lease requirement comparison</caption>' +
+      '<thead><tr><th scope="col">Evidence</th>' + items.map(item => '<th scope="col">' +
+        '<button type="button" class="candidate-text-button" data-candidate-review="' + esc(item.key) + '">' + esc(candidateName(item)) + '</button>' +
+        '<span>MSN ' + esc(item.msn) + '</span></th>').join("") + '</tr></thead><tbody>' +
+      basicRow("Recorded operator", item => item.operator) + basicRow("First flight", item => item.firstFlight) +
+      basicRow("Source engine label", item => item.engine) +
+      basicRow("Latest observed flight", item => dateText(item.activity.lastFlightDate)) +
+      basicRow("Observed flights in 90 days", item => count(item.activity.flights90)) +
+      basicRow("Last mapped arrival (OPDI)", item => item.activity.lastArrivalAirport
+        ? item.activity.lastArrivalAirport + " · " + dateText(item.activity.lastArrivalDate) : "Unmapped") +
+      [...requirements.entries()].map(([key, requirement]) => '<tr><th scope="row">' + esc(requirement.label) +
+        '<span>' + esc(requirement.expected ?? "") + '</span></th>' + items.map(item => '<td>' +
+          requirementCell(item.requirements.find(entry => (entry.key ?? entry.label) === key)) + '</td>').join("") + '</tr>').join("") +
+      '</tbody></table></div>';
+  }
+
+  function renderMethods() {
+    const method = data.methodology ?? {};
+    const notes = method.notes ?? [];
+    const summary = data.summary ?? {};
+    const funnel = [
+      ["A320 registry records screened", summary.registryA320 ?? summary.a320Count ?? summary.registryA320Count ?? summary.screened],
+      ["Eligible registry identities", summary.eligibleRegistryIdentities],
+      ["Aircraft with matched observations", summary.identityMatchedObservedAircraft ?? summary.matchedAircraft ?? summary.matchedCount],
+      ["Reviewable observed aircraft", summary.reviewableAircraft],
+      ["Candidates in this review", candidates.length],
+      ["Confirmed lease offers", summary.confirmedAvailableForLease],
+    ].filter(([, value]) => value !== null && value !== undefined);
+    query("[data-candidate-methods]").innerHTML = (funnel.length ? '<dl class="candidate-facts">' +
+      funnel.map(([label, value]) => '<div><dt>' + esc(label) + '</dt><dd>' + count(value) + '</dd></div>').join("") + '</dl>' : '') +
+      (summary.selectionOrder ? '<p><strong>Selection order</strong> ' + esc(summary.selectionOrder) + '</p>' : '') +
+      '<ul>' + notes.map(note => '<li>' + esc(note) + '</li>').join("") +
+      '<li>Manufacture year and first-flight date are different fields. A first-flight date is a proxy for screening the buyer’s year preference.</li>' +
+      '<li>Aircraft activity and the last mapped airport depend on observation coverage. Days since a flight observation do not establish continuous storage.</li>' +
+      '<li>The lessor’s mandate, delivery availability, cabin layout, certified MTOW, technical condition and commercial terms require supporting documents.</li></ul>' +
+      (method.sources?.length ? '<ul class="candidate-source-list">' + method.sources.map(source =>
+        '<li>' + link(source.url, source.title) + (source.asOf ? ' · ' + esc(source.asOf) : '') + '</li>').join("") + '</ul>' : '') +
+      (method.sourceUrl ? '<p>' + link(method.sourceUrl, "Flight-data source") + '</p>' : '');
+  }
+
+  panel.addEventListener("input", event => {
+    if (event.target.matches("[data-candidate-search]")) {
+      search = event.target.value;
+      renderRows();
+    }
+  });
+
+  panel.addEventListener("change", event => {
+    const input = event.target;
+    if (input.matches("[data-candidate-filter]")) {
+      filter = input.value;
+      renderRows();
+    } else if (input.matches("[data-candidate-order]")) {
+      order = input.value;
+      renderRows();
+    } else if (input.matches("[data-candidate-select]")) {
+      const key = input.dataset.candidateSelect;
+      if (input.checked && selected.size < 4) selected.add(key);
+      else selected.delete(key);
+      query("[data-candidate-feedback]").textContent = selected.size === 4 ? "Four aircraft selected. Clear one to compare another." : "";
+      if (filter === "selected") renderRows();
+      renderSelection();
+    }
+  });
+
+  panel.addEventListener("click", event => {
+    const button = event.target.closest("button");
+    if (!button || !panel.contains(button)) return;
+    if (button.dataset.candidateReview !== undefined) {
+      activeId = button.dataset.candidateReview;
+      renderDetail();
+      query("#candidate-detail-heading").focus({ preventScroll: true });
+      query("[data-candidate-detail]").scrollIntoView({ behavior: "smooth", block: "start" });
+    } else if (button.dataset.candidateHistory !== undefined) {
+      const item = candidates.find(candidate => candidate.key === button.dataset.candidateHistory);
+      if (item) openHistory?.(item.id ?? item.aircraftId);
+    } else if (button.dataset.candidateAction === "compare") {
+      query("#candidate-comparison-heading").focus({ preventScroll: true });
+      query("[data-candidate-comparison]").scrollIntoView({ behavior: "smooth", block: "start" });
+    } else if (button.dataset.candidateAction === "clear") {
+      selected.clear();
+      query("[data-candidate-feedback]").textContent = "Selection cleared.";
+      if (filter === "selected") renderRows();
+      renderSelection();
+    } else if (button.dataset.candidateAction === "close-review") {
+      activeId = null;
+      renderDetail();
+    } else if (button.dataset.candidateAction === "retry") {
+      show({ refresh: true });
+    }
+  });
+
+  async function show({ focus = false, refresh = false } = {}) {
+    if (loaded && !refresh) {
+      if (focus) query("#candidate-heading")?.focus({ preventScroll: true });
+      return data;
+    }
+    const currentRequest = ++requestNumber;
+    panel.classList.add("candidate-view");
+    panel.setAttribute("aria-busy", "true");
+    panel.innerHTML = '<p class="candidate-loading" role="status">Loading the requirement and aircraft evidence…</p>';
+    try {
+      const result = await loadCase();
+      if (currentRequest !== requestNumber) return;
+      if (!result || !Array.isArray(result.candidates)) throw new TypeError("Candidate evidence is unavailable.");
+      data = result;
+      candidates = result.candidates.map(normalize);
+      const keys = new Set(candidates.map(item => item.key));
+      for (const key of selected) if (!keys.has(key)) selected.delete(key);
+      if (!loaded) candidates.slice(0, 3).forEach(item => selected.add(item.key));
+      loaded = true;
+      render();
+      if (focus) query("#candidate-heading").focus({ preventScroll: true });
+      return data;
+    } catch (error) {
+      if (currentRequest !== requestNumber) return;
+      panel.innerHTML = '<div class="candidate-load-error"><h2>Could not load candidate evidence</h2>' +
+        '<p>The source request and aircraft records are temporarily unavailable.</p>' +
+        '<button type="button" class="candidate-button" data-candidate-action="retry">Retry</button></div>';
+    } finally {
+      if (currentRequest === requestNumber) panel.removeAttribute("aria-busy");
+    }
+  }
+
+  return { show, refresh: () => show({ refresh: true }) };
+}
+
 const startExplorer = async () => {
   const online = !window.REGISTRY;
   async function request(endpoint, params={}, signal) {
@@ -859,6 +1337,7 @@ const startExplorer = async () => {
   const evidence = {reactivation:"Explicit return-to-use record",new_airline_assignment:"Later assignment to another airline",scrap:"Dated dismantling record",storage_end_only:"Parking period ended; subsequent use unverified",assignment_unverified:"Later assignment; outcome unverified",next_storage:"Later parking period; outcome of this period unverified",no_later_record:"No confirmed outcome by archive cutoff"};
   const state = {mode:"stock",year:2025,from:2021,family:-1,country:"",status:"assigned",search:"",asset:null,corridor:null,page:0,zoom:1,focus:[500,250],model:"",age:"0/",duration:"0/",outcome:""};
   const params=new URLSearchParams(window.location.search);
+  if(params.get("view")==="candidates")state.mode="candidates";
   if(params.get("view")==="parking"||params.get("view")==="ppr"||root instanceof ShadowRoot) {
     state.mode="park";
     const year=Number(params.get("year"));
@@ -888,6 +1367,10 @@ const startExplorer = async () => {
       engines.findIndex(row => row[0] === caseFamily && String(row[1]) === String(asset.msn));
     return index < 0 ? [] : [[index, asset]];
   }));
+  const candidateView = mountCandidates(el("candidate-view"), {
+    loadCase:()=>online?request("candidates"):Promise.resolve(window.CANDIDATE_CASE),
+    openHistory:openCandidateHistory,
+  });
   const ppr = mountPpr(el("ppr-view"), {
     openHistory(msn) {
       const asset = [...caseAssets].find(([, entry]) => String(entry.msn) === String(msn));
@@ -1273,18 +1756,38 @@ const startExplorer = async () => {
   function historyView(asset, selected) {
     if(!asset) {state.asset=null; return drawDetails();}
     detailsHeader("Aircraft history",asset.model||registry.families[asset.family],"MSN "+asset.msn);
+    const history=historyContent(asset,selected);
+    el("details-body").innerHTML=history.body;
+    el("details-foot").innerHTML='<button class="inline-link" type="button" data-back="asset">← Back to '+(state.mode==="flow"?"changes":"aircraft list")+'</button><span>'+quantity(history.count,"record")+'</span>';
+  }
+
+  function historyContent(asset, selected=null) {
     const parkingDetail=selected?'<div class="parking-evidence"><strong>'+esc(result.asOf===result.followupEnd?"No dated follow-up":outcomes[selected.outcome])+'</strong> · Parked from '+esc(formatDate(selected.storageDate,selected.storagePrecision))+' · '+esc(timeParked(selected))+'<br>'+esc([formatDate(selected.outcomeDate,selected.outcomePrecision),selected.outcomeOperator,evidence[selected.outcomeEvidence]].filter(Boolean).join(" · "))+'</div>':"";
     const rows=[
       ...asset.assignments.map(assign=>({date:assign.date,title:assign.operator,sub:[assign.registration,label(assign.country||"~"),assign.role==="other"?"Non-airline record":""].filter(Boolean).join(" · "),kind:assign.role==="unknown"?"unresolved":""})),
       ...asset.events.map(event=>({date:event.date,display:formatDate(event.date,event.precision),title:lifecycle[event.kind]||event.kind,sub:"Historical status record",kind:"event"}))
     ].sort((a,b)=>b.date.localeCompare(a.date));
-    const caseLink=caseAssets.has(state.asset)?'<p class="parking-evidence"><button type="button" class="inline-link" data-ppr-entry>View the AerFin Hong Kong case →</button></p>':"";
+    const caseLink=caseAssets.has(asset.id)?'<p class="parking-evidence"><button type="button" class="inline-link" data-ppr-entry>View the AerFin Hong Kong case →</button></p>':"";
     const archiveStatus=asset.archiveStatus&&registry.meta.archiveStatusDate?
       '<p class="parking-evidence"><strong>Archive status '+esc(registry.meta.archiveStatusDate)+'</strong><br>'+
       esc(archiveLabels[asset.archiveStatus]||"Unmapped code "+asset.archiveStatus)+' · Event date unavailable from status code'+
       (asset.archiveUndatedScrap?"<br>Source history also includes an undated dismantling remark.":"")+'</p>':"";
-    el("details-body").innerHTML=parkingDetail+archiveStatus+caseLink+'<dl class="asset-meta"><dt>Family</dt><dd>'+esc(registry.families[asset.family])+'</dd><dt>First flight</dt><dd>'+esc(asset.firstFlight||"Unknown")+'</dd><dt>Engine</dt><dd>'+esc(asset.engine||"Unknown")+'</dd></dl><ol class="history">'+rows.map(item=>'<li class="'+item.kind+'"><time>'+esc(item.display||item.date)+'</time><strong>'+esc(item.title)+'</strong><small>'+esc(item.sub)+'</small></li>').join("")+'</ol>';
-    el("details-foot").innerHTML='<button class="inline-link" type="button" data-back="asset">← Back to '+(state.mode==="flow"?"changes":"aircraft list")+'</button><span>'+quantity(rows.length,"record")+'</span>';
+    return {body:parkingDetail+archiveStatus+caseLink+'<dl class="asset-meta"><dt>Family</dt><dd>'+esc(registry.families[asset.family])+'</dd><dt>First flight</dt><dd>'+esc(asset.firstFlight||"Unknown")+'</dd><dt>Engine</dt><dd>'+esc(asset.engine||"Unknown")+'</dd></dl><ol class="history">'+rows.map(item=>'<li class="'+item.kind+'"><time>'+esc(item.display||item.date)+'</time><strong>'+esc(item.title)+'</strong><small>'+esc(item.sub)+'</small></li>').join("")+'</ol>',count:rows.length};
+  }
+
+  async function openCandidateHistory(id) {
+    const dialog=el("candidate-history");
+    el("candidate-history-title").textContent="Aircraft history";
+    el("candidate-history-body").textContent="Loading history…";
+    dialog.showModal();
+    try {
+      const asset=online?await request("history",{id}):engine.history(registry,id);
+      if(!asset)throw new Error("Aircraft record unavailable.");
+      el("candidate-history-title").textContent=asset.model+" · MSN "+asset.msn;
+      el("candidate-history-body").innerHTML=historyContent(asset).body;
+    } catch {
+      el("candidate-history-body").textContent="Could not load this aircraft history. Close and reopen to retry.";
+    }
   }
 
   function drawDetails() {
@@ -1387,15 +1890,20 @@ const startExplorer = async () => {
     const flow=state.mode==="flow";
     const park=state.mode==="park";
     const policy=state.mode==="ppr";
+    const candidates=state.mode==="candidates";
+    const focused=policy||candidates;
     el("stock").setAttribute("aria-pressed",state.mode==="stock");
     el("flow").setAttribute("aria-pressed",flow);
     el("park").setAttribute("aria-pressed",park);
     el("ppr").setAttribute("aria-pressed",policy);
-    for(const id of ["map-intro","country-wrap","family-wrap","reset","map-board","map-timebar","map-footer"]) el(id).hidden=policy;
+    el("candidates").setAttribute("aria-pressed",candidates);
+    for(const id of ["map-intro","country-wrap","family-wrap","reset","map-board","map-timebar","map-footer"]) el(id).hidden=focused;
     el("ppr-view").hidden=!policy;
-    el("status-wrap").hidden=flow||park||policy;
+    el("candidate-view").hidden=!candidates;
+    el("status-wrap").hidden=flow||park||focused;
     el("park-filters").hidden=!park;
     if(policy)return;
+    if(candidates) {candidateView.show();return;}
     const list=el("details-body");
     const previousScroll=preserveScroll?list.scrollTop:0;
     el("country").value=state.country;
@@ -1512,6 +2020,7 @@ const startExplorer = async () => {
   el("stock").addEventListener("click",()=>setMode("stock"));
   el("flow").addEventListener("click",()=>setMode("flow"));
   el("park").addEventListener("click",()=>setMode("park"));
+  el("candidates").addEventListener("click",()=>setMode("candidates"));
   el("ppr").addEventListener("click",()=>openPpr(state.asset));
   el("park-ppr").addEventListener("click",()=>openPpr(state.asset));
   el("country").addEventListener("change",event=>chooseCountry(event.target.value));
@@ -1587,11 +2096,13 @@ const startExplorer = async () => {
   el("zoom-reset").addEventListener("click",()=>zoom(0));
   el("about").addEventListener("click",()=>el("method").showModal());
   el("close-method").addEventListener("click",()=>el("method").close());
+  el("close-candidate-history").addEventListener("click",()=>el("candidate-history").close());
   el("method-body").innerHTML='<p>The Airfleets production lists contain '+n(online?registry.airframeCount:engines.length)+' airframe histories, keyed by production list and manufacturer serial number (MSN). The map covers year-end snapshots from 2000 to 2025. Individual histories can start earlier.</p>'+
     '<p><strong>Fleet.</strong> Snapshots use dated assignment and status records through the selected date. “Assigned to airline” indicates a recorded airline assignment. Confirming actual operations requires flight records. Parked and dismantled aircraft appear under the airline’s country or territory as of that date, where known. Month- or year-only status records take effect at the end of the period.</p>'+
     '<p><strong>Cross-border assignments.</strong> Counts use dated changes in recorded airline for the same airframe, with both countries or territories mapped. An aircraft can contribute multiple changes. These records may include wet leases and transfers within an airline group. Ownership, airport and contract details require separate evidence.</p>'+
     '<p><strong>Parked aircraft.</strong> Each bar counts reconstructed parking periods open at year-end under the current filters. Dated storage and exit records define these periods. Record gaps can leave periods open. Age runs from first flight. Month- and year-only starts produce a range of possible durations. The filter includes ranges that overlap the selected interval.</p>'+
     '<p><strong>Subsequent outcomes.</strong> Dated follow-up runs through year-end 2025. Return to use requires an explicit dated record. Assignment to another airline uses later registry evidence. Archive status gives the source’s classification at extraction. The date of the underlying event requires separate evidence. Fixed-horizon counts use dated records.</p>'+
+    '<p><strong>Candidate Finder.</strong> The A320 review uses the published Airsource lease requirement and separately dated registry and OPDI evidence. Aircraft identity and observed activity support initial screening. The requirement matrix records the delivery, cabin, technical and commercial documents still needed from the lessor. Observed inactivity depends on tracking coverage.</p>'+
     '<p><strong>Coverage.</strong> '+n(registry.meta.counts.airlineMappedCountryAssignments)+' of '+n(registry.meta.counts.assignments)+' dated assignment records are matched to an airline’s country or territory. Unknown or conflicting records appear under “Country or territory unverified.” Historical status uses dated parking or disposal records.</p>'+
     '<p>Airline country mapping draws on <a href="https://openflights.org/data#airline" target="_blank" rel="noreferrer">OpenFlights</a>, the <a href="https://www.faa.gov/air_traffic/publications/atpubs/cnt_html/chap3_section_1.html" target="_blank" rel="noreferrer">FAA airline directory</a> and manual checks. Map boundaries use <a href="https://www.naturalearthdata.com/downloads/110m-cultural-vectors/110m-admin-0-countries/" target="_blank" rel="noreferrer">Natural Earth</a>. Some small territories appear as dots.</p>';
   if(params.get("view")==="ppr")openPpr(null,false);
