@@ -2143,6 +2143,30 @@ function mountLeaseLab(panel, { loadCase, openHistory, backToCandidates } = {}) 
   const esc=value=>String(value??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"})[c]);
   const n=value=>new Intl.NumberFormat("en-US").format(value??0);
   const label=record=>labels[record?.status]||labels.unavailable;
+  const list=value=>Array.isArray(value)?value:value?[value]:[];
+  const rate=(observed,total)=>total?new Intl.NumberFormat("en",{style:"percent",maximumFractionDigits:1}).format(observed/total):"Unavailable";
+  function auditMarkup(audit,metadata){
+    if(!audit)return "";
+    const baseline=audit.baseline||{},recoveries=audit.recoveries||{},controls=audit.controls||{};
+    const reported=value=>value===undefined||value===null?"Not reported":n(value);
+    const statusNames={STD:"Stored",SCR:"Scrapped","W/O":"Written off",PLN:"Planned entry into service",C:"Active",P:"Unmapped source code P"};
+    const statuses=Object.entries(audit.composition?.archiveStatuses||{});
+    const countries=list(controls.countries);
+    const recovered=list(audit.recoveredAircraft);
+    return '<details class="storage-opdi-record" data-storage-opdi-audit-details><summary><strong>Why are observations missing?</strong></summary>'+
+      '<p>This audit covers the full 2025 cohort before the current filters. '+reported(baseline.noObservation)+' aircraft originally had no qualifying flight match. The diagnostics overlap and do not form a causal breakdown.</p>'+
+      '<h4>Search gaps and additional evidence</h4><ul>'+
+      '<li>Recorded current registration: '+reported(baseline.noCurrentTailRawRows)+' of the original unresolved aircraft had no raw flight-source rows under that registration.</li>'+
+      '<li>Historical registrations: '+reported(baseline.historicalAliases)+' aircraft had earlier recorded registrations; '+reported(baseline.aliasHits)+' aircraft produced raw source hits under an earlier registration. Registrations can be reused, so a hit needs an aircraft identity check.</li>'+
+      '<li>Additional provisional flight matches: '+reported(recoveries.addedFlightMatches)+'. Other unverified alias clues retained without attributing flights: '+reported(recoveries.addedReviewClues)+'. These clues retain the No flight observed classification.</li>'+
+      '<li>Missing registration metadata in a flight row can prevent a direct match. Historical registrations, ICAO24 addresses and aircraft serial-number crosswalks can supply additional clues; unresolved links remain for review.</li></ul>'+
+      (recovered.length?'<h4>Recovered aircraft</h4><p>Search the asset list by either registration or serial number to inspect its dated evidence.</p><ul>'+recovered.map(r=>'<li>'+esc(r.registryRegistration)+(r.observedRegistration!==r.registryRegistration?' · observed as '+esc(r.observedRegistration):'')+' · MSN '+esc(r.msn)+' · '+esc(r.firstDate)+' to '+esc(r.lastDate)+' · '+n(r.consolidatedActivityRecords)+' activity records</li>').join('')+'</ul>':'')+
+      (statuses.length?'<h4>Registry endpoint labels in the original unresolved group</h4><p>'+statuses.map(([code,count])=>esc(statusNames[code]||"Source code "+code)+': '+n(count)).join(' · ')+'. These are '+esc(metadata.registryAsOf||"archive snapshot")+' labels; the codes do not provide event dates or establish a 2026 flight outcome.</p>':"")+
+      '<h4>How often is a recorded registration observed?</h4><p>Among '+reported(controls.total)+' archive-labelled Active aircraft with a unique recorded current registration, '+reported(controls.observed)+' ('+rate(controls.observed,controls.total)+') had a qualifying source row. This is a registration observability benchmark, not a coverage probability or independent proof of flight activity.</p>'+
+      (countries.length?'<ul>'+countries.map(c=>'<li>'+esc(c.country)+': '+reported(c.observed)+' / '+reported(c.total)+' ('+rate(c.observed,c.total)+')</li>').join('')+'</ul>':"")+
+      '<p>Country is the recorded operator’s country, not the aircraft’s location. Differences combine activity, geographic observation, registration changes and metadata freshness. No observed flight does not establish continued storage.</p>'+
+      (list(audit.notes).length?'<h4>Audit notes</h4><ul>'+list(audit.notes).map(note=>'<li>'+esc(note)+'</li>').join('')+'</ul>':"")+'</details>';
+  }
   function matches(record,filter){
     if(!filter)return true;
     if(filter==="operator_code_change")return record?.status==="flight_observed"&&record.operatorCodeChange===true;
@@ -2173,22 +2197,37 @@ function mountLeaseLab(panel, { loadCase, openHistory, backToCandidates } = {}) 
     const metric=(title,count,note)=>'<div><h3>'+esc(title)+'</h3><strong>'+n(count)+'</strong><p>'+esc(note)+'</p></div>';
     panel.querySelector("[data-storage-opdi-period]").textContent=(m.windowStart||"2026-01-01")+" to "+(m.windowEnd||"2026-09-30")+" · "+n(summary.total)+" aircraft under the current snapshot filters";
     panel.querySelector("[data-storage-opdi-metrics]").innerHTML=
-      metric("Provisional flight match",summary.flightObserved,percent+" of this cohort has matched post-snapshot flight observations. Aircraft identity remains a dated registration match.")+
+      metric("Provisional flight match",summary.flightObserved,percent+" of this cohort has matched post-snapshot flight observations. Aircraft identity remains provisional; see each record’s matching evidence.")+
       metric("Identity to verify",summary.identityReview,"Conflicting or ambiguous identities and review-only observations are retained for verification.")+
       metric("No flight observed",summary.noObservation,"No qualifying match in this observation window. Status remains unverified.")+
       metric("Registration unavailable",summary.noUsableRegistration,"No usable registration for this matching run.");
     panel.querySelector("[data-storage-opdi-operators]").textContent=n(summary.operatorCodeChanges)+" aircraft with variation in source operator codes; "+n(summary.callsignCodeChanges)+" with multiple operating callsign prefixes, among the matched-flight group. These are overlapping evidence subsets, not confirmed transfers.";
     panel.querySelector("[data-storage-opdi-scope]").textContent="This adds later flying evidence to the 2025 storage cohort. It does not date the first return to service, establish continuous activity, or replace the registry’s original event outcomes. No observed flight does not establish continued storage.";
+    let audit=panel.querySelector("[data-storage-opdi-audit]");
+    if(m.audit?.gapAudit&&!audit){
+      audit=panel.ownerDocument.createElement("div");
+      audit.setAttribute("data-storage-opdi-audit","");
+      const controls=panel.querySelector(".storage-opdi-controls");
+      if(controls)controls.before(audit);else panel.append(audit);
+    }
+    if(audit){
+      const wasOpen=audit.querySelector("details")?.open;
+      audit.innerHTML=auditMarkup(m.audit?.gapAudit,m);
+      if(wasOpen&&audit.querySelector("details"))audit.querySelector("details").open=true;
+    }
   }
   function recordMarkup(record){
     if(!record)return "";
     const rows=[
       ["Match classification",label(record)],
-      ["Registration used",record.registration||"Unavailable"],
+      ["Last registry registration",record.registration||"Unavailable"],
+      ...(record.matchCategory?[["Matching evidence category",String(record.matchCategory).replace(/_/g," ")]]:[]),
+      ["Corroborated observation-window registrations",list(record.observedRegistrations).filter(Boolean).map(x=>typeof x==="string"?x:[x.registration,x.firstDate,x.lastDate].filter(Boolean).join(" · ")).filter(Boolean).join(", ")||"Unavailable"],
       ["Registry operator at snapshot",record.registryOperator||"Unavailable"],
-      ["Observed identity",(record.icao24||[]).join(", ")||"Unavailable"],
+      ["Observed ICAO24 addresses",(record.icao24||[]).join(", ")||"Unavailable"],
       ["Observed type codes",(record.typecodes||[]).join(", ")||"Unavailable"],
-      ["Attributed flight observations",n(record.flightCount)],
+      ["Attributed consolidated activity records",n(record.flightCount)],
+      ...(record.activityRecordsWithoutCallsign!==undefined?[["Activity records with / without callsign",n(record.activityRecordsWithCallsign)+" / "+n(record.activityRecordsWithoutCallsign)]]:[]),
       ["First / last observation",[record.firstFlightDate,record.lastFlightDate].filter(Boolean).join(" / ")||"No qualifying observation"],
       ["Source operator codes",(record.operatorCodes||[]).join(", ")||"Unavailable"],
       ["Operating callsign prefixes",(record.callsignPrefixes||[]).join(", ")||"Unavailable"],
@@ -2197,11 +2236,18 @@ function mountLeaseLab(panel, { loadCase, openHistory, backToCandidates } = {}) 
     const arrival=record.lastArrival;
     if(arrival)rows.push(["Last mapped arrival",[arrival.airport,arrival.name,arrival.country,arrival.date].filter(Boolean).join(" · ")]);
     const codeTable=(title,entries)=>!entries?.length?"":'<h4>'+esc(title)+'</h4><ul>'+entries.map(x=>'<li>'+esc([x.code,x.firstDate,x.lastDate,n(x.flights)+" observations"].filter(Boolean).join(" · "))+'</li>').join("")+'</ul>';
-    const sources=(record.evidenceSources||[]).filter(x=>/^https?:\/\//.test(x.url||x.sourceUrl||""));
-    return '<section class="storage-opdi-record" data-opdi-record="'+esc(record.status)+'"><h3>OPDI follow-up evidence</h3><p class="storage-opdi-status">'+esc(label(record))+'</p><p>Observation window: 2026-01-01 to 2026-09-30. A flight-source registration match is provisional; no lease availability or ownership transfer is established.</p><dl>'+rows.map(([k,v])=>'<div><dt>'+esc(k)+'</dt><dd>'+esc(v)+'</dd></div>').join("")+'</dl>'+
+    const sourceEntries=[...list(record.identitySources),...list(record.evidenceSources)].map(x=>typeof x==="string"?{title:x,url:/^https?:\/\//.test(x)?x:""}:x).filter(x=>x&&typeof x==="object");
+    const sourceKeys=new Set();
+    const sources=sourceEntries.filter(x=>{const key=(x.url||x.sourceUrl||"")+"|"+(x.title||x.name||x.source||"");if(sourceKeys.has(key))return false;sourceKeys.add(key);return true;});
+    const sourceMarkup=x=>{
+      const url=x.url||x.sourceUrl||"",title=x.title||x.name||x.source||"Identity cross-check source";
+      return /^https?:\/\//.test(url)?'<a href="'+esc(url)+'" target="_blank" rel="noreferrer">'+esc(title)+'</a>':esc(title);
+    };
+    return '<section class="storage-opdi-record" data-opdi-record="'+esc(record.status)+'"><h3>OPDI follow-up evidence</h3><p class="storage-opdi-status">'+esc(label(record))+'</p><p>Observation window: 2026-01-01 to 2026-09-30. Links between source observations and a registry airframe remain provisional; no lease availability or ownership transfer is established.</p><dl>'+rows.map(([k,v])=>'<div><dt>'+esc(k)+'</dt><dd>'+esc(v)+'</dd></div>').join("")+'</dl>'+
       (record.matchMethod?'<p>'+esc(record.matchMethod)+'</p>':"")+
+      (record.missingEvidenceReason?'<h4>Unresolved evidence</h4><p>'+esc(record.missingEvidenceReason)+'</p>':"")+
       ((record.reviewReasons||[]).length?'<h4>Evidence requiring review</h4><ul>'+record.reviewReasons.map(x=>'<li>'+esc(x)+'</li>').join("")+'</ul>':"")+
-      (sources.length?'<p>'+sources.map(x=>'<a href="'+esc(x.url||x.sourceUrl)+'" target="_blank" rel="noreferrer">'+esc(x.title||"Identity cross-check source")+'</a>').join(" · ")+'</p>':"")+
+      (sources.length?'<h4>Identity cross-check sources</h4><p>'+sources.map(sourceMarkup).join(" · ")+'</p>':"")+
       codeTable("Dated source operator codes",record.operatorCodeEvidence)+codeTable("Dated operating callsign prefixes",record.callsignCodeEvidence)+
       '<p>Operator codes are source metadata. Callsign variation can reflect wet leasing or flight identification. Neither establishes a change in legal owner or operator. A mapped arrival is an inferred observed airport, not a verified current storage location.</p></section>';
   }
@@ -2455,7 +2501,8 @@ const startExplorer = async () => {
     const query=state.search.trim().toLowerCase();
     return result.records.filter(asset=>(!state.outcome||asset.outcome===state.outcome) &&
       storageOpdi.matches(asset.opdiEvidence,state.opdi) &&
-      (!query||[asset.msn,asset.model,asset.operator,asset.registration,asset.outcomeOperator]
+      (!query||[asset.msn,asset.model,asset.operator,asset.registration,asset.outcomeOperator,
+        ...(asset.opdiEvidence?.observedRegistrations||[])]
         .some(item=>String(item??"").toLowerCase().includes(query))));
   }
 
