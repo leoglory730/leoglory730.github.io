@@ -57,6 +57,25 @@ select,input[type=search]{border:1px solid var(--line);background:#fff;border-ra
 .storage-coverage-explanation{font-size:14px;color:var(--muted);margin-top:12px}
 .storage-coverage-explanation summary{font-weight:650;color:var(--ink);cursor:pointer}
 .storage-coverage-explanation p{margin-top:10px;max-width:1100px}
+.storage-opdi .storage-coverage-metrics{grid-template-columns:repeat(4,minmax(0,1fr))}
+.storage-opdi .storage-coverage-metrics>div:first-child{background:#eaf6ef;border-color:#cce3d4}
+.storage-opdi-operators{font-size:14px;margin-top:14px;color:#42635f}
+.storage-opdi-controls{display:flex;align-items:flex-end;gap:14px 22px;flex-wrap:wrap;margin-top:16px;border-top:1px solid var(--line);padding-top:14px}
+.storage-opdi-controls label{display:flex;flex-direction:column;font-size:14px;font-weight:650;gap:6px;min-width:220px;max-width:100%}
+.storage-opdi-controls select{font-size:14px;max-width:100%;padding:9px 12px}
+.storage-opdi-controls>p{font-size:14px;flex:1;min-width:220px;color:var(--muted)}
+.storage-opdi-record{padding:13px 14px;background:#f0f7f5;border:1px solid #d3e5df;border-radius:8px;margin-bottom:16px;font-size:14px;line-height:1.6}
+.storage-opdi-record h3{font-size:17px;margin:0 0 8px}
+.storage-opdi-record h4{font-size:14px;margin:14px 0 6px}
+.storage-opdi-record p{margin:9px 0;color:#45655e}
+.storage-opdi-record .storage-opdi-status{font-weight:700;color:#15594c}
+.storage-opdi-record dl{margin:12px 0;display:grid;gap:7px}
+.storage-opdi-record dl>div{border-top:1px solid #dae8e3;padding-top:6px}
+.storage-opdi-record dt{font-weight:650;font-size:13px}
+.storage-opdi-record dd{margin:0;overflow-wrap:anywhere}
+.storage-opdi-record ul{padding-left:18px;margin:6px 0;overflow-wrap:anywhere}
+@media(max-width:1050px){.storage-opdi .storage-coverage-metrics{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:580px){.storage-opdi .storage-coverage-metrics{grid-template-columns:1fr}.storage-opdi-controls label,.storage-opdi-controls>p{width:100%;min-width:0}.storage-opdi-controls select{width:100%}}
 .board.is-parking .map-metric{white-space:normal;flex-direction:column;align-items:flex-end;gap:2px;max-width:40%}
 .board.is-parking .map-metric span{font-size:12px;text-align:right}
 @media(max-width:800px){.storage-coverage-metrics{grid-template-columns:1fr}.storage-coverage-metrics>div{padding:12px 14px}.storage-coverage-metrics strong{font-size:19px}}
@@ -539,11 +558,19 @@ dialog{max-height:85dvh;overflow:auto}
     <div id="storage-coverage-metrics" class="storage-coverage-metrics" aria-live="polite"></div>
     <details class="storage-coverage-explanation"><summary>How to read gaps in these records</summary>
       <p>A storage period remains open until a dated assignment, storage exit, return to use or terminal event closes it. Missing exit records can leave a period open after the aircraft’s actual status changed.</p>
-      <p>An unconfirmed outcome can reflect an incomplete history or a lack of later observations. The latest snapshot has no later dated observation window. It cannot be used to estimate return-to-service or dismantling rates.</p>
+      <p>An unconfirmed outcome can reflect an incomplete history or a lack of later observations. The latest snapshot has no later dated registry-event window. The separate OPDI check adds subsequent flight observations without estimating complete return-to-service or dismantling rates.</p>
       <p>Return to use requires an explicit dated reactivation record. A later airline assignment is classified separately and can also precede renewed operations. These categories describe recorded evidence, not complete real-world outcome rates.</p>
       <p>The archive status at extraction provides a separate endpoint cross-check. Its status code supplies no event date and cannot retrospectively date an exit. Month- and year-level dates give ranges for storage duration.</p>
-      <p>This view does not integrate the OPDI observations used in Candidate Finder. It supports historical review and further verification of individual aircraft.</p>
+      <p>The 2025 cohort has a separate OPDI follow-up check below. Later flight observations are kept distinct from the registry’s dated event classifications.</p>
     </details>
+  </section>
+  <section id="storage-opdi" class="storage-coverage storage-opdi" aria-labelledby="storage-opdi-title" hidden>
+    <div class="storage-coverage-head"><h2 id="storage-opdi-title">2025 cohort: OPDI follow-up check</h2><p data-storage-opdi-period></p></div>
+    <p class="storage-definition" data-storage-opdi-scope></p>
+    <div class="storage-coverage-metrics" data-storage-opdi-metrics aria-live="polite"></div>
+    <p class="storage-opdi-operators" data-storage-opdi-operators></p>
+    <div class="storage-opdi-controls"><label for="storage-opdi-filter">Aircraft list evidence<select id="storage-opdi-filter"><option value="">All evidence groups</option><option value="flight_observed">Provisional flight match</option><option value="operator_code_change">Source operator-code variation</option><option value="callsign_code_change">Operating callsign variation</option><option value="identity_review">Identity to verify</option><option value="no_observation">No flight observed</option><option value="no_usable_registration">Registration unavailable</option></select></label><p>Filters the aircraft list only. Map, archive outcomes and the coverage denominator retain the snapshot filters.</p></div>
+    <details class="storage-coverage-explanation"><summary>Matching method and observation limits</summary><p>Matches use the last registry registration, uniqueness across the complete registry, observed ICAO24 identity and consistent aircraft type. Registration reuse, conflicting types, archive-terminal conflicts and review-only observations remain flagged for verification.</p><p>OPDI source operator codes and operating callsign prefixes are reported separately. Variation can reflect wet leasing, source metadata or identification issues. No legal transfer is inferred. Lack of observations can reflect coverage gaps or a changed registration.</p><p>The check uses the nine official monthly flight-list files from January to September 2026. Inferred arrivals describe an observed flight fragment; they do not establish a current parking position. <a href="https://www.opdi.aero/flight-list-data" target="_blank" rel="noreferrer">OPDI source and release coverage</a>.</p></details>
   </section>
   <div class="board" id="map-board">
     <section class="map-panel" aria-label="World aircraft map">
@@ -2110,6 +2137,77 @@ function mountLeaseLab(panel, { loadCase, openHistory, backToCandidates } = {}) 
   return { show, setAircraft, refresh: renderResults };
 }
 
+/* Dated OPDI observations remain separate from registry event classifications. */
+(function(global){
+  const labels={flight_observed:"Provisional flight match",identity_review:"Identity to verify",no_observation:"No flight observed",no_usable_registration:"Registration unavailable",unavailable:"Evidence unavailable"};
+  const esc=value=>String(value??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"})[c]);
+  const n=value=>new Intl.NumberFormat("en-US").format(value??0);
+  const label=record=>labels[record?.status]||labels.unavailable;
+  function matches(record,filter){
+    if(!filter)return true;
+    if(filter==="operator_code_change")return record?.status==="flight_observed"&&record.operatorCodeChange===true;
+    if(filter==="callsign_code_change")return record?.status==="flight_observed"&&record.callsignCodeChange===true;
+    return record?.status===filter;
+  }
+  function enhance(pool,dataset){
+    if(!dataset||pool.asOf!==dataset.metadata?.cohortAsOf){pool.storageOpdi={available:false};return pool;}
+    const counts=Object.fromEntries([...Object.keys(labels)].map(key=>[key,0]));
+    let operatorCodeChanges=0,callsignCodeChanges=0;
+    pool.records.forEach(row=>{
+      row.opdiEvidence=dataset.records[String(row.id)]??{status:"unavailable"};
+      const r=row.opdiEvidence;
+      counts[r.status in counts?r.status:"unavailable"]++;
+      if(r.status==="flight_observed"){
+        operatorCodeChanges+=Number(r.operatorCodeChange===true);
+        callsignCodeChanges+=Number(r.callsignCodeChange===true);
+      }
+    });
+    pool.storageOpdi={available:true,metadata:dataset.metadata,total:pool.total,statusCounts:counts,flightObserved:counts.flight_observed,identityReview:counts.identity_review,noObservation:counts.no_observation,noUsableRegistration:counts.no_usable_registration,operatorCodeChanges,callsignCodeChanges};
+    return pool;
+  }
+  function renderSummary(panel,summary){
+    panel.hidden=!summary?.available;
+    if(!summary?.available)return;
+    const m=summary.metadata||{};
+    const percent=summary.total?new Intl.NumberFormat("en",{style:"percent",maximumFractionDigits:1}).format(summary.flightObserved/summary.total):"—";
+    const metric=(title,count,note)=>'<div><h3>'+esc(title)+'</h3><strong>'+n(count)+'</strong><p>'+esc(note)+'</p></div>';
+    panel.querySelector("[data-storage-opdi-period]").textContent=(m.windowStart||"2026-01-01")+" to "+(m.windowEnd||"2026-09-30")+" · "+n(summary.total)+" aircraft under the current snapshot filters";
+    panel.querySelector("[data-storage-opdi-metrics]").innerHTML=
+      metric("Provisional flight match",summary.flightObserved,percent+" of this cohort has matched post-snapshot flight observations. Aircraft identity remains a dated registration match.")+
+      metric("Identity to verify",summary.identityReview,"Conflicting or ambiguous identities and review-only observations are retained for verification.")+
+      metric("No flight observed",summary.noObservation,"No qualifying match in this observation window. Status remains unverified.")+
+      metric("Registration unavailable",summary.noUsableRegistration,"No usable registration for this matching run.");
+    panel.querySelector("[data-storage-opdi-operators]").textContent=n(summary.operatorCodeChanges)+" aircraft with variation in source operator codes; "+n(summary.callsignCodeChanges)+" with multiple operating callsign prefixes, among the matched-flight group. These are overlapping evidence subsets, not confirmed transfers.";
+    panel.querySelector("[data-storage-opdi-scope]").textContent="This adds later flying evidence to the 2025 storage cohort. It does not date the first return to service, establish continuous activity, or replace the registry’s original event outcomes. No observed flight does not establish continued storage.";
+  }
+  function recordMarkup(record){
+    if(!record)return "";
+    const rows=[
+      ["Match classification",label(record)],
+      ["Registration used",record.registration||"Unavailable"],
+      ["Registry operator at snapshot",record.registryOperator||"Unavailable"],
+      ["Observed identity",(record.icao24||[]).join(", ")||"Unavailable"],
+      ["Observed type codes",(record.typecodes||[]).join(", ")||"Unavailable"],
+      ["Attributed flight observations",n(record.flightCount)],
+      ["First / last observation",[record.firstFlightDate,record.lastFlightDate].filter(Boolean).join(" / ")||"No qualifying observation"],
+      ["Source operator codes",(record.operatorCodes||[]).join(", ")||"Unavailable"],
+      ["Operating callsign prefixes",(record.callsignPrefixes||[]).join(", ")||"Unavailable"],
+    ];
+    if(record.status==="identity_review"&&(record.rawMatchedFlightCount??record.matchedFlightCount))rows.push(["Source observations needing verification",n(record.rawMatchedFlightCount??record.matchedFlightCount)]);
+    const arrival=record.lastArrival;
+    if(arrival)rows.push(["Last mapped arrival",[arrival.airport,arrival.name,arrival.country,arrival.date].filter(Boolean).join(" · ")]);
+    const codeTable=(title,entries)=>!entries?.length?"":'<h4>'+esc(title)+'</h4><ul>'+entries.map(x=>'<li>'+esc([x.code,x.firstDate,x.lastDate,n(x.flights)+" observations"].filter(Boolean).join(" · "))+'</li>').join("")+'</ul>';
+    const sources=(record.evidenceSources||[]).filter(x=>/^https?:\/\//.test(x.url||x.sourceUrl||""));
+    return '<section class="storage-opdi-record" data-opdi-record="'+esc(record.status)+'"><h3>OPDI follow-up evidence</h3><p class="storage-opdi-status">'+esc(label(record))+'</p><p>Observation window: 2026-01-01 to 2026-09-30. A flight-source registration match is provisional; no lease availability or ownership transfer is established.</p><dl>'+rows.map(([k,v])=>'<div><dt>'+esc(k)+'</dt><dd>'+esc(v)+'</dd></div>').join("")+'</dl>'+
+      (record.matchMethod?'<p>'+esc(record.matchMethod)+'</p>':"")+
+      ((record.reviewReasons||[]).length?'<h4>Evidence requiring review</h4><ul>'+record.reviewReasons.map(x=>'<li>'+esc(x)+'</li>').join("")+'</ul>':"")+
+      (sources.length?'<p>'+sources.map(x=>'<a href="'+esc(x.url||x.sourceUrl)+'" target="_blank" rel="noreferrer">'+esc(x.title||"Identity cross-check source")+'</a>').join(" · ")+'</p>':"")+
+      codeTable("Dated source operator codes",record.operatorCodeEvidence)+codeTable("Dated operating callsign prefixes",record.callsignCodeEvidence)+
+      '<p>Operator codes are source metadata. Callsign variation can reflect wet leasing or flight identification. Neither establishes a change in legal owner or operator. A mapped arrival is an inferred observed airport, not a verified current storage location.</p></section>';
+  }
+  global.StorageOpdiView={label,matches,enhance,renderSummary,recordMarkup};
+})(typeof window==="undefined"?globalThis:window);
+
 const startExplorer = async () => {
   const online = !window.REGISTRY;
   async function request(endpoint, params={}, signal) {
@@ -2123,6 +2221,7 @@ const startExplorer = async () => {
   const registry = online ? await request("meta") : window.REGISTRY;
   const engine = window.ExplorerEngine;
   const parking = window.ExplorerParking;
+  const storageOpdi = window.StorageOpdiView;
   const {geo, places} = window.GEOGRAPHY;
   const root = typeof appRoot === "undefined" ? document : appRoot;
   const el = id => root.getElementById(id);
@@ -2149,6 +2248,7 @@ const startExplorer = async () => {
   const archiveLabels = {STD:"Stored",SCR:"Scrapped",C:"Active", "W/O":"Written off",PLN:"To enter in service"};
   const evidence = {reactivation:"Explicit return-to-use record",new_airline_assignment:"Later assignment to another airline",scrap:"Dated dismantling record",storage_end_only:"Parking period ended; subsequent use unverified",assignment_unverified:"Later assignment; outcome unverified",next_storage:"Later parking period; outcome of this period unverified",no_later_record:"No confirmed outcome by archive cutoff"};
   const state = {mode:"stock",year:2025,from:2021,family:-1,country:"",status:"assigned",search:"",asset:null,corridor:null,page:0,zoom:1,focus:[500,250],model:"",age:"0/",duration:"0/",outcome:""};
+  state.opdi="";
   const params=new URLSearchParams(window.location.search);
   if(params.get("view")==="candidates")state.mode="candidates";
   if(params.get("view")==="finance")state.mode="finance";
@@ -2261,7 +2361,7 @@ const startExplorer = async () => {
     if(state.mode==="park") {
       const [ageMin,ageMax]=filterBounds(state.age);
       const [durationMin,durationMax]=filterBounds(state.duration);
-      return parking.pool(registry,{year:state.year,family:state.family,model:state.model,country:state.country,ageMin,ageMax,durationMin,durationMax});
+      return storageOpdi.enhance(parking.pool(registry,{year:state.year,family:state.family,model:state.model,country:state.country,ageMin,ageMax,durationMin,durationMax}),window.STORAGE_OPDI);
     }
     const key=[state.year,state.family,state.status].join("/");
     if(!yearly.has(key)) {
@@ -2275,7 +2375,7 @@ const startExplorer = async () => {
     const [ageMin,ageMax]=filterBounds(state.age);
     const [durationMin,durationMax]=filterBounds(state.duration);
     return {mode:state.mode,year:state.year,from:state.from,family:state.family,status:state.status,
-      country:state.country,model:state.model,ageMin:ageMin??"",ageMax:ageMax??"",
+      country:state.country,model:state.model,opdi:state.opdi,ageMin:ageMin??"",ageMax:ageMax??"",
       durationMin:durationMin??"",durationMax:durationMax??""};
   }
 
@@ -2354,12 +2454,15 @@ const startExplorer = async () => {
   function parkItems() {
     const query=state.search.trim().toLowerCase();
     return result.records.filter(asset=>(!state.outcome||asset.outcome===state.outcome) &&
+      storageOpdi.matches(asset.opdiEvidence,state.opdi) &&
       (!query||[asset.msn,asset.model,asset.operator,asset.registration,asset.outcomeOperator]
         .some(item=>String(item??"").toLowerCase().includes(query))));
   }
 
   function renderParking() {
     renderStorageCoverage();
+    storageOpdi.renderSummary(el("storage-opdi"),result.storageOpdi);
+    el("storage-opdi-filter").value=state.opdi;
     const chart=el("trend-chart");
     const width=Math.max(250,chart.clientWidth);
     const height=78, bottom=56, top=7;
@@ -2386,7 +2489,7 @@ const startExplorer = async () => {
     el("trend-summary").textContent=state.year+" · "+quantity(result.total,"aircraft","aircraft")+(difference===null?"":" · "+(difference>0?"+":"")+n(difference)+" vs. prior year");
     const noFollowup=result.asOf===result.followupEnd;
     if(noFollowup)state.outcome="";
-    el("outcomes-asof").textContent=noFollowup?"No dated follow-up":"Records through year-end "+result.followupEnd.slice(0,4);
+    el("outcomes-asof").textContent=noFollowup?"No later dated registry event":"Records through year-end "+result.followupEnd.slice(0,4);
     el("outcomes-controls").innerHTML=noFollowup?"":Object.entries(outcomes).map(([key,name])=>
       '<button type="button" class="outcome" aria-pressed="'+(state.outcome===key)+'" data-outcome="'+key+'"><span>'+name+'</span><strong>'+n(result.outcomes[key])+'</strong></button>').join("")
       +(state.outcome?'<button type="button" class="inline-link outcome-clear" data-outcome="">Show all outcomes</button>':"");
@@ -2430,8 +2533,8 @@ const startExplorer = async () => {
     el("storage-coverage-period").textContent="Snapshot "+result.asOf+" · Dated histories through "+result.followupEnd;
     const card=(label,value,note)=>'<div><h3>'+esc(label)+'</h3><strong>'+esc(value)+'</strong><p>'+esc(note)+'</p></div>';
     el("storage-coverage-metrics").innerHTML=
-      card("Later outcome coverage",noWindow?"No later observation window":total?n(unknown)+" / "+n(total)+" unconfirmed":"No matching records",
-        noWindow?"The snapshot is at the dated-history cutoff. Follow-up rates are unavailable.":
+      card("Registry-event follow-up",noWindow?"No later registry-event window":total?n(unknown)+" / "+n(total)+" unconfirmed":"No matching records",
+        noWindow?"The snapshot is at the registry-event cutoff. OPDI flight observations are reported separately below.":
           total?share(unknown)+" unconfirmed; "+n(known)+" have a classifiable later record through "+result.followupEnd+".":"Adjust the filters to review another set of records.")+
       card("Archive Stored label",total&&Number.isFinite(stored)?n(stored)+" / "+n(total):total?"Unavailable":"No matching records",
         total&&Number.isFinite(stored)?share(stored)+" of this cohort at extraction on "+(review.archive.asOf||"an unverified date")+". "+n(total-stored)+" have other or missing source labels.":"An archive status does not supply a dated storage exit.")+
@@ -2614,7 +2717,7 @@ const startExplorer = async () => {
   }
 
   function historyContent(asset, selected=null) {
-    const parkingDetail=selected?'<div class="parking-evidence"><strong>'+esc(result.asOf===result.followupEnd?"No dated follow-up":outcomes[selected.outcome])+'</strong> · Parked from '+esc(formatDate(selected.storageDate,selected.storagePrecision))+' · '+esc(timeParked(selected))+'<br>'+esc([formatDate(selected.outcomeDate,selected.outcomePrecision),selected.outcomeOperator,evidence[selected.outcomeEvidence]].filter(Boolean).join(" · "))+'</div>':"";
+    const parkingDetail=selected?'<div class="parking-evidence"><strong>'+esc(result.asOf===result.followupEnd?"No later dated registry event":outcomes[selected.outcome])+'</strong> · Parked from '+esc(formatDate(selected.storageDate,selected.storagePrecision))+' · '+esc(timeParked(selected))+'<br>'+esc([formatDate(selected.outcomeDate,selected.outcomePrecision),selected.outcomeOperator,evidence[selected.outcomeEvidence]].filter(Boolean).join(" · "))+'</div>':"";
     const rows=[
       ...asset.assignments.map(assign=>({date:assign.date,title:assign.operator,sub:[assign.registration,label(assign.country||"~"),assign.role==="other"?"Non-airline record":""].filter(Boolean).join(" · "),kind:assign.role==="unknown"?"unresolved":""})),
       ...asset.events.map(event=>({date:event.date,display:formatDate(event.date,event.precision),title:lifecycle[event.kind]||event.kind,sub:"Historical status record",kind:"event"}))
@@ -2624,7 +2727,7 @@ const startExplorer = async () => {
       '<p class="parking-evidence"><strong>Archive status '+esc(registry.meta.archiveStatusDate)+'</strong><br>'+
       esc(archiveLabels[asset.archiveStatus]||"Unmapped code "+asset.archiveStatus)+' · Event date unavailable from status code'+
       (asset.archiveUndatedScrap?"<br>Source history also includes an undated dismantling remark.":"")+'</p>':"";
-    return {body:parkingDetail+archiveStatus+caseLink+'<dl class="asset-meta"><dt>Family</dt><dd>'+esc(registry.families[asset.family])+'</dd><dt>First flight</dt><dd>'+esc(asset.firstFlight||"Unknown")+'</dd><dt>Engine</dt><dd>'+esc(asset.engine||"Unknown")+'</dd></dl><ol class="history">'+rows.map(item=>'<li class="'+item.kind+'"><time>'+esc(item.display||item.date)+'</time><strong>'+esc(item.title)+'</strong><small>'+esc(item.sub)+'</small></li>').join("")+'</ol>',count:rows.length};
+    return {body:parkingDetail+storageOpdi.recordMarkup(selected?.opdiEvidence)+archiveStatus+caseLink+'<dl class="asset-meta"><dt>Family</dt><dd>'+esc(registry.families[asset.family])+'</dd><dt>First flight</dt><dd>'+esc(asset.firstFlight||"Unknown")+'</dd><dt>Engine</dt><dd>'+esc(asset.engine||"Unknown")+'</dd></dl><ol class="history">'+rows.map(item=>'<li class="'+item.kind+'"><time>'+esc(item.display||item.date)+'</time><strong>'+esc(item.title)+'</strong><small>'+esc(item.sub)+'</small></li>').join("")+'</ol>',count:rows.length};
   }
 
   async function openCandidateHistory(id) {
@@ -2696,9 +2799,9 @@ const startExplorer = async () => {
     const matches=(values)=>!query||values.some(value=>String(value??"").toLowerCase().includes(query));
     if(park) {
       const items=remote?.items??parkItems();
-      detailsHeader("Aircraft in reconstructed storage",label(state.country),"Year-end "+state.year+" · "+quantity(remote?.total??items.length,"aircraft","aircraft")+(state.outcome?" · "+outcomes[state.outcome]:""),true);
-      detailList(items,a=>row("asset-row",'data-asset="'+a.id+'"',(a.registration||"Registration unknown")+" · MSN "+a.msn,
-        [a.model,a.operator,a.age===null?"Age unknown":quantity(a.age,"year")+" old",timeParked(a)].filter(Boolean).join(" · "),result.asOf===result.followupEnd?"":outcomes[a.outcome]),"aircraft","aircraft",remote);
+      detailsHeader("Aircraft in reconstructed storage",label(state.country),"Year-end "+state.year+" · "+quantity(remote?.total??items.length,"aircraft","aircraft")+(state.opdi?" · OPDI list filter":"")+(state.outcome?" · "+outcomes[state.outcome]:""),true);
+      detailList(items,a=>row("asset-row",'data-asset="'+a.id+'"'+(a.opdiEvidence?' data-opdi-status="'+esc(a.opdiEvidence.status)+'"':''),(a.registration||"Registration unknown")+" · MSN "+a.msn,
+        [a.model,a.operator,a.age===null?"Age unknown":quantity(a.age,"year")+" old",timeParked(a),a.opdiEvidence?.lastFlightDate?"Observed "+a.opdiEvidence.lastFlightDate:""].filter(Boolean).join(" · "),a.opdiEvidence?storageOpdi.label(a.opdiEvidence):result.asOf===result.followupEnd?"":outcomes[a.outcome]),"aircraft","aircraft",remote);
       return;
     }
     if(state.mode==="flow") {
@@ -2736,8 +2839,9 @@ const startExplorer = async () => {
   function refresh({preserveScroll=false}={}) {
     if (window.location.protocol === "http:" || window.location.protocol === "https:") {
       const viewUrl = new URL(window.location.href);
-      if (state.mode === "finance" || state.mode === "candidates") viewUrl.searchParams.set("view", state.mode);
-      else if (["finance", "candidates"].includes(viewUrl.searchParams.get("view"))) viewUrl.searchParams.delete("view");
+      if(state.mode==="park"){viewUrl.searchParams.set("view","parking");viewUrl.searchParams.set("year",state.year);}
+      else if (state.mode === "finance" || state.mode === "candidates") viewUrl.searchParams.set("view", state.mode);
+      else if (["finance", "candidates", "parking"].includes(viewUrl.searchParams.get("view"))) {viewUrl.searchParams.delete("view");viewUrl.searchParams.delete("year");}
       if (viewUrl.href !== window.location.href) window.history.replaceState(null, "", viewUrl);
     }
     if(online) {
@@ -2751,6 +2855,8 @@ const startExplorer = async () => {
     const candidates=state.mode==="candidates";
     const finance=state.mode==="finance";
     const focused=policy||candidates||finance;
+    if(!park||state.year!==2025)state.opdi="";
+    el("storage-opdi").hidden=true;
     el("explorer-heading").textContent=park?"Historical Aircraft Storage":"Global aircraft assets";
     el("explorer-description").textContent=park?"Review reconstructed storage histories and the evidence for subsequent outcomes.":"Explore fleet geography and follow individual airframes over time.";
     el("country-label").textContent=park?"Recorded operator country":"Country or territory";
@@ -2916,6 +3022,9 @@ const startExplorer = async () => {
     });
   }
   el("park-horizon").addEventListener("change", renderParkingFollowup);
+  el("storage-opdi-filter").addEventListener("change",event=>{
+    state.opdi=event.target.value;state.asset=null;state.page=0;drawDetails();
+  });
   if(!online) {
     el("park-export").addEventListener("click",exportParking);
     el("close-csv").addEventListener("click",()=>el("csv-dialog").close());
@@ -2960,7 +3069,7 @@ const startExplorer = async () => {
   });
   el("reset").addEventListener("click",()=>{
     if(playing!==null)togglePlayback();
-    Object.assign(state,{country:"",family:-1,status:"assigned",search:"",page:0,asset:null,corridor:null,year:2025,from:2021,zoom:1,focus:[500,250],model:"",age:"0/",duration:"0/",outcome:""});
+    Object.assign(state,{country:"",family:-1,status:"assigned",search:"",page:0,asset:null,corridor:null,year:2025,from:2021,zoom:1,focus:[500,250],model:"",age:"0/",duration:"0/",outcome:"",opdi:""});
     syncModels();
     el("park-age").value=state.age;
     el("park-duration").value=state.duration;
