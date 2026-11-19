@@ -44,6 +44,23 @@ select,input[type=search]{border:1px solid var(--line);background:#fff;border-ra
 .controlbar select{min-width:126px;max-width:196px}
 .reset{margin-left:auto;align-self:flex-end;color:#415561;min-height:37px}
 .board{display:grid;grid-template-columns:minmax(0,1fr) minmax(272px,320px);gap:12px;align-items:stretch}
+.storage-coverage{border:1px solid var(--line);border-radius:12px;background:#fff;padding:18px 20px;margin:2px 0 14px;min-width:0;font-size:16px;line-height:1.6}
+.storage-coverage-head{display:flex;justify-content:space-between;align-items:baseline;gap:8px 18px;flex-wrap:wrap}
+.storage-coverage-head h2{font-size:20px;letter-spacing:-.02em}
+.storage-coverage-head p{font-size:14px;color:var(--muted)}
+.storage-definition{margin-top:9px;color:#405e68;font-size:14px}
+.storage-coverage-metrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:13px;margin-top:15px}
+.storage-coverage-metrics>div{border:1px solid #dce7e6;border-radius:8px;background:#f4f8f7;padding:13px 15px;min-width:0}
+.storage-coverage-metrics h3{font-size:14px;font-weight:650;color:#42635f;margin:0 0 5px}
+.storage-coverage-metrics strong{display:block;font-size:20px;line-height:1.35;letter-spacing:-.02em;overflow-wrap:anywhere}
+.storage-coverage-metrics p{font-size:14px;color:var(--muted);margin-top:7px}
+.storage-coverage-explanation{font-size:14px;color:var(--muted);margin-top:12px}
+.storage-coverage-explanation summary{font-weight:650;color:var(--ink);cursor:pointer}
+.storage-coverage-explanation p{margin-top:10px;max-width:1100px}
+.board.is-parking .map-metric{white-space:normal;flex-direction:column;align-items:flex-end;gap:2px;max-width:40%}
+.board.is-parking .map-metric span{font-size:12px;text-align:right}
+@media(max-width:800px){.storage-coverage-metrics{grid-template-columns:1fr}.storage-coverage-metrics>div{padding:12px 14px}.storage-coverage-metrics strong{font-size:19px}}
+@media(max-width:525px){.storage-coverage{padding:15px 13px}.storage-coverage-head h2{font-size:19px}}
 .map-panel,.details,.timebar{background:#fff;border:1px solid var(--line);border-radius:12px;overflow:hidden}
 .map-panel{display:flex;flex-direction:column;min-width:0}
 .map-head{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:15px 17px 12px}
@@ -494,27 +511,39 @@ dialog{max-height:85dvh;overflow:auto}
   <button id="about" class="light-button" type="button">Data and methods <span aria-hidden="true">↗</span></button>
 </header>
 <main>
-  <div class="intro" id="map-intro"><div><h1>Global aircraft assets</h1><p>Explore fleet geography and follow individual airframes over time.</p></div><div class="source"><span></span>Airfleets historical records</div></div>
+  <div class="intro" id="map-intro"><div><h1 id="explorer-heading">Global aircraft assets</h1><p id="explorer-description">Explore fleet geography and follow individual airframes over time.</p></div><div class="source"><span></span>Airfleets historical records</div></div>
   <section class="controlbar" aria-label="Asset filters">
     <div class="tabs" aria-label="Explorer views">
       <button id="stock" aria-pressed="true" type="button">◫ <span>Fleet</span></button>
       <button id="flow" aria-pressed="false" type="button">⇄ <span>Transfers</span></button>
-      <button id="park" aria-pressed="false" type="button">◉ <span>Parking pool</span></button>
+      <button id="park" aria-pressed="false" type="button">◉ <span>Storage History</span></button>
       <button id="candidates" aria-pressed="false" aria-controls="candidate-view" type="button">Candidate Finder</button>
       <button id="finance" aria-pressed="false" aria-controls="finance-view" type="button">Decision Lab</button>
       <button id="ppr" aria-pressed="false" aria-controls="ppr-view" type="button">Hong Kong policy analysis</button>
     </div>
-    <label id="country-wrap">Country or territory<select id="country"><option value="">Global</option></select></label>
+    <label id="country-wrap"><span id="country-label">Country or territory</span><select id="country"><option value="">Global</option></select></label>
     <label id="family-wrap">Aircraft family<select id="family"><option value="-1">All families</option></select></label>
     <label id="status-wrap">Asset status<select id="status"><option value="all">All statuses</option><option value="assigned">Operator assignment</option><option value="parked">Recorded in storage</option><option value="retired">Recorded dismantling</option><option value="unresolved">Unverified status</option></select></label>
     <button type="button" class="light-button reset" id="reset">Reset filters</button>
   </section>
-  <section id="park-filters" class="controlbar park-filters" aria-label="Parking pool filters" hidden>
+  <section id="park-filters" class="controlbar park-filters" aria-label="Storage history filters" hidden>
     <label>Model variant<select id="park-model"><option value="">All variants</option></select></label>
     <label>Age at year-end<select id="park-age"><option value="0/">Any</option><option value="0/9">0–9 years</option><option value="10/19">10–19 years</option><option value="20/29">20–29 years</option><option value="30/">30 years or more</option></select></label>
-    <label>Time already in storage<select id="park-duration"><option value="0/">Any</option><option value="0/0.5">Up to 6 months</option><option value="0.5/1">6–12 months</option><option value="1/2">1–2 years</option><option value="2/5">2–5 years</option><option value="5/">5 years or more</option></select></label>
+    <label>Reconstructed time in storage<select id="park-duration"><option value="0/">Any</option><option value="0/0.5">Up to 6 months</option><option value="0.5/1">6–12 months</option><option value="1/2">1–2 years</option><option value="2/5">2–5 years</option><option value="5/">5 years or more</option></select></label>
     <button type="button" class="light-button ppr-link" id="park-ppr">Explore the AerFin case <span aria-hidden="true">→</span></button>
 
+  </section>
+  <section id="storage-coverage" class="storage-coverage" aria-labelledby="storage-coverage-title" hidden>
+    <div class="storage-coverage-head"><h2 id="storage-coverage-title">Record coverage</h2><p id="storage-coverage-period"></p></div>
+    <p class="storage-definition">Registry-based reconstruction at the selected year-end, covering the available aircraft histories. Geography follows the recorded operator’s country. Current storage location and commercial availability require separate confirmation.</p>
+    <div id="storage-coverage-metrics" class="storage-coverage-metrics" aria-live="polite"></div>
+    <details class="storage-coverage-explanation"><summary>How to read gaps in these records</summary>
+      <p>A storage period remains open until a dated assignment, storage exit, return to use or terminal event closes it. Missing exit records can leave a period open after the aircraft’s actual status changed.</p>
+      <p>An unconfirmed outcome can reflect an incomplete history or a lack of later observations. The latest snapshot has no later dated observation window. It cannot be used to estimate return-to-service or dismantling rates.</p>
+      <p>Return to use requires an explicit dated reactivation record. A later airline assignment is classified separately and can also precede renewed operations. These categories describe recorded evidence, not complete real-world outcome rates.</p>
+      <p>The archive status at extraction provides a separate endpoint cross-check. Its status code supplies no event date and cannot retrospectively date an exit. Month- and year-level dates give ranges for storage duration.</p>
+      <p>This view does not integrate the OPDI observations used in Candidate Finder. It supports historical review and further verification of individual aircraft.</p>
+    </details>
   </section>
   <div class="board" id="map-board">
     <section class="map-panel" aria-label="World aircraft map">
@@ -551,7 +580,7 @@ dialog{max-height:85dvh;overflow:auto}
         <p id="detail-summary" aria-live="polite"></p>
       </div>
       <section id="park-outcomes" aria-label="Outcomes after storage" hidden>
-        <div class="outcomes-title"><strong>Subsequent outcomes</strong><span id="outcomes-asof"></span></div>
+        <div class="outcomes-title"><strong>Later recorded outcomes</strong><span id="outcomes-asof"></span></div>
         <div id="outcomes-controls"></div>
         <div id="outcomes-evidence"></div>
       </section>
@@ -923,7 +952,7 @@ function mountPpr(panel, actions, {showAssetList = true, headingLevel = 1, data 
         <h${headingLevel} id="ppr-heading" tabindex="-1">${esc(data.title)}</h${headingLevel}>
         <p>${esc(data.subtitle)}</p>
       </div>
-      ${actions.back ? '<button type="button" class="light-button" data-return-parking>← Back to parking pool</button>' : ''}
+      ${actions.back ? '<button type="button" class="light-button" data-return-parking>Back to Storage History</button>' : ''}
     </header>
     <div class="ppr-overview">
       <p>${esc(data.summary)}</p>
@@ -2330,6 +2359,7 @@ const startExplorer = async () => {
   }
 
   function renderParking() {
+    renderStorageCoverage();
     const chart=el("trend-chart");
     const width=Math.max(250,chart.clientWidth);
     const height=78, bottom=56, top=7;
@@ -2386,6 +2416,27 @@ const startExplorer = async () => {
           '<div><dt>'+esc(label)+'</dt><dd>'+n(count)+'</dd></div>').join("")+'</dl>';
       evidenceBox.append(archive);
     }
+  }
+
+  function renderStorageCoverage() {
+    const total=result.total;
+    const noWindow=result.asOf>=result.followupEnd;
+    const unknown=result.outcomes?.unknown??0;
+    const known=total-unknown;
+    const percent=new Intl.NumberFormat("en",{style:"percent",maximumFractionDigits:1});
+    const share=count=>total?percent.format(count/total):"No records";
+    const review=online?result.reviewer:window.ExplorerParkingReview.calibrate(result,{registry});
+    const stored=review?.archive?.counts?.stored;
+    el("storage-coverage-period").textContent="Snapshot "+result.asOf+" · Dated histories through "+result.followupEnd;
+    const card=(label,value,note)=>'<div><h3>'+esc(label)+'</h3><strong>'+esc(value)+'</strong><p>'+esc(note)+'</p></div>';
+    el("storage-coverage-metrics").innerHTML=
+      card("Later outcome coverage",noWindow?"No later observation window":total?n(unknown)+" / "+n(total)+" unconfirmed":"No matching records",
+        noWindow?"The snapshot is at the dated-history cutoff. Follow-up rates are unavailable.":
+          total?share(unknown)+" unconfirmed; "+n(known)+" have a classifiable later record through "+result.followupEnd+".":"Adjust the filters to review another set of records.")+
+      card("Archive Stored label",total&&Number.isFinite(stored)?n(stored)+" / "+n(total):total?"Unavailable":"No matching records",
+        total&&Number.isFinite(stored)?share(stored)+" of this cohort at extraction on "+(review.archive.asOf||"an unverified date")+". "+n(total-stored)+" have other or missing source labels.":"An archive status does not supply a dated storage exit.")+
+      card("Physical location and availability","Not established",
+        "Country means recorded operator country. Parking airports, current technical readiness and lease availability are not verified in this view.");
   }
 
   function renderParkingFollowup() {
@@ -2700,6 +2751,14 @@ const startExplorer = async () => {
     const candidates=state.mode==="candidates";
     const finance=state.mode==="finance";
     const focused=policy||candidates||finance;
+    el("explorer-heading").textContent=park?"Historical Aircraft Storage":"Global aircraft assets";
+    el("explorer-description").textContent=park?"Review reconstructed storage histories and the evidence for subsequent outcomes.":"Explore fleet geography and follow individual airframes over time.";
+    el("country-label").textContent=park?"Recorded operator country":"Country or territory";
+    el("storage-coverage").hidden=!park;
+    if(park) {
+      el("storage-coverage-period").textContent="Loading record coverage…";
+      el("storage-coverage-metrics").replaceChildren();
+    }
     el("stock").setAttribute("aria-pressed",state.mode==="stock");
     el("flow").setAttribute("aria-pressed",flow);
     el("park").setAttribute("aria-pressed",park);
@@ -2778,11 +2837,11 @@ const startExplorer = async () => {
       metric=park?result.total:state.country==="~"?result.totals.unmapped:state.country?
         result.countries.find(c=>c.code===state.country)?.count||0:result.totals.selected;
       const unmapped=park?result.unmapped:result.totals.unmapped;
-      muted="By airline country or territory"+(unmapped?" · "+n(unmapped)+" unverified":"");
+      muted=(park?"By recorded operator country":"By airline country or territory")+(unmapped?" · "+n(unmapped)+" unverified":"");
       el("legend").innerHTML='<span>0</span><span class="swatches">'+tones.map(c=>'<span style="background:'+c+'"></span>').join("")+'</span><span>'+(park?"300":"1,500")+'+ aircraft</span>';
     }
     el("metric-count").textContent=n(metric);
-    el("metric-label").textContent=(state.country?label(state.country)+" · ":"")+(flow?"changes":"aircraft");
+    el("metric-label").textContent=(state.country?label(state.country)+" · ":"")+(flow?"changes":park?"reconstructed records":"aircraft");
     el("map-note").textContent=muted;
     if(park) {renderParking(); renderParkingFollowup();}
     drawMap(); drawDetails(); projectionTransform(); el("details-body").scrollTop=previousScroll;
@@ -2917,7 +2976,7 @@ const startExplorer = async () => {
   el("method-body").innerHTML='<p>The Airfleets production lists contain '+n(online?registry.airframeCount:engines.length)+' airframe histories, keyed by production list and manufacturer serial number (MSN). The map covers year-end snapshots from 2000 to 2025. Individual histories can start earlier.</p>'+
     '<p><strong>Fleet.</strong> Snapshots use dated assignment and status records through the selected date. “Assigned to airline” indicates a recorded airline assignment. Confirming actual operations requires flight records. Parked and dismantled aircraft appear under the airline’s country or territory as of that date, where known. Month- or year-only status records take effect at the end of the period.</p>'+
     '<p><strong>Cross-border assignments.</strong> Counts use dated changes in recorded airline for the same airframe, with both countries or territories mapped. An aircraft can contribute multiple changes. These records may include wet leases and transfers within an airline group. Ownership, airport and contract details require separate evidence.</p>'+
-    '<p><strong>Parked aircraft.</strong> Each bar counts reconstructed parking periods open at year-end under the current filters. Dated storage and exit records define these periods. Record gaps can leave periods open. Age runs from first flight. Month- and year-only starts produce a range of possible durations. The filter includes ranges that overlap the selected interval.</p>'+
+    '<p><strong>Storage History.</strong> Each bar counts reconstructed parking periods open at year-end under the current filters. Dated storage and exit records define these periods. Missing exits can leave periods open after the actual status changed. Geography follows the recorded operator’s country, not a verified parking airport. The archive status is a separate cross-check without event dates. Age runs from first flight. Month- and year-only starts produce a range of possible durations. This view supports historical review; current storage and commercial availability require separate verification.</p>'+
     '<p><strong>Subsequent outcomes.</strong> Dated follow-up runs through year-end 2025. Return to use requires an explicit dated record. Assignment to another airline uses later registry evidence. Archive status gives the source’s classification at extraction. The date of the underlying event requires separate evidence. Fixed-horizon counts use dated records.</p>'+
     '<p><strong>Candidate Finder.</strong> The A320 review uses the published Airsource lease requirement and separately dated registry and OPDI evidence. Aircraft identity and observed activity support initial screening. The requirement matrix records the delivery, cabin, technical and commercial documents still needed from the lessor. Observed inactivity depends on tracking coverage.</p>'+
     '<p><strong>Aviation Decision Lab.</strong> The lease review compares a receiving airline’s lease-related cash costs under user-entered contract terms and operating assumptions. Aircraft evidence retains its original dates. Illustrative quotes are optional scenarios and are never confirmed offers. Refundable deposits and the maintenance reserve account are tracked separately from final costs. Fuel, crew and other airline operating costs require a separate operating model.</p>'+
