@@ -561,16 +561,16 @@ dialog{max-height:85dvh;overflow:auto}
       <p>An unconfirmed outcome can reflect an incomplete history or a lack of later observations. The latest snapshot has no later dated registry-event window. The separate OPDI check adds subsequent flight observations without estimating complete return-to-service or dismantling rates.</p>
       <p>Return to use requires an explicit dated reactivation record. A later airline assignment is classified separately and can also precede renewed operations. These categories describe recorded evidence, not complete real-world outcome rates.</p>
       <p>The archive status at extraction provides a separate endpoint cross-check. Its status code supplies no event date and cannot retrospectively date an exit. Month- and year-level dates give ranges for storage duration.</p>
-      <p>The 2025 cohort has a separate OPDI follow-up check below. Later flight observations are kept distinct from the registry’s dated event classifications.</p>
+      <p>The 2025 cohort has a separate flight-activity check below, combining OPDI and additional sampled ADSB.lol evidence for US and China records. Later observations are kept distinct from the registry’s dated event classifications.</p>
     </details>
   </section>
   <section id="storage-opdi" class="storage-coverage storage-opdi" aria-labelledby="storage-opdi-title" hidden>
-    <div class="storage-coverage-head"><h2 id="storage-opdi-title">2025 cohort: OPDI follow-up check</h2><p data-storage-opdi-period></p></div>
+    <div class="storage-coverage-head"><h2 id="storage-opdi-title">2025 cohort: flight-activity checks</h2><p data-storage-opdi-period></p></div>
     <p class="storage-definition" data-storage-opdi-scope></p>
     <div class="storage-coverage-metrics" data-storage-opdi-metrics aria-live="polite"></div>
     <p class="storage-opdi-operators" data-storage-opdi-operators></p>
-    <div class="storage-opdi-controls"><label for="storage-opdi-filter">Aircraft list evidence<select id="storage-opdi-filter"><option value="">All evidence groups</option><option value="flight_observed">Provisional flight match</option><option value="operator_code_change">Source operator-code variation</option><option value="callsign_code_change">Operating callsign variation</option><option value="identity_review">Identity to verify</option><option value="no_observation">No flight observed</option><option value="no_usable_registration">Registration unavailable</option></select></label><p>Filters the aircraft list only. Map, archive outcomes and the coverage denominator retain the snapshot filters.</p></div>
-    <details class="storage-coverage-explanation"><summary>Matching method and observation limits</summary><p>Matches use the last registry registration, uniqueness across the complete registry, observed ICAO24 identity and consistent aircraft type. Registration reuse, conflicting types, archive-terminal conflicts and review-only observations remain flagged for verification.</p><p>OPDI source operator codes and operating callsign prefixes are reported separately. Variation can reflect wet leasing, source metadata or identification issues. No legal transfer is inferred. Lack of observations can reflect coverage gaps or a changed registration.</p><p>The check uses the nine official monthly flight-list files from January to September 2026. Inferred arrivals describe an observed flight fragment; they do not establish a current parking position. <a href="https://www.opdi.aero/flight-list-data" target="_blank" rel="noreferrer">OPDI source and release coverage</a>.</p></details>
+    <div class="storage-opdi-controls"><label for="storage-opdi-filter">Aircraft list evidence<select id="storage-opdi-filter"><option value="">All evidence groups</option><option value="combined_activity">Any matched flying evidence</option><option value="flight_observed">OPDI provisional flight match</option><option value="extended_adsb">Additional ADSB.lol airborne evidence</option><option value="operator_code_change">OPDI source operator-code variation</option><option value="callsign_code_change">OPDI operating callsign variation</option><option value="identity_review">Identity to verify</option><option value="no_observation">No attributable flight observed</option><option value="no_usable_registration">Registration unavailable</option></select></label><p>Filters the aircraft list only. Map, archive outcomes and the coverage denominator retain the snapshot filters. This history does not identify aircraft available for lease.</p></div>
+    <details class="storage-coverage-explanation"><summary>Matching method and observation limits</summary><p>Matches use the last registry registration, uniqueness across the complete registry, observed ICAO24 identity and consistent aircraft type. Registration reuse, conflicting types, archive-terminal conflicts and review-only observations remain flagged for verification.</p><p>OPDI source operator codes and operating callsign prefixes are reported separately. Variation can reflect wet leasing, source metadata or identification issues. No legal transfer is inferred. Lack of observations can reflect coverage gaps or a changed registration.</p><p>The OPDI check uses nine official monthly flight-list files from January to September 2026. Additional ADSB.lol evidence uses fresh sampled positions in the same window, with repeated airborne movement and separate identity checks. Movement fragments and OPDI flight records use different count units. <a href="https://www.opdi.aero/flight-list-data" target="_blank" rel="noreferrer">OPDI source and release coverage</a>; <a href="https://leoglory730.github.io/ppr-aircraft-explorer/methods/README.md" target="_blank" rel="noreferrer">ADSB.lol transformation method</a>.</p></details>
   </section>
   <div class="board" id="map-board">
     <section class="map-panel" aria-label="World aircraft map">
@@ -2139,12 +2139,37 @@ function mountLeaseLab(panel, { loadCase, openHistory, backToCandidates } = {}) 
 
 /* Dated OPDI observations remain separate from registry event classifications. */
 (function(global){
-  const labels={flight_observed:"Provisional flight match",identity_review:"Identity to verify",no_observation:"No flight observed",no_usable_registration:"Registration unavailable",unavailable:"Evidence unavailable"};
+  const labels={flight_observed:"Provisional flight match",airborne_observed:"Additional ADS-B activity",identity_review:"Identity to verify",no_observation:"No flight observed",no_usable_registration:"Registration unavailable",unavailable:"Evidence unavailable"};
   const esc=value=>String(value??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"})[c]);
   const n=value=>new Intl.NumberFormat("en-US").format(value??0);
   const label=record=>labels[record?.status]||labels.unavailable;
   const list=value=>Array.isArray(value)?value:value?[value]:[];
   const rate=(observed,total)=>total?new Intl.NumberFormat("en",{style:"percent",maximumFractionDigits:1}).format(observed/total):"Unavailable";
+  const windowText=value=>typeof value==="string"?value:Array.isArray(value)?value.filter(Boolean).join(" to "):value?[value.start||value.windowStart||value.from||value.first,value.end||value.windowEnd||value.to||value.last].filter(Boolean).join(" to "):"";
+  const linkMarkup=entry=>{
+    if(!entry)return "";
+    const source=typeof entry==="string"?{url:entry,title:entry}:entry;
+    const url=source.url||source.sourceUrl||"",title=source.title||source.name||source.source||"Source";
+    return /^https?:\/\//.test(url)?'<a href="'+esc(url)+'" target="_blank" rel="noreferrer">'+esc(title)+'</a>':esc(title);
+  };
+  const definitionList=rows=>'<dl>'+rows.map(([key,value])=>'<div><dt>'+esc(key)+'</dt><dd>'+esc(value)+'</dd></div>').join("")+'</dl>';
+  const adsbAttribution=()=>'<p>Contains information from <a href="https://github.com/adsblol/globe_history_2026" target="_blank" rel="noreferrer">ADSB.lol</a>, made available under the <a href="https://opendatacommons.org/licenses/odbl/1.0/" target="_blank" rel="noreferrer">Open Database License (ODbL)</a>. Sampled observations are queried through <a href="https://adsb.exposed/" target="_blank" rel="noreferrer">ClickHouse / adsb.exposed</a>.</p>';
+  function extendedAuditMarkup(audit){
+    if(!audit)return "";
+    const countries=list(audit.countries),names={USA:"United States",CHN:"China"};
+    const window=windowText(audit.sourceWindow||{start:audit.windowStart,end:audit.windowEnd});
+    const sampling=audit.sampling||(audit.sampleFraction!==undefined?rate(audit.sampleFraction,1)+" of observed ADSB.lol points":"1% of observed ADSB.lol points");
+    const sources=Array.isArray(audit.sourceUrls)?audit.sourceUrls:typeof audit.sourceUrls==="object"&&audit.sourceUrls?Object.entries(audit.sourceUrls).map(([title,url])=>({title,url})):list(audit.sourceUrls);
+    return '<details class="storage-opdi-record" data-storage-adsb-audit-details><summary><strong>Additional US and China verification</strong></summary>'+
+      '<p>This audit follows the originally unresolved US and China groups in the full 2025 cohort. Country refers to the recorded operator, not the aircraft’s location. Audit counts below retain that scope when snapshot filters change.</p>'+
+      '<p>'+(window?'Additional source window: '+esc(window)+'. ':'')+'Sampling: '+esc(sampling)+'.</p>'+
+      (countries.length?'<ul>'+countries.map(c=>'<li>'+esc(names[c.country]||c.country)+': '+n(c.screened??c.cohort)+' in scope; '+n(c.sourceHits??c.rawRegistrationHits)+' with source registration hits; '+n(c.qualifiedMatches??c.added)+' additional activity matches'+(c.reviewOnly!==undefined?'; '+n(c.reviewOnly)+' retained as review-only clues':'')+(c.remaining!==undefined?'; '+n(c.remaining)+' without an additional match':'')+'.</li>').join('')+'</ul>':'')+
+      '<p>The point sample supplies positive evidence when qualifying airborne movement is present. It gives a lower bound on observed aircraft and movement fragments. A missing sample row is inconclusive; these counts do not measure total flights or utilization.</p>'+
+      (list(audit.notes).length?'<ul>'+list(audit.notes).map(note=>'<li>'+esc(note)+'</li>').join('')+'</ul>':'')+
+      (sources.length?'<p>'+sources.map(linkMarkup).filter(Boolean).join(' · ')+'</p>':'')+
+      '<p>'+linkMarkup({title:"Activity transformation and verification method",url:"https://leoglory730.github.io/ppr-aircraft-explorer/methods/README.md"})+'</p>'+
+      adsbAttribution()+'</details>';
+  }
   function auditMarkup(audit,metadata){
     if(!audit)return "";
     const baseline=audit.baseline||{},recoveries=audit.recoveries||{},controls=audit.controls||{};
@@ -2169,6 +2194,8 @@ function mountLeaseLab(panel, { loadCase, openHistory, backToCandidates } = {}) 
   }
   function matches(record,filter){
     if(!filter)return true;
+    if(filter==="extended_adsb")return record?.status==="airborne_observed";
+    if(filter==="combined_activity")return record?.status==="flight_observed"||record?.status==="airborne_observed";
     if(filter==="operator_code_change")return record?.status==="flight_observed"&&record.operatorCodeChange===true;
     if(filter==="callsign_code_change")return record?.status==="flight_observed"&&record.callsignCodeChange===true;
     return record?.status===filter;
@@ -2186,38 +2213,82 @@ function mountLeaseLab(panel, { loadCase, openHistory, backToCandidates } = {}) 
         callsignCodeChanges+=Number(r.callsignCodeChange===true);
       }
     });
-    pool.storageOpdi={available:true,metadata:dataset.metadata,total:pool.total,statusCounts:counts,flightObserved:counts.flight_observed,identityReview:counts.identity_review,noObservation:counts.no_observation,noUsableRegistration:counts.no_usable_registration,operatorCodeChanges,callsignCodeChanges};
+    pool.storageOpdi={available:true,metadata:dataset.metadata,total:pool.total,statusCounts:counts,flightObserved:counts.flight_observed,airborneObserved:counts.airborne_observed,combinedActivityMatched:counts.flight_observed+counts.airborne_observed,identityReview:counts.identity_review,noObservation:counts.no_observation,noUsableRegistration:counts.no_usable_registration,operatorCodeChanges,callsignCodeChanges};
     return pool;
   }
   function renderSummary(panel,summary){
     panel.hidden=!summary?.available;
     if(!summary?.available)return;
     const m=summary.metadata||{};
-    const percent=summary.total?new Intl.NumberFormat("en",{style:"percent",maximumFractionDigits:1}).format(summary.flightObserved/summary.total):"—";
+    const combined=summary.combinedActivityMatched??((summary.flightObserved||0)+(summary.airborneObserved||0));
+    const percent=summary.total?new Intl.NumberFormat("en",{style:"percent",maximumFractionDigits:1}).format(combined/summary.total):"—";
     const metric=(title,count,note)=>'<div><h3>'+esc(title)+'</h3><strong>'+n(count)+'</strong><p>'+esc(note)+'</p></div>';
-    panel.querySelector("[data-storage-opdi-period]").textContent=(m.windowStart||"2026-01-01")+" to "+(m.windowEnd||"2026-09-30")+" · "+n(summary.total)+" aircraft under the current snapshot filters";
+    const extraWindow=windowText(m.audit?.extendedAdsb?.sourceWindow||{start:m.audit?.extendedAdsb?.windowStart,end:m.audit?.extendedAdsb?.windowEnd});
+    panel.querySelector("[data-storage-opdi-period]").textContent="OPDI: "+(m.windowStart||"2026-01-01")+" to "+(m.windowEnd||"2026-09-30")+(extraWindow?" · additional ADS-B: "+extraWindow:"")+" · "+n(summary.total)+" aircraft under the current snapshot filters";
     panel.querySelector("[data-storage-opdi-metrics]").innerHTML=
-      metric("Provisional flight match",summary.flightObserved,percent+" of this cohort has matched post-snapshot flight observations. Aircraft identity remains provisional; see each record’s matching evidence.")+
+      metric("Matched airborne activity",combined,n(summary.flightObserved)+" OPDI provisional matches + "+n(summary.airborneObserved)+" additional ADS-B matches. "+percent+" of this cohort; inspect each record’s dated identity evidence.")+
       metric("Identity to verify",summary.identityReview,"Conflicting or ambiguous identities and review-only observations are retained for verification.")+
-      metric("No flight observed",summary.noObservation,"No qualifying match in this observation window. Status remains unverified.")+
+      metric("No flight observed",summary.noObservation,"No attributable qualifying activity in the checked sources and windows. Status remains unverified.")+
       metric("Registration unavailable",summary.noUsableRegistration,"No usable registration for this matching run.");
-    panel.querySelector("[data-storage-opdi-operators]").textContent=n(summary.operatorCodeChanges)+" aircraft with variation in source operator codes; "+n(summary.callsignCodeChanges)+" with multiple operating callsign prefixes, among the matched-flight group. These are overlapping evidence subsets, not confirmed transfers.";
+    panel.querySelector("[data-storage-opdi-operators]").textContent=n(summary.operatorCodeChanges)+" aircraft with variation in source operator codes; "+n(summary.callsignCodeChanges)+" with multiple operating callsign prefixes, among the OPDI provisional-match group. These are overlapping evidence subsets, not confirmed transfers.";
     panel.querySelector("[data-storage-opdi-scope]").textContent="This adds later flying evidence to the 2025 storage cohort. It does not date the first return to service, establish continuous activity, or replace the registry’s original event outcomes. No observed flight does not establish continued storage.";
     let audit=panel.querySelector("[data-storage-opdi-audit]");
-    if(m.audit?.gapAudit&&!audit){
+    if((m.audit?.gapAudit||m.audit?.extendedAdsb)&&!audit){
       audit=panel.ownerDocument.createElement("div");
       audit.setAttribute("data-storage-opdi-audit","");
       const controls=panel.querySelector(".storage-opdi-controls");
       if(controls)controls.before(audit);else panel.append(audit);
     }
     if(audit){
-      const wasOpen=audit.querySelector("details")?.open;
-      audit.innerHTML=auditMarkup(m.audit?.gapAudit,m);
-      if(wasOpen&&audit.querySelector("details"))audit.querySelector("details").open=true;
+      const gapOpen=audit.querySelector("[data-storage-opdi-audit-details]")?.open;
+      const extendedOpen=audit.querySelector("[data-storage-adsb-audit-details]")?.open;
+      audit.innerHTML=extendedAuditMarkup(m.audit?.extendedAdsb)+auditMarkup(m.audit?.gapAudit,m);
+      if(gapOpen&&audit.querySelector("[data-storage-opdi-audit-details]"))audit.querySelector("[data-storage-opdi-audit-details]").open=true;
+      if(extendedOpen&&audit.querySelector("[data-storage-adsb-audit-details]"))audit.querySelector("[data-storage-adsb-audit-details]").open=true;
     }
+  }
+  function additionalActivityMarkup(record){
+    const evidence=record.aviationActivityEvidence||{};
+    const segment=evidence.exampleSegment||{};
+    const rows=[
+      ["Match classification",label(record)],
+      ["Last registry registration",record.registration||"Unavailable"],
+      ["Registry serial number",record.msn||"Unavailable"],
+      ["Corroborated observation-window registrations",list(record.observedRegistrations).filter(Boolean).map(x=>typeof x==="string"?x:x.registration).filter(Boolean).join(", ")||"Unavailable"],
+      ["Registry operator at snapshot",record.registryOperator||"Unavailable"],
+      ["Activity source",evidence.source||"ADSB.lol sampled observations"],
+      ["Additional source window",windowText(evidence.sourceWindow)||"See source evidence"],
+      ["Observed ICAO24 addresses",list(record.icao24?.length?record.icao24:evidence.icao24).join(", ")||"Unavailable"],
+      ["Aircraft identity linkage",evidence.identityMethod||record.matchMethod||"See identity sources"],
+      ["Sampled airborne points",n(evidence.airbornePointCount)],
+      ["Qualifying movement fragments",n(evidence.qualifyingSegmentCount)],
+      ["First / last qualifying airborne observation",[evidence.firstAirborne,evidence.lastAirborne].filter(Boolean).join(" / ")||"Unavailable"],
+    ];
+    const fragmentRows=[
+      ...(segment.first||segment.last?[["Fragment observation times",[segment.first,segment.last].filter(Boolean).join(" / ")]]:[]),
+      ...(segment.callsign?[["Observed callsign",segment.callsign]]:[]),
+      ...(segment.displacementNm!==undefined?[["Position displacement",n(segment.displacementNm)+" nautical miles"]]:[]),
+      ...(segment.pointCount!==undefined||segment.points!==undefined?[["Sampled points in fragment",n(segment.pointCount??segment.points)]]:[]),
+      ...(segment.durationMinutes!==undefined?[["Fragment time span",n(segment.durationMinutes)+" minutes"]]:[]),
+    ];
+    const sources=[...list(evidence.identitySources),...list(record.identitySources),...list(record.evidenceSources)];
+    if(evidence.sourceUrl)sources.push({title:"Activity data source",url:evidence.sourceUrl});
+    const seen=new Set();
+    const links=sources.filter(x=>{const key=typeof x==="string"?x:(x.url||x.sourceUrl||"")+"|"+(x.title||x.name||"");if(seen.has(key))return false;seen.add(key);return true;});
+    return '<section class="storage-opdi-record" data-opdi-record="'+esc(record.status)+'"><h3>Flight-activity follow-up evidence</h3><p class="storage-opdi-status">'+esc(label(record))+'</p>'+
+      '<p>Multiple sampled airborne positions support movement of the linked airframe. This is dated activity evidence; lease availability, a legal transfer and current location remain unverified.</p>'+definitionList(rows)+
+      (fragmentRows.length?'<h4>Example qualifying movement fragment</h4>'+definitionList(fragmentRows):'')+
+      '<p>Movement fragments and sampled points are lower bounds on observed activity. They are not completed-flight counts and cannot establish exact utilization or the first return to service.</p>'+
+      (record.missingEvidenceReason?'<h4>Evidence qualification</h4><p>'+esc(record.missingEvidenceReason)+'</p>':'')+
+      (list(record.reviewReasons).length?'<h4>Evidence requiring review</h4><ul>'+list(record.reviewReasons).map(reason=>'<li>'+esc(reason)+'</li>').join('')+'</ul>':'')+
+      (links.length?'<h4>Identity and activity sources</h4><p>'+links.map(linkMarkup).filter(Boolean).join(' · ')+'</p>':'')+
+      (evidence.license?'<p>Activity-data license: '+esc(typeof evidence.license==="string"?evidence.license:evidence.license.name||"ODbL")+'.</p>':'')+
+      '<p>'+linkMarkup({title:"Activity transformation and verification method",url:"https://leoglory730.github.io/ppr-aircraft-explorer/methods/README.md"})+'</p>'+
+      adsbAttribution()+'</section>';
   }
   function recordMarkup(record){
     if(!record)return "";
+    if(record.status==="airborne_observed")return additionalActivityMarkup(record);
     const rows=[
       ["Match classification",label(record)],
       ["Last registry registration",record.registration||"Unavailable"],
@@ -2243,7 +2314,7 @@ function mountLeaseLab(panel, { loadCase, openHistory, backToCandidates } = {}) 
       const url=x.url||x.sourceUrl||"",title=x.title||x.name||x.source||"Identity cross-check source";
       return /^https?:\/\//.test(url)?'<a href="'+esc(url)+'" target="_blank" rel="noreferrer">'+esc(title)+'</a>':esc(title);
     };
-    return '<section class="storage-opdi-record" data-opdi-record="'+esc(record.status)+'"><h3>OPDI follow-up evidence</h3><p class="storage-opdi-status">'+esc(label(record))+'</p><p>Observation window: 2026-01-01 to 2026-09-30. Links between source observations and a registry airframe remain provisional; no lease availability or ownership transfer is established.</p><dl>'+rows.map(([k,v])=>'<div><dt>'+esc(k)+'</dt><dd>'+esc(v)+'</dd></div>').join("")+'</dl>'+
+    return '<section class="storage-opdi-record" data-opdi-record="'+esc(record.status)+'"><h3>Flight-activity follow-up evidence</h3><p class="storage-opdi-status">'+esc(label(record))+'</p><p>OPDI observation window: 2026-01-01 to 2026-09-30. Links between source observations and a registry airframe remain provisional; no lease availability or ownership transfer is established.</p><dl>'+rows.map(([k,v])=>'<div><dt>'+esc(k)+'</dt><dd>'+esc(v)+'</dd></div>').join("")+'</dl>'+
       (record.matchMethod?'<p>'+esc(record.matchMethod)+'</p>':"")+
       (record.missingEvidenceReason?'<h4>Unresolved evidence</h4><p>'+esc(record.missingEvidenceReason)+'</p>':"")+
       ((record.reviewReasons||[]).length?'<h4>Evidence requiring review</h4><ul>'+record.reviewReasons.map(x=>'<li>'+esc(x)+'</li>').join("")+'</ul>':"")+
